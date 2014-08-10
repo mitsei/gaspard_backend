@@ -1,0 +1,59 @@
+{% extends "ims_lti_py_sample/base.html" %}
+
+{%block title%}
+        Assessment Name
+{%endblock%}
+
+{% block content %}
+        <script>
+        $(document).ready(function()
+        {
+            $('.prob-quest-header').click(function(){
+                var width = document.getElementById('prob-quest-row').offsetWidth;
+                console.log(width);
+                $('.quest-item').css('width',width);
+            });
+        });
+        </script>
+        <div class="row main-problem-bgr">
+            <div class="col-lg-1"></div>
+            <div class="col-lg-10 col-quest-background no-padding">
+                <div class="display-question">
+
+                    <div class="col-lg-5">
+                        <div class="row"  style="padding:20px 100px 0 20px;">
+                            <div class="dropdown" id="prob-quest-row">
+                              <a data-toggle="dropdown"href="#">
+                                  <p class="mylist-head prob-quest-header"> Current Question<span class="glyphicon glyphicon-chevron-down" style="float:right"></span></p>
+
+                              </a>
+                                <div class="dropdown-menu " role="menu" aria-labelledby="dLabel">
+                                {% for a in questions %}
+
+                                    <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"name="{{a.text.text}}">Names are empty{{a.displayName.text}}</a>
+                                {% endfor %}
+                                 </div>
+
+
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-5">
+                        <div class="row">
+                            <h4>Description</h4>
+                        </div>
+                            <p>{{question}}</p>
+
+
+                    </div>
+                    <button class="btn  btn-sm submit-answer" type="button">Submit</button>
+
+
+                </div>
+            </div>
+            <div class="col-lg-1"></div>
+        </div>
+{%endblock%}
