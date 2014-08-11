@@ -1,6 +1,9 @@
-#newasses {
 
+
+#newasses {
 }
+
+
 
 #btn-new-assess {
     color: white;
@@ -40,6 +43,9 @@
 #modal-offering-id{
 
  }
+#assess-items-name{
+
+}
 #select-badge{
 
 }
@@ -68,6 +74,60 @@ removing items from the assessment
 
 }
 .item-in-assess{
+     background: #F0F4F6;
+  background-image: -webkit-linear-gradient(top, white,  #F0F4F6);
+  background-image: -moz-linear-gradient(top, white,  #F0F4F6);
+  background-image: -ms-linear-gradient(top, white,  #F0F4F6);
+  background-image: -o-linear-gradient(top, white,  #F0F4F6);
+  background-image: linear-gradient(to bottom, white, #F0F4F6);
+
+
+}
+.mylist-head {
+    background: #4D8496;
+    background: rgba(77, 132, 150, 1);
+    color: white;
+    margin: 0;
+    padding: 10px 15px;
+    text-decoration: none;
+}
+a.mylist-head:hover{
+    text-decoration: none;
+}
+
+.mylist {
+    background-color: #fff;
+    border: 1px solid #4D8496;
+}
+
+a.mylist-item {
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    color: #4D8496;
+
+    text-decoration: none;
+}
+/*.mylist-item:hover {*/
+    /*background: #C7DCE3;*/
+    /*background: rgba(199, 220, 227, 1);*/
+
+/*}*/
+
+.mylist-item-div{
+    background-color: #fff;
+    width:auto;
+
+}
+.mylist-item-div:hover{
+     background: #C7DCE3;
+     background: rgba(199, 220, 227, 1);
+
+}
+.assess-item:hover{
+     background: #C7DCE3;
+     background: rgba(199, 220, 227, 1);
 
 }
 
@@ -76,10 +136,32 @@ a.selected {
 
 }
 
+
 a.selected:hover {
-    background: #4D8496;
+    background: #C7DCE3;
 }
+.selected-bank-item, .selected-bank-item:hover{
+    background: #C0DCCD;
+  background-image: -webkit-linear-gradient(top, #EAF3EE,  #C0DCCD);
+  background-image: -moz-linear-gradient(top, white,  #C0DCCD);
+  background-image: -ms-linear-gradient(top, white,  #C0DCCD);
+  background-image: -o-linear-gradient(top, white,  #C0DCCD);
+  background-image: linear-gradient(to bottom, white, #C0DCCD);
+
+}
+/*a.selected-bank-item:hover{*/
+    /**/
+/*}*/
 #assess-list {
+
+}
+#assess-name{
+
+}
+#create{
+
+}
+#modal-create-assessment{
 
 }
 
@@ -121,37 +203,7 @@ h4{
     top: 30%;
 }
 
-.mylist-head {
-    background: #4D8496;
-    background: rgba(77, 132, 150, 1);
-    color: white;
-    margin: 0;
-    padding: 10px 15px;
-    text-decoration: none;
-}
-a.mylist-head:hover{
-    text-decoration: none;
-}
 
-.mylist {
-    background-color: #fff;
-    border: 1px solid #4D8496;
-}
-
-a.mylist-item {
-    position: relative;
-    display: block;
-    padding: 10px 15px;
-    margin-bottom: -1px;
-    color: #4D8496;
-
-    text-decoration: none;
-}
-.mylist-item-div{
-    background-color: #fff;
-    width:auto;
-
-}
 .mylist-item-div-clone{
     background: white;
   background-image: -webkit-linear-gradient(top, white,  #C7DCE3);
@@ -159,16 +211,10 @@ a.mylist-item {
   background-image: -ms-linear-gradient(top, white,  #C7DCE3);
   background-image: -o-linear-gradient(top, white,  #C7DCE3);
   background-image: linear-gradient(to bottom, white,  #C7DCE3);
-  /*-webkit-border-radius: 28;*/
-  /*-moz-border-radius: 28;*/
-  /*border-radius: 28px;*/
-}
-
-a.mylist-item:hover {
-    background: #C7DCE3;
-    background: rgba(199, 220, 227, 1);
 
 }
+
+
 
 
 .img-home {

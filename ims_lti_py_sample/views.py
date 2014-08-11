@@ -22,7 +22,7 @@ def index(request):
         #print request.META
         print "PARAMS"
 
-        #print request.POST
+        print request.POST
         #print request.POST['user_id']
         #print request.user
     session = request.session
@@ -98,42 +98,57 @@ def student(request):
         params = {}
         for g in Post.objects.all():
             params[g.key]= g.value
-            print g.key
-        bank_id= urllib.unquote(params['custom_bank_id'])
-        offering_id= urllib.unquote(params['custom_offering_id'])
-        name=params['lis_person_name_full'].split(" ",1)[0]
+            print str(g.key) +str(g.value)
+        bank_id= params['custom_bank_id']
+        offering_id= params['custom_offering_id']
+        name = params["lis_person_name_given"]
+
+
+        print bank_id
+        print offering_id
+
         '''
         create new taken
         and get the taken_id
         assessment/banks/<bank_id>/assessmentsoffered/<offering_id>/asessmentstaken/
         '''
-        resp=student_req.post(student_req.url+bank_id+"/assessmentsoffered/"+offering_id+"/assessmentstaken/")  #/assessmentstaken/
-        taken_id=urllib.unquote(resp['id'])
-        print taken_id
+        resp= student_req.post(student_req.url+bank_id+"/assessmentsoffered/"+offering_id+"/assessmentstaken/")  #/assessmentstaken/
+        print resp
 
-        '''
-        Get questions from this assessment
-        assessment/banks/<bank_id>/assessmentstaken/<taken_id>/questions/
+        if 'id'in resp:
 
-        '''
 
-        resp1 = student_req.get(student_req.url+bank_id+"/assessmentstaken/"+taken_id+"/questions/")
-        resp1=resp1.json()
-        questions = resp1['data']# a list of wuestions
-        Questions.objects.all().delete()
-        for a in questions:
-            print a['text']['text']
-            q=Questions(value=a)
-            q.save()
+            taken_id=urllib.unquote(resp['id'])
+            print "Got Taken Id"
+            print taken_id
 
-        print "Questions"
-        #print questions
-        print "Request status code "
-        #print resp.status_code
-        #print resp
+            '''
+            Get questions from this assessment
+            assessment/banks/<bank_id>/assessmentstaken/<taken_id>/questions/
 
-        return render_to_response("ims_lti_py_sample/student.html",
+            '''
+
+            resp1 = student_req.get(student_req.url+bank_id+"/assessmentstaken/"+taken_id+"/questions/")
+            print resp1
+            resp1=resp1.json()
+            print resp1
+            questions = resp1['data']# a list of wuestions
+            Questions.objects.all().delete()
+            for a in questions:
+                print a['text']['text']
+                q=Questions(value=a)
+                q.save()
+
+            print "Questions"
+            #print questions
+            print "Request status code "
+            #print resp.status_code
+            #print resp
+
+            return render_to_response("ims_lti_py_sample/student.html",
                                           RequestContext(request,{'userName':name, 'questions': questions}))
+        else:
+            return render_to_response(("ims_lti_py_sample/student"),RequestContext(request,{'userName':name,'questions':[]}))
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
@@ -264,8 +279,12 @@ def create_assessment(request):
 
         req_assess=AssessmentRequests()
         items_ids=request.POST.getlist('selected[]')
+        print "Selected bank items"
         print items_ids
-        data = {'name': "XAssessment",'description':"difficult",'itemIds':items_ids}
+        name=request.POST.getlist('name')[0]
+        print "Name of new assessment"
+        print name
+        data = {'name': name,'description': "difficult", 'itemIds': items_ids}
         data=json.dumps(data)
         #bank_id= Bank.objects.get('bank_id')
         bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
@@ -304,23 +323,63 @@ def delete_assessment(request):
         '''
         r1=req_assess.get(req_assess.url+bank_id+'/assessments/'+sub_id+"/assessmentsoffered/")
         print "response assessments offered"
-        data= r1.json()['data']
-        print data
-        if len(data)>0:
-            offering_id=data[0]['id']
-            print "offering id"
-            print offering_id
-            '''
-            delete an offering
-            '''''
-            r2=req_assess.delete(req_assess.url+bank_id+'/assessmentsoffered/'+offering_id+"/")
-            print r2
-        req=req_assess.delete(req_assess.url+bank_id+"/assessments/"+sub_id+'/')
-        print "del response"
-        req=req
-        print req
+        print r1
+        if r1.status_code==200:
+            data = r1.json()['data']
 
-        return HttpResponse(req)
+            if len(data)>0:
+                offering_id=data[0]['id']
+                print "offering id"
+                print offering_id
+
+                '''
+                Get a list of takens for this assessment
+                url: /assessment/<bank_id>/assessmentsoffered/<sub_id>/assessmentstaken/
+                '''
+                r4=req_assess.get(req_assess.url+bank_id+'/assessmentsoffered/'+offering_id+"/assessmentstaken/")
+                if r4.status_code==200:
+                    print "takens"
+                    print r4.json()
+                    takensList=r4.json()['data']
+                    print takensList
+                    if len(takensList)>0:
+                        for taken in takensList:
+                            print "taken"
+                            print taken
+                            '''
+                            delete assessment takens
+                            url:assessment/<bank_id>/assessmentstaken/<taken_id>/
+                            '''
+                            r3=req_assess.delete(req_assess.url+bank_id+'/assessmentstaken/'+taken['id']+'/')
+                else:
+                    return HttpResponse(r4)
+
+
+
+                '''
+                delete an offering
+                url:    assessment/<bank_id>/assessmentsoffered/<offering_id>/
+                '''''
+                r2=req_assess.delete(req_assess.url+bank_id+'/assessmentsoffered/'+offering_id+"/")
+                print r2
+                if r2.status_code!=200:
+                    return HttpResponse(r2)
+
+            '''
+            Delete an assessment
+            url:  assessment/<bank_id>/assessments/<sub_id>/
+            '''
+
+            req=req_assess.delete(req_assess.url+bank_id+"/assessments/"+sub_id+'/')
+            print "del response"
+            print req
+
+            return HttpResponse(req)
+        else:
+            #r2=r2.json()
+            #if r2['detail']=='There are still AssessmentTakens associated with this AssessmentOffered. Delete them first.':
+            return HttpResponse(r1)
+
 
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html",  RequestContext(request))
@@ -336,6 +395,12 @@ def get_offering_id(request):
     print sub_id
     req_assess=AssessmentRequests()
     bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+
+    '''
+    Get offerings of this assessment
+    url:   assessment/<bank_id>/assessments/<sub_id>/assessmentsoffered/
+
+    '''
     resp=req_assess.get(req_assess.url+bank_id+'/assessments/'+sub_id+"/assessmentsoffered/")
     data= resp.json()['data']
     print data

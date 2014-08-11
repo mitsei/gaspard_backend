@@ -76,6 +76,7 @@ class AssessmentRequests(object):
         req = requests.post(url, data=data,
                             auth=self._auth, headers=now_headers)
         #print req.text
+        #print req
         return req.json()
 
 
