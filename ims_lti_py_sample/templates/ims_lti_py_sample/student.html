@@ -7,8 +7,8 @@
 {% block content %}
 <div class="row main-page-bgr">
     <div class="main-page-img">
-     <div class="row welcome-row" style="">
-         {% load static %}
+     <div class="welcome-row" style="">
+         {% load staticfiles %}
          <img class="img-home" src="{% static 'css_ui/SummaryPage/image.png' %}">
 
          <h2 class="welcome">Welcome, {{userName}}!</h2>
@@ -26,7 +26,7 @@
             $.ajax({
                 url:'get_question',
                 type:'POST',
-                data:{data:[$(obj).attr('value'),$(obj).attr('name')]},//send the file.manip
+                data:{data:[$(obj).attr('value'), $(obj).attr('name')]},//send the file.manip
                 success: function(data){
                     console.log(data);
                     //window.location.href = response.redirect;
@@ -38,16 +38,18 @@
         }
        });
     </script>
-    <div class="row" style="height:500px;">
+    <div class="row body-row">
         <!--<div class="col-lg-1"></div>-->
         <div class="col-lg-2"></div>
         <div class="col-lg-3">
             <div class=" col-list">
-                <p class="mylist-head">Questions</p>
+                <div class="mylist-header">Questions</div>
 
                 <div class="mylist">
                     {% for a in questions %}
+                    <div class="mylist-item-div">
                     <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"name="{{a.text.text}}">Names are empty{{a.displayName.text}}</a>
+                        </div>
                     {% endfor %}
                 </div>
             </div>
@@ -55,7 +57,7 @@
         <div class="col-lg-1"></div>
         <div class="col-lg-3"><p class="whitetext"></p></div>
 
-        <div class="col-lg-3"><p class="whitetext">Choose problem from the Bank</p></div>
+        <div class="col-lg-3"></div>
         <div class="col-lg-1"></div>
     </div>
 

@@ -167,14 +167,15 @@ def get_question(request):
         #print manip
         decoded=base64.b64decode(manip)
         #print decoded
-        text_file=open("manip.unity3d","w")
+        text_file=open("static/Gaspard/Basic.unity3d","w")
         text_file.write(decoded)
         text_file.close()
-    #     return render_to_response("ims_lti_py_sample/question.html",
+       # return render_to_response("ims_lti_py_sample/question.html",
     #                                           RequestContext(request,{'userName':"Hannah"}))
     # except KeyError, e:
     #     return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
-        question= {'success': True, 'redirect': True, 'redirectURL': "question"}
+
+        question= {'success': True, 'redirect': True, 'redirectURL': "display_question"}#UnityWebPlayer  display_question
         return HttpResponse(json.dumps(question), content_type='application/json')
 
 @csrf_exempt
@@ -196,11 +197,22 @@ def display_question(request):
             print a
         #print quest
 
-        return render_to_response("ims_lti_py_sample/question.html",
+        return render_to_response("ims_lti_py_sample/unity.html",
                                           RequestContext(request,{'question':q,'questions':questions}))
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
+## Testin unity web player
+@csrf_exempt
+def d_question(request):
+    try:
+        print "D question"
+
+
+        return render_to_response("ims_lti_py_sample/UnityWebPlayer.html",
+                                          RequestContext(request))
+    except KeyError, e:
+        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
 
 @csrf_exempt
@@ -453,7 +465,7 @@ def add_item(request):
     print request.POST
     #check if request.Post is not empty
     print "Test"
-    print request.POST._getitem_('sub_id')
+   # print request.POST._getitem_('sub_id')
     sub_id=request.POST.getlist('sub_id')[0]
     question_id=request.POST.getlist('question_id')[0]
     data={"itemIds": [question_id]}
@@ -466,7 +478,7 @@ def add_item(request):
     resp = req_assess.post(req_assess.url+bank_id+"/assessments/"+sub_id+"/items/",json.dumps(data))
     print "Printing the response"
     print resp
-    return HttpResponse(resp ,content_type='application/json')
+    return HttpResponse(json.dumps(resp) ,content_type='application/json')
 
 
 
@@ -486,7 +498,7 @@ def remove_item(request):
     resp = req_assess.delete(req_assess.url+bank_id+"/assessments/"+sub_id+"/items/"+question_id+"/",)
 
     print resp
-    return HttpResponse(resp,content_type='application/json')
+    return HttpResponse(resp, content_type='application/json')
 
 '''
 Update list of assessments

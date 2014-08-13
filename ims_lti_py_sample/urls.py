@@ -24,7 +24,11 @@ urlpatterns = patterns('',
    #For student
    #############
    url(r'^get_question$', 'ims_lti_py_sample.views.get_question', name='Question'),
-   url(r'^question$', 'ims_lti_py_sample.views.display_question', name='DisplayQuestion'),
+   url(r'^display_question$', 'ims_lti_py_sample.views.display_question', name='DisplayQuestion'),
+
+   #for testing
+   url(r'^UnityWebPlayer$', 'ims_lti_py_sample.views.d_question', name='DisplayQuestion'),
+
 
 
 )

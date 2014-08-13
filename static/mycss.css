@@ -3,6 +3,67 @@
 #newasses {
 }
 
+.container {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
+  }
+     .body-row{
+        height:980px;
+    }
+}
+@media (min-width: 992px) {
+  .container {
+    width: 1170px;
+
+
+  }
+    .body-row{
+        height:980px;
+    }
+}
+@media (min-width: 2000px) {
+  .container {
+    width: 1920px;
+
+  }
+    .body-row{
+        height:980px;
+    }
+}
+.container-fluid {
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.main-header{
+    background : #4D8496;
+	background : rgba(77, 132, 150, 1);
+    height:100%;
+
+}
+.header-height{
+     height:150px;
+}
+
+
+.mit-image {
+    position: relative;
+    left: 50%;
+    top: 30%;
+}
+.body-row{
+
+}
+
+
 
 
 #btn-new-assess {
@@ -73,7 +134,7 @@ removing items from the assessment
 #bank-box-droppable{
 
 }
-.item-in-assess{
+.bank-item, .item-in-assess{
      background: #F0F4F6;
   background-image: -webkit-linear-gradient(top, white,  #F0F4F6);
   background-image: -moz-linear-gradient(top, white,  #F0F4F6);
@@ -83,13 +144,24 @@ removing items from the assessment
 
 
 }
-.mylist-head {
+.mylist-header{
     background: #4D8496;
+   /*background:red;*/
     background: rgba(77, 132, 150, 1);
     color: white;
     margin: 0;
     padding: 10px 15px;
     text-decoration: none;
+    font-size: 21px;
+
+
+}
+h4{
+    text-align: center;
+    float:left;
+    font-size : 26px;
+	color : #4D8496;
+    font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 }
 a.mylist-head:hover{
     text-decoration: none;
@@ -106,6 +178,8 @@ a.mylist-item {
     padding: 10px 15px;
     margin-bottom: -1px;
     color: #4D8496;
+    font-size: 21px;
+     font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 
     text-decoration: none;
 }
@@ -121,13 +195,14 @@ a.mylist-item {
 
 }
 .mylist-item-div:hover{
-     background: #C7DCE3;
-     background: rgba(199, 220, 227, 1);
+     background: #F0F4F6;
+     /*background: rgba(199, 220, 227, 1);*/
+
 
 }
 .assess-item:hover{
-     background: #C7DCE3;
-     background: rgba(199, 220, 227, 1);
+     background:#F0F4F6;
+     /*background: rgba(199, 220, 227, 1);*/
 
 }
 
@@ -138,15 +213,31 @@ a.selected {
 
 
 a.selected:hover {
-    background: #C7DCE3;
+    /*background: #C7DCE3;*/
+    background-image: -webkit-linear-gradient(top, #DBE6EA,  #EDF3F4);
+}
+.gragabble{
+    background:#DBE6EA;
+  background-image: -webkit-linear-gradient(top, #DBE6EA,  #B8CED5);
+  background-image: -moz-linear-gradient(top, white,  #B8CED5);
+  background-image: -ms-linear-gradient(top, white,  #B8CED5);
+  background-image: -o-linear-gradient(top, white,  #B8CED5);
+  background-image: linear-gradient(to bottom, #DBE6EA,#CADAE0);
+    border-radius : 12px;
+	-moz-border-radius : 12px;
+	-webkit-border-radius : 12px;
+
 }
 .selected-bank-item, .selected-bank-item:hover{
-    background: #C0DCCD;
-  background-image: -webkit-linear-gradient(top, #EAF3EE,  #C0DCCD);
-  background-image: -moz-linear-gradient(top, white,  #C0DCCD);
-  background-image: -ms-linear-gradient(top, white,  #C0DCCD);
-  background-image: -o-linear-gradient(top, white,  #C0DCCD);
-  background-image: linear-gradient(to bottom, white, #C0DCCD);
+    background: #B8CED5;
+  background-image: -webkit-linear-gradient(top, #DBE6EA,  #B8CED5);
+  background-image: -moz-linear-gradient(top, white,  #B8CED5);
+  background-image: -ms-linear-gradient(top, white,  #B8CED5);
+  background-image: -o-linear-gradient(top, white,  #B8CED5);
+  background-image: linear-gradient(to bottom, #DBE6EA,#B8CED5);
+    border-radius : 12px;
+	-moz-border-radius : 12px;
+	-webkit-border-radius : 12px;
 
 }
 /*a.selected-bank-item:hover{*/
@@ -168,7 +259,16 @@ a.selected:hover {
 .whitetext {
     color: white;
 }
+body{
+    font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+}
+h1{
+    /*font-family : MyriadPro Bold;*/
+    font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 
+	font-weight : bold;
+	font-size : 50px;
+}
 h1,h2 {
     text-align: center;
     color: white;
@@ -176,31 +276,34 @@ h1,h2 {
 
 
 }
-h4{
-    text-align: center;
-    float:left;
-    color: grey;
+
+
+.instruction{
+    padding-top: 50px;
+     font-size : 20px;
+
+}
+.question-col{
+    position:absolute;
+    /*padding:30px;*/
+    left:5%;
+    top:70px;
+    width:400px;
+    z-index: 100;
+    opacity:1;
+
+}
+.unity-content{
+    position:absolute;
+    padding:70px;
+    right:10px;
 }
 
 .welcome {
     display: inline;
     margin-left: 10px;
     padding: 0 10px;
-}
-.main-header{
-    background : #4D8496;
-	background : rgba(77, 132, 150, 1);
-
-}
-.header-height{
-     height:100px;
-}
-
-
-.mit-image {
-    position: relative;
-    left: 50%;
-    top: 30%;
+    font-size: 35px;
 }
 
 
@@ -230,23 +333,34 @@ h4{
 
 }
 .prob-quest-header{
+    /*font-family : MyriadPro Semibold;*/
+    font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+
+	font-size : 26px;
+    opacity:1;
+    /*background-color: gray;*/
 
 }
 #prob-quest-row{
 
 }
 .submit-answer{
-    bottom:10px;
+    bottom:150px;
+    right:200px;
     position:absolute;
+    background-color : #4D8496;
+    color: white;
+    font-size : 33px;
+
 }
 .welcome-row{
-    padding: 40px 10px;
+    padding: 60px 30px;
 }
 .display-question{
-    height:500px;
+
     background-image : url(css_ui/GUI_Matching/image9.png);
 	background-repeat : repeat;
-	opacity : 0.6;
+	/*opacity : 1;*/
 	filter: alpha(opacity=10) progid:DXImageTransform.Microsoft.Alpha(opacity=10) ;
 
 }
@@ -264,11 +378,12 @@ h4{
 	border-radius : 12px;
 	-moz-border-radius : 12px;
 	-webkit-border-radius : 12px;
-	box-shadow : 1px 1px 5px rgba(0, 0, 0, 0.25);
+	box-shadow : 2px 2px 5px rgba(0, 0, 0, 0.25);
 	filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=1, OffY=1, Color='#000000') ;
 }
 .main-problem-bgr{
-    padding-bottom:50px;
+
+    padding:0 40px 50px 40px;
     background : -moz-linear-gradient(50% 0% -90deg,rgba(77, 132, 150, 1) 0%,rgba(125, 159, 173, 1) 100%);
 	background : -webkit-linear-gradient(-90deg, rgba(77, 132, 150, 1) 0%, rgba(125, 159, 173, 1) 100%);
 	background : -webkit-gradient(linear,50% 0% ,50% 100% ,color-stop(0,rgba(77, 132, 150, 1) ),color-stop(1,rgba(125, 159, 173, 1) ));
@@ -311,4 +426,64 @@ h4{
 	border-color : rgba(209, 211, 212, 1);
 	border-width : 1px;
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#7D9FAD',endColorstr='#FFFFFF' , GradientType=0);
+}
+.header-border{
+    border-bottom: 1px solid #D1D3D4;
+
+}
+
+
+.NormalCharacterStyle6
+{
+	font-family : MyriadPro Bold;
+	font-weight : bold;
+	font-size : 50px;
+	color : #FFFFFF;
+	color : rgb(255, 255, 255);
+}
+.NormalCharacterStyle1
+{
+	font-family : Wingdings 2;
+	font-size : 39px;
+	line-height : 81.92px;
+	color : #00A651;
+	color : rgb(0, 166, 81);
+}
+.NormalCharacterStyle4
+{
+	font-family : MyriadPro Semibold;
+	font-size : 26px;
+	color : #FFFFFF;
+	color : rgb(255, 255, 255);
+}
+.NormalCharacterStyle5
+{
+	font-family : Myriad Pro;
+	font-size : 21px;
+	color : #4D8496;
+	color : rgb(77, 132, 150);
+}
+.NormalCharacterStyle3
+{
+	font-family : MyriadPro Semibold;
+	font-size : 21px;
+	line-height : 43.08px;
+	color : #A7A9AC;
+	color : rgb(167, 169, 172);
+}
+.NormalCharacterStyle2
+{
+	font-family : Wingdings 2;
+	font-size : 39px;
+	line-height : 81.92px;
+	color : #00A651;
+	color : rgb(0, 166, 81);
+}
+.NormalCharacterStyle
+{
+	font-family : Wingdings 2;
+	font-size : 39px;
+	line-height : 43.08px;
+	color : #ED1C24;
+	color : rgb(237, 28, 36);
 }

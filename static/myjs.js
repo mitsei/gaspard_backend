@@ -172,9 +172,7 @@ $(document).ready(function () {
                         success: function (response) {
 
                             console.log("success removing item");
-                            for (var prop in response) {
-                                console.log(prop);
-                            }
+
 
                             requestItems(selectedAssessment);
                         }
@@ -343,7 +341,7 @@ function requestItems(obj) {
                         console.log(value['id']);
                     });
                     removeHeader();
-                    $('#assess-box-droppable').prepend('<p class="mylist-head" id="assess-items-name">'+$(obj).text()+'</p>');
+                    $('#assess-box-droppable').prepend('<p class="mylist-header" id="assess-items-name">'+$(obj).text()+'</p>');
                     $('#assess-items').addClass('mylist').html(str);
 
                     $('.item-in-assess').draggable();
