@@ -3,19 +3,22 @@
  */
 var selectedAssessment = null;
 var selectedBankItems=[];
+
 $(document).ready(function () {
+    $(".submit-answer").click(function(){
+         u.getUnity().SendMessage("Question", "RequestRespone", "");
+    });
 
 
     /* Handle the selection of the assessment */
     $('.assess-item').click(function () {
         clickAssessment($(this));
     });
-
-
     /* Delete an assessment */
 
     $('#btn-del-assess').click(function () {
         var sub_id = findSelectedAssess();
+        unselectThisAssessment($(this));
         //check if any selected
         $.ajax({
             url: 'del_assess',
@@ -23,13 +26,12 @@ $(document).ready(function () {
             data: {'sub_id': sub_id},
             success: function (response) {
                 console.log(response);
-                unselectThisAssessment($(this));
+
                 updateAssessmentList();
 
 
             }
         });
-       // $('#assess-items').empty().removeClass('mylist');
 
     });
     $('.bank-item').click(function(){
@@ -39,39 +41,47 @@ $(document).ready(function () {
      * Click on bank item                           //change
      */
 
+     /**
+      * Plus button -> show modal, ask for name
+     */
+
+
+      $("#btn-new-assess").click(function () {
+        $('#modal-create-assessment').modal('show');
+
+    });
+    /**
+     * "Create" button inside the modal
+     *  check if entered name is not empty
+     */
 
     $('#create').click(function() {
 
         var name= $("#assess-name").val();
         console.log("Name of the new assessment");
-
         console.log(name);
 
-        if(selectedBankItems.length>0){
-            $.ajax({
-                url:"create_assessment",
-                type:'POST',
-                data:{'selected': selectedBankItems, 'name': name},
-                success: function(response){
-                    console.log(response);
-                    updateAssessmentList();
-                }
-            });
+        if(name.length>0) {
+            if (selectedBankItems.length > 0) {
+                $.ajax({
+                    url: "create_assessment",
+                    type: 'POST',
+                    data: {'selected': selectedBankItems, 'name': name},
+                    success: function (response) {
+                        console.log(response);
+                        updateAssessmentList();
+                    }
+                });
 
+            } else {
+                console.log('No bank items are selected');
+            }
         }else{
-            console.log('No bank items are selected');
+            $("#modal-create-assessment").modal('show');
         }
-
     });
 
-    $("#btn-new-assess").click(function () {
-        $('#modal-create-assessment').modal('show');
 
-        //if selectedBankItems list is not empty
-
-
-
-    });
     $("#btn-get-offering").click(function () {
         var sub_id = findSelectedAssess();
 
@@ -248,6 +258,10 @@ function findSelectedAssess() {
         }
     }
     return sub_id;
+
+    /**
+     * or could just check if selectedAssessment is null or not
+     */
 }
 function hasclass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
@@ -490,6 +504,26 @@ function updateAssessmentList() {
 
 
 }
+
+/**
+ * In student view
+ * displays the problem
+ * @param obj is the quest-item clicked on
+ */
+function getProblem(obj){
+            $.ajax({
+                url:'get_question',
+                type:'POST',
+                data:{data:[$(obj).attr('value'), $(obj).attr('name'), $(obj).text(), $(obj).attr('id')]},//send the file.manip
+                success: function(data){
+                    console.log(data);
+                    //window.location.href = response.redirect;
+                    if(data['redirect']) {
+                         window.location = data['redirectURL'];
+                     }
+                }
+            });
+        }
 
 
 

@@ -22,20 +22,7 @@
                     getProblem($(this));
                 }
         );
-        function getProblem(obj){
-            $.ajax({
-                url:'get_question',
-                type:'POST',
-                data:{data:[$(obj).attr('value'), $(obj).attr('name')]},//send the file.manip
-                success: function(data){
-                    console.log(data);
-                    //window.location.href = response.redirect;
-                    if(data['redirect']) {
-                         window.location = data['redirectURL'];
-                     }
-                }
-            });
-        }
+
        });
     </script>
     <div class="row body-row">
@@ -48,7 +35,7 @@
                 <div class="mylist">
                     {% for a in questions %}
                     <div class="mylist-item-div">
-                    <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"name="{{a.text.text}}">Names are empty{{a.displayName.text}}</a>
+                    <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"name="{{a.text.text}}" id="{{a.id}}">Names are empty{{a.displayName.text}}</a>
                         </div>
                     {% endfor %}
                 </div>

@@ -1,29 +1,36 @@
 {% extends "ims_lti_py_sample/question.html" %}
 {%block unity%}
 
-        <script type="text/javascript">
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#submit-answer").click(function () {
 
-			var config = {
-				width: 1536,
-				height: 864,
-				params: { enableDebugging:"0", logoimage: "{{gaspard}}" }
+            u.getUnity().SendMessage("Question", "RequestRespone", "");
+            console.log("send response");
+        });
+    });
 
-			};
-			var u = new UnityObject2(config);
-            console.log(u);
+    var config = {
+        width: 1280,
+        height: 864,
+        params: { enableDebugging: "0", logoimage: "{{gaspard}}" }
+
+    };
+    var u = new UnityObject2(config);
+    console.log(u);
 
 
-			jQuery(function() {
-                console.log("Entered function");
+    jQuery(function () {
+        console.log("Entered function");
 
-				var $missingScreen = jQuery("#unityPlayer").find(".missing");
-				var $brokenScreen = jQuery("#unityPlayer").find(".broken");
-				$missingScreen.hide();
-				$brokenScreen.hide();
+        var $missingScreen = jQuery("#unityPlayer").find(".missing");
+        var $brokenScreen = jQuery("#unityPlayer").find(".broken");
+        $missingScreen.hide();
+        $brokenScreen.hide();
 
-				u.observeProgress(function (progress) {
-					switch(progress.pluginStatus) {
-						case "broken":
+        u.observeProgress(function (progress) {
+            switch (progress.pluginStatus) {
+                case "broken":
 							$brokenScreen.find("a").click(function (e) {
 								e.stopPropagation();
 								e.preventDefault();
@@ -60,10 +67,20 @@
                 console.log("sending second message");
 			    u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");
 			}
-            function SayHello( arg )
+
+            function ReceiveResponse( arg )
 		{
 		    // show the message
-		    alert( arg);
+		   // alert( arg );
+            $.ajax({
+                url:"submit_answer",
+                type:"POST",
+                data: {answer: arg},
+                success: function(response){
+                    console.log("Got the answer back");
+                    console.log(response);
+                }
+            });
 		}
 </script>
         <div class="unity-content">
@@ -79,7 +96,7 @@
 					</a>
 				</div>
 			</div>
-            <button class="btn  btn-lg submit-answer" type="button">Submit</button>
+            <button class="btn  btn-lg submit-answer" id="submit-answer" type="button">Submit</button>
 		</div>
 
 
