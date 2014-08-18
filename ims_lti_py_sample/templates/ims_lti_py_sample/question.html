@@ -13,7 +13,9 @@
             $('.quest-item').css('width', width);
         });
         $('.quest-item').click(function(){
+            console.log("Clicked on question");
             $('.prob-quest-header').html($(this).text());
+            console.log("Changed header text");
             //goto a different question
             getProblem($(this));
         });

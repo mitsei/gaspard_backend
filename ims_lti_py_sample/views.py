@@ -156,6 +156,8 @@ def get_question(request):
         '''
         data = request.POST.getlist('data[]')
         print data
+
+        print "Size of data "+str(len(data))
         print "selected question"
 
         question = data[1]
@@ -168,6 +170,7 @@ def get_question(request):
         #make sure there isn't one in the database already
         Post.objects.filter(key='question_name').delete()
         Post.objects.filter(key="question").delete()
+        Post.objects.filter(key="question_id").delete()
 
         p1=Post(key="question_name", value=question_name)
         p2=Post(key="question", value=question)
@@ -179,23 +182,23 @@ def get_question(request):
         ########################################
         #Testing if key is unique
         #########################################
-        print "Testing Post for duplicates"
-        params = {}
-
-        for g in Post.objects.all():
-            params[g.key]= g.value
-            #print str(g.key) +"      "+ str(g.value)
+        # print "Testing Post for duplicates"
+        # params = {}
+        #
+        # for g in Post.objects.all():
+        #     params[g.key]= g.value
+        #     #print str(g.key) +"      "+ str(g.value)
 
         ##########################################
         #end of testing
 
-        manip=data[0]
-        print "manip for this question"
+        manip = data[0]
+        #print "manip for this question"
         #print manip
 
         decoded=base64.b64decode(manip)
         #print decoded
-        text_file=open("static/Gaspard/Basic.unity3d","w")
+        text_file=open("static/Gaspard/Basic.unity3d", "w")
         text_file.write(decoded)
         text_file.close()
        # return render_to_response("ims_lti_py_sample/question.html",
