@@ -13,6 +13,7 @@
             $('.quest-item').css('width', width);
         });
         $('.quest-item').click(function(){
+            $('.prob-quest-header').html($(this).text());
             //goto a different question
             getProblem($(this));
         });
@@ -41,14 +42,14 @@
                     <!--<div class="question-menu-div" style="">-->
                         <div class="dropdown" id="prob-quest-row">
                             <a data-toggle="dropdown" href="#">
-                                <p class="mylist-header prob-quest-header"> {{question_name}}<span class="glyphicon glyphicon-chevron-down"
+                                <p class="mylist-header" id="prob-quest-header"> {{question_name}}<span class="glyphicon glyphicon-chevron-down"
                                         style="float:right; margin-top:5px;"></span></p>
                             </a>
                             <div class="dropdown-menu " role="menu" aria-labelledby="dLabel">
                                 {% for a in questions %}
                                 <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"
 
-                                   name="{{a.text.text}}">Names are empty{{a.displayName.text}}</a>
+                                   name="{{a.text.text}}" id="{{a.id}}" >{{a.displayName.text}}</a>
                                 {% endfor %}
                             </div>
                         </div>

@@ -35,7 +35,7 @@
                 <div class="mylist">
                     {% for a in questions %}
                     <div class="mylist-item-div">
-                    <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"name="{{a.text.text}}" id="{{a.id}}">Names are empty{{a.displayName.text}}</a>
+                    <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"name="{{a.text.text}}" id="{{a.id}}">{{a.displayName.text}}</a>
                         </div>
                     {% endfor %}
                 </div>

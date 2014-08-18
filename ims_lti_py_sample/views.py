@@ -154,11 +154,12 @@ def get_question(request):
         '''
         Data -> [files.manip, text.text], e.g [manip, question] add [question_name] add [question_id]
         '''
-        data=request.POST.getlist('data[]')
+        data = request.POST.getlist('data[]')
+        print data
         print "selected question"
 
-        question=data[1]
-        question_name=data[2]
+        question = data[1]
+        question_name = data[2]
         question_id=data[3]
         print question ## item object
         print question_name

@@ -360,7 +360,7 @@ h1,h2 {
 .quest-item{
 
 }
-.prob-quest-header{
+#prob-quest-header{
     /*font-family : MyriadPro Semibold;*/
     font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 
