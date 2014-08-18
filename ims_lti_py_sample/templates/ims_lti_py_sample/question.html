@@ -19,6 +19,10 @@
             //goto a different question
             getProblem($(this));
         });
+        $('#prob-quest-header').click(function(){
+                   $('.dropdown-menu').css('width', $("#prob-quest-row").width());
+
+        });
 
     });
 </script>
@@ -32,22 +36,20 @@
 
                 <div class="col-lg-12 col-md-12">
                     <div class="next-question">
-                        <span class="glyphicon glyphicon-chevron-left" style=""></span>
-                        <span class="glyphicon glyphicon-chevron-right"></span>
+                        <span class="glyphicon glyphicon-chevron-left next-badge"></span>
+                        <span class="glyphicon glyphicon-chevron-right next-badge"></span>
 
                     </div>
-                    <div id="report-answer">
 
-                    </div>
                     <div class="question-col">
                      <!--Start of the Question-Description column-->
                     <!--<div class="question-menu-div" style="">-->
                         <div class="dropdown" id="prob-quest-row">
                             <a data-toggle="dropdown" href="#">
-                                <p class="mylist-header" id="prob-quest-header"> {{question_name}}<span class="glyphicon glyphicon-chevron-down"
+                                <p class="mylist-header" id="prob-quest-header">{{question_name}}<span class="glyphicon glyphicon-chevron-down"
                                         style="float:right; margin-top:5px;"></span></p>
                             </a>
-                            <div class="dropdown-menu " role="menu" aria-labelledby="dLabel">
+                            <div class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                 {% for a in questions %}
                                 <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"
 
@@ -66,10 +68,10 @@
 
                     </div>
                     <div class="instruction">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum aliquam leo, a laoreet
-                        lectus gravida tristique. Nam ultrices urna ut nisi pharetra, non ornare massa gravida.
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum aliquam leo, a laoreet
-                        lectus gravida tristique. Nam ultrices urna ut nisi pharetra, non ornare massa gravida.
+                        <!--Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum aliquam leo, a laoreet-->
+                        <!--lectus gravida tristique. Nam ultrices urna ut nisi pharetra, non ornare massa gravida.-->
+                        <!--Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum aliquam leo, a laoreet-->
+                        <!--lectus gravida tristique. Nam ultrices urna ut nisi pharetra, non ornare massa gravida.-->
                     </div>
                     <!--End of Description column-->
                     </div>

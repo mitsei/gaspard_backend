@@ -198,7 +198,7 @@ def get_question(request):
 
         decoded=base64.b64decode(manip)
         #print decoded
-        text_file=open("static/Gaspard/Basic.unity3d", "w")
+        text_file=open("static/Gaspard/"+question_name+".unity3d", "w")
         text_file.write(decoded)
         text_file.close()
        # return render_to_response("ims_lti_py_sample/question.html",

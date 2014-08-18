@@ -1,5 +1,10 @@
 {% extends "ims_lti_py_sample/question.html" %}
+
 {%block unity%}
+{% load staticfiles %}
+    {%static "Gaspard/Gaspard.logo.png" as gaspard%}
+    {%static "Gaspard/" as manipFile%}
+    {%static "Gaspard/Gaspard - Web Buil.unity3d" as gaspardWebBuild%}
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -11,8 +16,10 @@
     });
 
     var config = {
-        width: 1280,
-        height: 864,
+//        width: 1280,
+//        height: 864,
+        width:1024,
+        height:700,
         params: { enableDebugging: "0", logoimage: "{{gaspard}}" }
 
     };
@@ -63,7 +70,7 @@
 			});
 			function SaySomethingToUnity()
 			{   console.log("Sending message");
-			    u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}");
+			    u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}{{question_name}}.unity3d");
                 console.log("sending second message");
 			    u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");
 			}
@@ -81,14 +88,20 @@
                     console.log(response);
                     var answer='';
                    // console.log("Got here");
-                    if(response['correct']==='true'){
-                        answer="Correct answer"+'<span class="glyphicon glyphicon-chevron-ok next-badge" style="float:right"></span>';
+                    console.log(response['correct']=== true );
+                    if(response['correct']=== true ){
+                        answer='<span class="glyphicon glyphicon-ok" style="top:5px; color:green;" ></span>'+ " Correct!";
 
                     }else{
-                        answer="Wrong answer"+'<span class="glyphicon glyphicon-chevron-remove next-badge"></span>';
+                        answer='<span class="glyphicon glyphicon-remove" style="top:5px;"></span>'+" Wrong!";
+
+
+                        $('#report-answer').css("color","red");
                     }
                     //$('.display-answer').css("display", "visible").css("position", "absolute").html(answer);
-                    $('#report-answer').addClass('display-answer').html(answer);
+                    $('#report-answer').html(answer);
+                    console.log("Print variable: ");
+                    console.log('{{question_name}}');
 
                 }
             });
@@ -108,6 +121,9 @@
 				</div>
 			</div>
             <button class="btn  btn-lg submit-answer" id="submit-answer" type="button">Submit</button>
+            <div id="report-answer">
+
+            </div>
 		</div>
 
 

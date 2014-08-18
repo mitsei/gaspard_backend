@@ -14,7 +14,7 @@
     width: 750px;
   }
      .body-row{
-        height:980px;
+        height:780px;
     }
 }
 @media (min-width: 992px) {
@@ -24,16 +24,16 @@
 
   }
     .body-row{
-        height:980px;
+        height:740px;
     }
 }
-@media (min-width: 2000px) {
+@media (min-width: 1500px) {
   .container {
-    width: 1920px;
+    width: 1440px;
 
   }
     .body-row{
-        height:980px;
+        height:740px;  /*resize*/
     }
 }
 .container-fluid {
@@ -90,8 +90,7 @@
     color: red;
 }
 
-#but {
-}
+
 .manage-assess-btn{
      color: white;
      background: #4D8496;
@@ -214,7 +213,7 @@ a.selected:hover {
     /*background: #C7DCE3;*/
     background-image: -webkit-linear-gradient(top, #DBE6EA,  #EDF3F4);
 }
-.gragabble{
+.dragabble{
     background:#DBE6EA;
   background-image: -webkit-linear-gradient(top, #DBE6EA,  #B8CED5);
   background-image: -moz-linear-gradient(top, white,  #B8CED5);
@@ -284,26 +283,27 @@ h1,h2 {
 .question-col{
     position:absolute;
     /*padding:30px;*/
-    left:5%;
-    top:70px;
-    width:400px;
+    left:1%;
+    top:20px;            /*rescale*/
+    width:300px;        /*rescale*/
     z-index: 100;
     opacity:1;
 
 }
 .unity-content{
     position:absolute;
-    padding:70px 20px;
+    padding:20px 0px;
     right:10px;
 }
 .next-question{
     position: absolute;
-    top:20px;
+    top:10%;
     width:auto;
     right:10px;
 
 }
 .next-badge{
+    z-index:100;
 
     background:#4D8496;
     color: white;
@@ -324,9 +324,7 @@ h1,h2 {
 
 
 }
-#report-answer{
-    display:hidden;
-}
+
 .welcome {
     display: inline;
     margin-left: 10px;
@@ -369,22 +367,34 @@ h1,h2 {
     /*background-color: gray;*/
 
 }
+.dropdown-menu{
+    box-shadow : 5px 5px 2px rgba(0, 0, 0, 0.25);
+    width:100%;
+}
+
 #prob-quest-row{
     box-shadow : 5px 5px 2px rgba(0, 0, 0, 0.25);
 
 }
-.dropdown-menu{
-    box-shadow : 5px 5px 2px rgba(0, 0, 0, 0.25);
-}
+
 .submit-answer{
-    bottom:150px;
-    right:200px;
+    bottom:10%;
+    right:10%;
     position:absolute;
     background-color : #4D8496;
     color: white;
     font-size : 33px;
 
 }
+#report-answer{
+    position:absolute;
+    bottom:30%;
+    right:10%;
+    color:#4D8496;
+    font-size: 33px;
+
+}
+
 .welcome-row{
     padding: 60px 30px;
 }
