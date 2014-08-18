@@ -27,9 +27,9 @@
         height:740px;
     }
 }
-@media (min-width: 1500px) {
+@media (min-width: 1390px) {
   .container {
-    width: 1440px;
+    width: 1390px;
 
   }
     .body-row{
