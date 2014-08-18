@@ -79,6 +79,17 @@
                 success: function(response){
                     console.log("Got the answer back");
                     console.log(response);
+                    var answer='';
+                   // console.log("Got here");
+                    if(response['correct']==='true'){
+                        answer="Correct answer"+'<span class="glyphicon glyphicon-chevron-ok next-badge" style="float:right"></span>';
+
+                    }else{
+                        answer="Wrong answer"+'<span class="glyphicon glyphicon-chevron-remove next-badge"></span>';
+                    }
+                    //$('.display-answer').css("display", "visible").css("position", "absolute").html(answer);
+                    $('#report-answer').addClass('display-answer').html(answer);
+
                 }
             });
 		}

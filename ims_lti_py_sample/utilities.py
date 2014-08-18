@@ -77,6 +77,7 @@ class AssessmentRequests(object):
                             auth=self._auth, headers=now_headers)
         #print req.text
         #print req
+        print "status code: "+str(req.status_code)
         return req.json()
 
 

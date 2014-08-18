@@ -303,7 +303,12 @@ def instructor(request):
                 print "Found Ortho 3D"
                 found = True
 
-                bank_id=urllib.unquote(a['id'])
+                bank_id = a['id']
+
+                Post.objects.filter(key="bank_id").delete()
+                p = Post(key="bank_id", value=bank_id)
+                p.save()
+
                 #print bank_id
                 #Bank.objects.all().delete()
                 #Bank(key='bank_id', value=bank_id).save()
@@ -359,14 +364,19 @@ def create_assessment(request):
 
         print "Selected bank items"
         print items_ids
-
-        name=request.POST.getlist('name')[0]
+        print request.POST.getlist('name')
+        name = request.POST.getlist('name')[0]
         print "Name of new assessment"
         print name
         data = {'name': name,'description': "difficult", 'itemIds': items_ids}
         data=json.dumps(data)
         #bank_id= Bank.objects.get('bank_id')
-        bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+        #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+
+        bank_id = Post.objects.filter(key="bank_id")[0].value
+
+        print "Print bank id"
+        print bank_id
         print "sending items"
         '''
         Create new assessment
@@ -374,8 +384,13 @@ def create_assessment(request):
         '''
         resp = req_assess.post(req_assess.url+bank_id+"/assessments/", data)
         print 'Created new assess: response'
-        print resp['id']
-        sub_id=resp['id']
+        if 'id' in resp.keys():
+            print resp['id']
+            sub_id=resp['id']
+        else:
+            print "Could not create an assessment"
+            if 'detail' in resp.keys():
+                print resp
 
         #Removed creation of assessment offering
 
@@ -393,9 +408,10 @@ def delete_assessment(request):
     try:
 
         req_assess=AssessmentRequests()
-        bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+        #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+        bank_id = Post.objects.filter(key="bank_id")[0].value
         sub_id = request.GET.getlist('sub_id')[0]
-        sub_id = urllib.unquote(sub_id)
+       # sub_id = sub_id
 
 
         ''''
@@ -404,11 +420,11 @@ def delete_assessment(request):
         r1=req_assess.get(req_assess.url+bank_id+'/assessments/'+sub_id+"/assessmentsoffered/")
         print "response assessments offered"
         print r1
-        if r1.status_code==200:
+        if r1.status_code == 200:
             data = r1.json()['data']
 
             if len(data)>0:
-                offering_id=data[0]['id']
+                offering_id = data[0]['id']
                 print "offering id"
                 print offering_id
 
@@ -474,8 +490,8 @@ def get_offering_id(request):
     sub_id=request.POST.getlist('sub_id')[0]
     print sub_id
     req_assess=AssessmentRequests()
-    bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
-
+    #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+    bank_id = Post.objects.filter(key="bank_id")[0].value
     '''
     Create new offering
     url: assessment/bank/assessements/<sub_id>/assessmentsoffered/
@@ -513,13 +529,14 @@ def get_items(request):
 
     print request.GET
     sub_id = request.GET.getlist('sub_id')[0]
-    sub_id = urllib.unquote(sub_id)
+    #sub_id = urllib.unquote(sub_id)
     print sub_id
 
     try:
 
         req_assess=AssessmentRequests()
-        bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+        #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+        bank_id = Post.objects.filter(key="bank_id")[0].value
         resp = req_assess.get(req_assess.url+bank_id+"/assessments/"+sub_id+"/items/")
 
         items = resp.json()
@@ -550,7 +567,7 @@ def add_item(request):
     print request.POST
     #check if request.Post is not empty
     print "Test"
-    sub_id=request.POST.getlist('sub_id')[0]
+    sub_id = request.POST.getlist('sub_id')[0]
     question_id=request.POST.getlist('question_id')[0]
     data={"itemIds": [question_id]}
 
@@ -558,7 +575,8 @@ def add_item(request):
     print question_id
 
     req_assess = AssessmentRequests()
-    bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+    #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+    bank_id = Post.objects.filter(key="bank_id")[0].value
     '''
     Adding item to assessment
     url: assessment/bank/
@@ -600,7 +618,8 @@ def remove_item(request):
     print question_id
 
     req_assess=AssessmentRequests()
-    bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+    #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+    bank_id = Post.objects.filter(key="bank_id")[0].value
     resp = req_assess.delete(req_assess.url+bank_id+"/assessments/"+sub_id+"/items/"+question_id+"/",)
 
     print resp
@@ -621,7 +640,8 @@ Question: do I need to create a new offering?
 def arrange_items(request):
     print "Rearrange items in assessment"
     print request.POST
-    bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+    #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+    bank_id = Post.objects.filter(key="bank_id")[0].value
 
     items_ids=request.POST.getlist('data[]')
     print "Items to be added"
@@ -649,7 +669,8 @@ def update_assessments(request):
     print request.GET
 
     req_assess=AssessmentRequests()
-    bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+    #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
+    bank_id = Post.objects.filter(key="bank_id")[0].value
 
     eq2=req_assess.get(req_assess.url + bank_id +"/assessments/")
     assessments = eq2.json()['data']
