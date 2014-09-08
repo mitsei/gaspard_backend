@@ -1,0 +1,204 @@
+{% extends "ims_lti_py_sample/question.html" %}
+
+{%block unity%}
+{% load staticfiles %}
+    <!--{%static "Gaspard/Gaspard.logo.png" as gaspard%}-->
+    <!--{%static "Gaspard/" as manipFile%}-->
+    <!--{%static "Gaspard/Gaspard - Web Buil.unity3d" as gaspardWebBuild%}-->
+
+        {% static "MultichoiceLayouts/largeOrthoViewSet0.jpg" as lg_img_layout1%}
+        {% static "MultichoiceLayouts/largeOrthoViewSet1.jpg" as lg_img_layout2%}
+        {% static "MultichoiceLayouts/largeOrthoViewSet2.jpg" as lg_img_layout3%}
+        {% static "MultichoiceLayouts/largeOrthoViewSet3.jpg" as lg_img_layout4%}
+
+
+        {% static "MultichoiceLayouts/smallOrthoViewSet0.jpg" as sm_img_layout1%}
+        {% static "MultichoiceLayouts/smallOrthoViewSet1.jpg" as sm_img_layout2%}
+        {% static "MultichoiceLayouts/smallOrthoViewSet2.jpg" as sm_img_layout3%}
+        {% static "MultichoiceLayouts/smallOrthoViewSet3.jpg" as sm_img_layout4%}
+
+      <script type="text/javascript">
+var selectedLayout=null;
+        $(document).ready(function () {
+
+
+          showFourChoices();
+            var str='<div id=report-multi-answer style=""></div>'+
+                            ' <button class="btn  btn-lg submit-answer" id="submit-multi-answer" type="button">Submit</button>';
+            $("#bottom-row").append(str);
+            $('#submit-multi-answer').click(function(){
+                submitMultiAnswer();
+            });
+
+        });
+        function submitMultiAnswer(){
+            if(selectedLayout!=null) {
+                var answer = selectedLayout.attr('value');
+                $.ajax({
+                    url: "submit_multi_answer",
+                    type: "POST",
+                    data: {"answer": answer},
+                    success: function (response) {
+                        console.log(response);
+                        var reportDiv = document.getElementById("report-multi-answer");
+                        if (response['correct'] === true) {
+
+                            answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
+//                        $(reportDiv).css("color","green");
+                            reportDiv.style.color = "green";
+
+                        } else {
+                            answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + " Wrong!";
+                            reportDiv.style.color = "red";
+
+//                        $(reportDiv).css("color","red");
+                        }
+                        reportDiv.innerHTML = answer;
+//                    $(reportDiv).html(answer);
+
+                    }
+                });
+            }
+        }
+        function showLargeLayout(num){
+            var four_lg_img=["{{lg_img_layout1}}","{{lg_img_layout2}}","{{lg_img_layout3}}","{{lg_img_layout4}}"];
+
+            $("#choices-row").html('<div  id="expand-img">' +
+
+                        '<span class="glyphicon glyphicon-chevron-left next-choice-badge" value="'+num+'" id="left-choice-badge"></span>' +
+                        '<span class="glyphicon glyphicon-remove close-choice-badge"></span>' +
+                        '<img class="multichoice-img-lg" style="border:0px green solid" src="'+four_lg_img[num]+'">' +
+                        '<span class="glyphicon glyphicon-chevron-right next-choice-badge" value="'+num+'" id="right-choice-badge"></span>' +
+                        '</div>');
+            $('#expand-img').click(function(){
+                showFourChoices();
+
+            });
+            $("#left-choice-badge").click(function(){
+                console.log(parseInt($(this).attr('value')));
+                displayPrevLargeLayout((parseInt($(this).attr('value'))));
+            });
+            $("#right-choice-badge").click(function(){
+                displayNextLargeLayout((parseInt($(this).attr('value'))+1)%4);
+            });
+
+        }
+        function displayNextLargeLayout(num){
+            showLargeLayout(num);
+        }
+        function displayPrevLargeLayout(num){
+            if(num <1){
+                num=3;
+            }else{
+                num--;
+            }
+            console.log(num);
+            showLargeLayout(num);
+        }
+          function showFourChoices(){
+              var list="";
+
+              var str="";
+              var four_sm_img=["{{sm_img_layout1}}","{{sm_img_layout2}}","{{sm_img_layout3}}","{{sm_img_layout4}}"];
+              for(var i=0; i<4;i++){
+
+
+                  str+='<div class="col-xs-12 col-md-6 col-sm-6 col-lg-6 choice-col" style="">'+
+                        '<a href="#" class="thumbnail">'+
+                            '<input style="position:absolute" class="radio-inline radio-select-layout" value="'+i+'" type="radio">'+
+                            '<img class="multichoice-img-small" value="'+i+'" style=""'+
+                                 'src="'+four_sm_img[i]+'">'+
+                        '</a>'+
+                    '</div>';
+
+                      }
+
+              $("#choices-row").html(str);
+
+              if(selectedLayout!=null){
+                   var value=selectedLayout.attr("value");
+                  var radios=document.getElementsByClassName("radio-select-layout");
+                  radios[value].checked=true;
+                  selectedLayout=$(radios[value]);
+
+              }
+              $(".radio-select-layout").click(function(){
+                  console.log("clicked");
+                            radioClick($(this));
+              });
+              $(".multichoice-img-small").click(function(){
+
+                showLargeLayout(parseInt($(this).attr('value')));
+            });
+        function radioClick(obj){
+            if(selectedLayout==null){
+                console.log("Selected");
+                selectedLayout=obj;
+                obj.prop('checked',true);
+                //select the radio button
+            }else if(selectedLayout.attr('value')===obj.attr('value')){ //Unselect
+                console.log("unselected");
+                obj.prop('checked', false);
+                selectedLayout=null;
+
+                //unselect the radio button
+
+            }else{//reselect
+                selectedLayout.prop('checked',false);
+                selectedLayout=obj;
+                selectedLayout.prop('checked',true);
+
+            }
+
+        }
+          }
+            </script>
+
+
+
+<div class="col-lg-5 col-md-5 " style="border:0px greenyellow solid;">
+    <!--want to set the height of this column to be the height of the row-->
+    <div class="instruction" style="border:0px solid yellow;">
+        <div style="display:table;"><h4>Description</h4></div>
+
+        <div><p>{{question}}</p></div>
+    </div>
+
+    <div class="unity-content-multichoice" style="border:0px solid indianred;margin-top:10%; overflow:hidden">
+    <!--<div class="unity-content">-->
+        <div id="unityPlayer">
+            <div class="missing">
+                <a href="http://unity3d.com/webplayer/" title="Unity Web Player. Install now!">
+                    <img alt="Unity Web Player. Install now!"
+                         src="http://webplayer.unity3d.com/installation/getunity.png" width="193" height="63"/>
+                </a>
+            </div>
+            <div class="broken">
+                <a href="http://unity3d.com/webplayer/"
+                   title="Unity Web Player. Install now! Restart your browser after install.">
+                    <img alt="Unity Web Player. Install now! Restart your browser after install."
+                         src="http://webplayer.unity3d.com/installation/getunityrestart.png" width="193" height="63"/>
+                </a>
+            </div>
+        </div>
+
+    <!--</div>-->
+
+    </div>
+</div>
+
+
+
+<div class="col-lg-7 col-md-7 ">
+                <div class="row" id="choices-row" style="border:0px solid blue;">
+                </div>
+
+
+</div>
+
+
+
+
+
+
+{%endblock%}

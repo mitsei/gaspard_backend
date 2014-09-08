@@ -67,16 +67,9 @@ class AssessmentRequests(object):
         now_headers = deepcopy(self._headers)
         now_headers['Date'] = get_now()
 
-        print 'ready to send a post'
-        print url
-
-        #print data
-        #print now_headers
-        print self._auth
+        # print self._auth
         req = requests.post(url, data=data,
                             auth=self._auth, headers=now_headers)
-        #print req.text
-        #print req
         print "status code: "+str(req.status_code)
         return req.json()
 

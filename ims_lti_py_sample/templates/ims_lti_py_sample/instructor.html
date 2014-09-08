@@ -9,21 +9,21 @@
             {% load static %}
             <img class="img-home" src="{% static 'css_ui/SummaryPage/image.png' %}">
 
-            <h2 class="welcome">Welcome, Betsy</h2>
+            <h2 class="welcome">Welcome, {{user_name}}</h2>
         </div>
         <div class="row">
-            <div class="col-lg-1"></div>
-            <div class="col-lg-3"><p class="whitetext">1. Choose an assessment</p></div>
-            <div class="col-lg-4"></div>
-            <div class="col-lg-3"><p class="whitetext">Choose problem from the Bank</p></div>
-            <div class="col-lg-1"></div>
+            <div class="col-lg-1 col-md-1 col-sm-1"></div>
+            <div class="col-lg-3 col-md-3 col-sm-3"><p class="whitetext">1. Choose an assessment</p></div>
+            <div class="col-lg-4 col-md-4 col-sm-4"></div>
+            <div class="col-lg-3 col-md-3 col-sm-3"><p class="whitetext">Choose problem from the Bank</p></div>
+            <div class="col-lg-1 col-md-1 col-sm-1"></div>
         </div>
 
         <div class="row">
-            <div class="col-lg-1"></div>
+            <div class="col-lg-1 col-md-1 col-sm-1"></div>
 
             <!--Assessments-->
-            <div class="col-lg-3 col-list">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-list">
                 <div class="mylist-header">Assessments
                     <button class="manage-assess-btn btn btn-default" id="btn-new-assess"><span
                             class="glyphicon glyphicon-plus" style="float:right"></span></button>
@@ -43,21 +43,21 @@
             </div>
 
             <!--Items in the assessment-->
-            <div class="col-lg-3" id="assess-box-droppable">
+            <div class="col-lg-3 col-md-3 col-sm-3" id="assess-box-droppable">
 
                 <div id="assess-items">
                 </div>
 
             </div>
-            <div class="col-lg-1">
+            <div class="col-lg-1 col-md-1 col-sm-1">
 
             </div>
 
             <!--Items in a Bank-->
-            <div class="col-lg-3">
-                <p class="mylist-header">Items</p>
+            <div class="col-lg-3 col-md-3 col-sm-3" id="bank-box-droppable">
+                <p class="mylist-header" id="bank-items-name">Items</p>
 
-                <div class="mylist" id="bank-box-droppable">
+                <div class="mylist" >
                     {% for a in items %}
                     <div class="mylist-item-div bank-item">
                         <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
@@ -69,11 +69,13 @@
 
 
             </div>
-            <div class="col-lg-1"></div>
+            <div class="col-lg-1 col-md-1"></div>
         </div>
 
         <div class="row">
-            <div class="col-lg-2"></div>
+            <div class="col-lg-2">
+
+            </div>
             <div class="col-lg-2"></div>
             <div class="col-lg-2"></div>
             <div class="col-lg-2"></div>

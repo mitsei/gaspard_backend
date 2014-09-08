@@ -36,12 +36,7 @@
     <style>
 
 
-        .header-img {
-            position: absolute;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
+
 
         .mit-imag {
             min-width: 20%;
@@ -62,13 +57,40 @@
 
 <body style="height:100%">
 
+<div id="modal-reorder-items" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title">Reorder Items</h4>
+            </div>
+            <div class="modal-body">
+                <div id="reorder-items-div" class="">
+                    <div id="reorder-items">
+
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="submit-new-order" data-dismiss="modal">Done</button>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
 <div id="modal-create-assessment" class="modal fade">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title">Offering Id</h4>
+                <h4 class="modal-title">Create New Assessment</h4>
             </div>
             <div class="modal-body">
                 <div class=""><label>Enter name <input type="text" id="assess-name"></label></div>
@@ -76,7 +98,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" id="create" data-dismiss="modal">Create</button>
-
             </div>
         </div>
         <!-- /.modal-content -->
@@ -85,15 +106,18 @@
 </div>
 <!-- /.modal -->
 <div id="modal-offering-id" class="modal fade">
-    <div class="modal-dialog">
+    <div class="modal-dialog" style="width:900px">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
                 <h4 class="modal-title">Offering Id</h4>
             </div>
-            <div class="modal-body">
-                <div id="display_offering_id">
+            <div class="modal-body" >
+                <div id="display-offering-id">
+
+                </div>
+                <div id="display-bank-id">
 
                 </div>
 
@@ -108,16 +132,37 @@
     <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+<div id="modal-select-bank-items" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title">Create New Assessment</h4>
+            </div>
+            <div class="modal-body">
+                Please select bank items to create new assessment.
 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
-<div class="container" style="">
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<div class="container-fluid" style="">
 
     <div class="row header-height header-border">
-        <div class="col-lg-3" style="height: 100%;">
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="height: 100%;">
             <img class="com_college header-img" style="" src="{% static 'css_ui/SummaryPage/image8.png' %}"></div>
-        <div class="col-lg-7 main-header" style="padding:15px;"><h1 style="vertical-align: 50%" class="header-text">
+        <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7 main-header" style="padding:15px;"><h1 style="vertical-align: 50%" class="header-text">
             {%block title%}Assessments{% endblock %}</h1></div>
-        <div class="col-lg-2 main-header">
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 main-header">
             <img class="mit-imag  header-img" style="" src="{% static 'css_ui/SummaryPage/image7.png' %}">
         </div>
 
@@ -125,8 +170,6 @@
 
     {% block content %}{% endblock %}
 
-
-    <a role="button" class="btn" data-toggle="modal" data-target="#myModal">Launch demo modal</a>
 
 </div>
 

@@ -5,6 +5,12 @@
 {%endblock%}
 
 {% block content %}
+        {% load staticfiles %}
+    {%static "Gaspard/Gaspard.logo.png" as gaspard%}
+    {%static "Gaspard/" as manipFile%}
+    {%static "Gaspard/Gaspard - Web Bui.unity3d" as gaspardWebBuild%}
+
+
 <script>
     $(document).ready(function () {
         $('.prob-quest-header').click(function () {
@@ -26,65 +32,184 @@
 
     });
 </script>
+        <script type="text/javascript">
+ $(document).ready(function () {
+        $("#submit-match-answer").click(function () {
+
+            u.getUnity().SendMessage("Question", "RequestRespone", "");
+            console.log("send response");
+        });
+        $("#submit-multi-answer").click(function(){
+            var choice_id=$(this).attr('');
+            $.ajax({
+                url:"submit_multi_answer",
+                type:'POST',
+                data:choice_id,
+                success: function(){
+
+                }
+            });
+        });
+    });
+ console.log("Print type");
+    console.log("{{question_type}}");
+     var w=1024;
+     var h=700;
+    if("{{question_type}}".toLowerCase().indexOf("multi-choice-ortho") >= 0){
+        w=512;
+        h=512;
+    }
+    var config = {
+        width: w,
+        height: h,
+        params: { enableDebugging: "0", logoimage: "{{gaspard}}" }
+    };
+    var u = new UnityObject2(config);
+    console.log(u);
+
+
+    jQuery(function () {
+        console.log("Entered function");
+
+        var $missingScreen = jQuery("#unityPlayer").find(".missing");
+        var $brokenScreen = jQuery("#unityPlayer").find(".broken");
+        $missingScreen.hide();
+        $brokenScreen.hide();
+
+        u.observeProgress(function (progress) {
+            switch (progress.pluginStatus) {
+                case "broken":
+							$brokenScreen.find("a").click(function (e) {
+								e.stopPropagation();
+								e.preventDefault();
+								u.installPlugin();
+								return false;
+							});
+							$brokenScreen.show();
+						break;
+						case "missing":
+							$missingScreen.find("a").click(function (e) {
+								e.stopPropagation();
+								e.preventDefault();
+								u.installPlugin();
+								return false;
+							});
+							$missingScreen.show();
+						break;
+						case "installed":
+							$missingScreen.remove();
+						break;
+						case "first":
+						break;
+					}
+				});
+                console.log("Calling initPlugin");
+				u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}");
+
+                console.log("saying smth");
+				SaySomethingToUnity();
+                console.log("Done")
+			});
+			function SaySomethingToUnity()
+			{   console.log("Sending message");
+
+                 if("{{question_type}}".toLowerCase().indexOf("multi-choice-ortho") >= 0) {
+                     u.getUnity().SendMessage("QuestionLoader", "SetViewerOnly", "true");
+                 }
+			    u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}{{question_name}}.unity3d");
+
+                console.log("sending second message");
+
+			    u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");
+			}
+
+            function ReceiveResponse( arg )
+		{
+		    // show the message
+		   // alert( arg );
+            $.ajax({
+                url:"submit_answer",
+                type:"POST",
+                data: {answer: arg},
+                success: function(response){
+                    console.log("Got the answer back");
+                    console.log(response);
+                    var answer='';
+                   // console.log("Got here");
+                    console.log(response['correct']=== true );
+                    if(response['correct']=== true ){
+                        answer='<span class="glyphicon glyphicon-ok" style="top:5px" ></span>'+ " Correct!";
+                        $('#report-answer').css("color","green");
+
+                    }else{
+                        answer='<span class="glyphicon glyphicon-remove" style="top:5px;"></span>'+" Wrong!";
+
+
+                        $('#report-answer').css("color","red");
+                    }
+
+                    $('#report-answer').html(answer);
+                    console.log("Print variable: ");
+                    console.log('{{question_name}}');
+
+                }
+            });
+		}
+</script>
+
 <div class="row main-problem-bgr" >
     <!--<div class="col-lg-1"></div>-->
     <div class="col-lg-12 col-quest-background " style="margin-top: -20px">
         <div class="display-question">
-            <div class="row body-row" style="margin:0">
+            <div class="row" style="border:0px peachpuff solid; height:100%; margin:0">
 
 
 
-                <div class="col-lg-12 col-md-12">
-                    <div class="next-question">
+                <div class="col-lg-12 col-md-12" style="border:0px solid darkolivegreen">
+                    <!--Next and prev question             position: absolute; top:3%; right:1%;-->
+                    <div class="row" style="border:0px blue solid; margin:15px 0;">
+                        <div class="next-question">
                         <span class="glyphicon glyphicon-chevron-left next-badge"></span>
                         <span class="glyphicon glyphicon-chevron-right next-badge"></span>
+                        </div>
 
+                        <div class="question-col col-lg-3 col-md-3 col-sm-4 col-xs-5">
+                            <div class="dropdown" id="prob-quest-row">
+                                <a data-toggle="dropdown" href="#" >
+                                    <p class="mylist-header" id="prob-quest-header" style="padding-right: 40px;">{{question_name}}
+                                        <span class="glyphicon glyphicon-chevron-down"
+                                            style="position:absolute;right:10px; margin-top:15px;">
+                                        </span>
+                                    </p>
+                                </a>
+                                <div class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    {% for a in questions %}
+                                    <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"
+                                       name="{{a.text.text}}" id="{{a.id}}">{{a.displayName.text}}</a>
+                                    {% endfor %}
+                                </div>
+                            </div> <!--End Dropdown-->
+
+                        </div><!--End of question-col-->
                     </div>
 
-                    <div class="question-col">
-                     <!--Start of the Question-Description column-->
-                    <!--<div class="question-menu-div" style="">-->
-                        <div class="dropdown" id="prob-quest-row">
-                            <a data-toggle="dropdown" href="#">
-                                <p class="mylist-header" id="prob-quest-header">{{question_name}}<span class="glyphicon glyphicon-chevron-down"
-                                        style="float:right; margin-top:5px;"></span></p>
+                    <div class="row">
+                         {%block unity%}
+                         {%endblock%}
+                    </div>
+                    <div class="row" id="bottom-row" style="border:0px blanchedalmond solid">
+                        {% load staticfiles %}
+                        <a href="/lti/student_home"><img class="" style="margin:10px;" src="{% static 'css_ui/GUI_Matching/image.png' %}">
                             </a>
-                            <div class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                {% for a in questions %}
-                                <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"
-
-                                   name="{{a.text.text}}" id="{{a.id}}" >{{a.displayName.text}}</a>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    <!--</div>-->
-                        <div style="padding:100px 0 30px 0;">
-                             <h4>Description</h4>
-
-                        </div>
-
-                    <div class="instruction">
-                        <p>{{question}}</p>
-
                     </div>
-                    <div class="instruction">
-                        <!--Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum aliquam leo, a laoreet-->
-                        <!--lectus gravida tristique. Nam ultrices urna ut nisi pharetra, non ornare massa gravida.-->
-                        <!--Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum aliquam leo, a laoreet-->
-                        <!--lectus gravida tristique. Nam ultrices urna ut nisi pharetra, non ornare massa gravida.-->
-                    </div>
-                    <!--End of Description column-->
-                    </div>
-
-
-
-                    {%block unity%}
-                    {%endblock%}
-
 
                 </div>
             </div>
         </div>
+        <!--<button class="btn  btn-lg submit-answer" id="submit-answer" type="button">Submit</button>-->
+        <!--<div id="report-answer">-->
+
+        <!--</div>-->
         <!--<div class="col-lg-1"></div>-->
     </div>
 </div>
