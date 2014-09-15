@@ -496,12 +496,13 @@ def create_assessment(request):
 
         print "Print bank id"
         print bank_id
-        print "sending items"
+
         '''
         Create new assessment
         url: assessment/bank/<bank_id>/assessments/
         '''
         resp = req_assess.post(req_assess.url+bank_id+"/assessments/", data)
+        print resp
         '''
         This part is not necessary
         '''
@@ -524,7 +525,7 @@ def delete_assessment(request):
     print request.GET
     try:
 
-        req_assess=AssessmentRequests()
+        req_assess = AssessmentRequests()
         bank_id = Post.objects.filter(key="bank_id")[0].value
         sub_id = request.GET.getlist('sub_id')[0]
 
@@ -532,65 +533,70 @@ def delete_assessment(request):
         ''''
         get list of offerings
         '''
-        r1=req_assess.get(req_assess.url+bank_id+'/assessments/'+sub_id+"/assessmentsoffered/")
-        print "response assessments offered"
-        print r1
+        r1 = req_assess.get(req_assess.url+bank_id+'/assessments/'+sub_id+"/assessmentsoffered/")
+
         if r1.status_code == 200:
-            data = r1.json()['data']
+            offeringList = r1.json()['data']
 
-            if len(data)>0:
-                offering_id = data[0]['id']
-                print "offering id"
-                print offering_id
+            if len(offeringList) > 0:
+                for offering in offeringList:
+                    offering_id = offering['id']
+                    print "offering id"
+                    print offering_id
 
-                '''
-                Get a list of takens for this assessment
-                url: /assessment/<bank_id>/assessmentsoffered/<sub_id>/assessmentstaken/
-                '''
-                r4=req_assess.get(req_assess.url+bank_id+'/assessmentsoffered/'+offering_id+"/assessmentstaken/")
-                if r4.status_code == 200:
-                    print "takens"
-                    print r4.json()
-                    takensList=r4.json()['data']
-                    print takensList
-                    if len(takensList)>0:
-                        for taken in takensList:
-                            print "taken"
-                            print taken
+                    '''
+                    Get a list of takens for this offering
+                    url: /assessment/<bank_id>/assessmentsoffered/<sub_id>/assessmentstaken/
+                    '''
+                    r4 = req_assess.get(req_assess.url+bank_id+'/assessmentsoffered/'+offering_id+"/assessmentstaken/")
+                    if r4.status_code == 200:
+                        print "takens"
+                        print r4.json()
+                        takensList=r4.json()['data']
+                        print takensList
+                        if len(takensList) > 0:
+                            return HttpResponse(json.dumps({'detail':"This offering has tekens and cannot be deleted"}))
                             '''
-                            delete assessment takens
-                            url:assessment/<bank_id>/assessmentstaken/<taken_id>/
+                            This is deleting all the takens
                             '''
-                            r3=req_assess.delete(req_assess.url+bank_id+'/assessmentstaken/'+taken['id']+'/')
-                else:
-                    return HttpResponse(r4)
+                            # for taken in takensList:
+                            #     print "taken"
+                            #     print taken
+                            #     '''
+                            #     delete assessment takens
+                            #     url:assessment/<bank_id>/assessmentstaken/<taken_id>/
+                            #     '''
+                            #     r3 = req_assess.delete(req_assess.url+bank_id+'/assessmentstaken/'+taken['id']+'/')
+                    else:
+                        return HttpResponse(r4)
 
-
-
-                '''
-                delete an offering
-                url:    assessment/<bank_id>/assessmentsoffered/<offering_id>/
-                '''''
-                r2=req_assess.delete(req_assess.url+bank_id+'/assessmentsoffered/'+offering_id+"/")
-                print r2
-                if r2.status_code!=200:
-                    return HttpResponse(r2)
+                    '''
+                    delete an offering
+                    url:    assessment/<bank_id>/assessmentsoffered/<offering_id>/
+                    '''''
+                    r2 =req_assess.delete(req_assess.url+bank_id+'/assessmentsoffered/'+offering_id+"/")
+                    print r2
+                    if r2.status_code != 200:
+                        r = {'detail': 'Could not delete the offering, id= '+offering_id}
+                        return HttpResponse(json.dumps(r))
 
             '''
             Delete an assessment
             url:  assessment/<bank_id>/assessments/<sub_id>/
             '''
 
-            req=req_assess.delete(req_assess.url+bank_id+"/assessments/"+sub_id+'/')
+            req = req_assess.delete(req_assess.url+bank_id+"/assessments/"+sub_id+'/')
             print "del response"
             print req
-
-            return HttpResponse(req)
+            if req.status_code == 200:
+                return HttpResponse(json.dumps({'success': 'Assessment deleted successfully'}))
+            else:
+                req = {'detail': 'Could not delete an assessment '+str(req.status_code)}
+                return HttpResponse(json.dumps(req))
+            # return HttpResponse(req)
         else:
-            #r2=r2.json()
-            #if r2['detail']=='There are still AssessmentTakens associated with this AssessmentOffered. Delete them first.':
-            return HttpResponse(r1)
 
+            return HttpResponse(r1)
 
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html",  RequestContext(request))
@@ -605,16 +611,16 @@ def get_offering_id(request):
     print request.POST
 
     sub_id=request.POST.getlist('sub_id')[0]
-    print sub_id
-    req_assess=AssessmentRequests()
     bank_id = Post.objects.filter(key="bank_id")[0].value
+
+    req_assess = AssessmentRequests()
 
     '''
     Create new offering
     url: assessment/bank/assessements/<sub_id>/assessmentsoffered/
     '''
 
-    eq4=req_assess.post(req_assess.url+bank_id+'/assessments/'+sub_id+'/assessmentsoffered/')
+    eq4 = req_assess.post(req_assess.url+bank_id+'/assessments/'+sub_id+'/assessmentsoffered/')
 
     print "offering id"
     print eq4['id']
@@ -641,92 +647,114 @@ def get_offering_id(request):
 
 
 @csrf_exempt
+def rename_assessment(request):
+    print "Rename Assessment"
+    print request.POST
+
+    try:
+
+        req_assess = AssessmentRequests()
+        bank_id = Post.objects.filter(key="bank_id")[0].value
+        sub_id = request.POST.getlist('sub_id')[0]
+        new_name = request.POST.getlist('name')[0]
+
+        print new_name
+
+        data = {'name': new_name}
+
+        '''
+        Change name of assessment
+        url: assessment/bank/<bank_id>/assessments/<sub_id>/
+        type:'PUT'
+        '''
+        resp = req_assess.put(req_assess.url+bank_id+"/assessments/"+sub_id+"/", json.dumps(data))
+        print resp
+        print resp.json()
+        return HttpResponse(resp, content_type='application/json')
+
+    except KeyError, e:
+        return render_to_response("ims_lti_py_sample/error.html",  RequestContext(request))
+
+
+
+@csrf_exempt
 def get_items(request):
     print "Get Items of an Assessment"
 
-    print request.GET
+    # print request.GET
     sub_id = request.GET.getlist('sub_id')[0]
     print sub_id
 
     try:
 
-        req_assess=AssessmentRequests()
+        req_assess = AssessmentRequests()
         bank_id = Post.objects.filter(key="bank_id")[0].value
+        '''
+        Get items of an assessment
+        url: assessment/bank/<bank_id>/assessments/<sub_id>/items/
+        type: 'GET'
+        returns: {'data':[]}
+        '''
         resp = req_assess.get(req_assess.url+bank_id+"/assessments/"+sub_id+"/items/")
         items = resp.json()
+        # print items
+        print "Number of items: "+str(len(items))
         return HttpResponse(json.dumps(items), content_type='application/json')
 
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html",  RequestContext(request))
 
 '''
-Maybe want  to check if there are any takens for this assessement
-    if yes create a new assessments from the old one plus the new question
-    else
-        want to delete the takens and offerings
-
-Question:  do I ever want to delete offerings?
-Each time I add or delete item an offering is being created
-Another way is to create offering only when the instructor is requesting it
+Add item to assessment
 '''
 @csrf_exempt
 def add_item(request):
     print 'Add Item to Assessment'
     print request.POST
-    #check if request.Post is not empty
-    print "Test"
+
     sub_id = request.POST.getlist('sub_id')[0]
     question_id=request.POST.getlist('question_id')[0]
-    data={"itemIds": [question_id]}
+    bank_id = Post.objects.filter(key="bank_id")[0].value
 
     print sub_id
     print question_id
 
+    data={"itemIds": [question_id]}
+
+
     req_assess = AssessmentRequests()
-    bank_id = Post.objects.filter(key="bank_id")[0].value
     '''
     Adding item to assessment
-    url: assessment/bank/
+    url: assessment/bank/<bank_id>/assessments/<sub_id>/items/
+    data: {"itemIds": [<question_id>]}
+    type:POST
     '''
     resp = req_assess.post(req_assess.url + bank_id + "/assessments/" + sub_id + "/items/", json.dumps(data))
-    print "Printing the response"
-    print resp
-
-
-
-    #deleteOfferings(bank_id, sub_id)
-    # '''
-    # Create new offering
-    # url: assessment/bank/assessements/<sub_id>/assessmentsoffered/
-    # '''
-    #
-    # eq4 = req_assess.post(req_assess.url + bank_id + '/assessments/' + sub_id + '/assessmentsoffered/')
-    # print "Create offering:"
-    # print "offering id"
-    # print eq4['id']
-
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
 '''
 Remove one item from the assessment
-
 '''
 @csrf_exempt
 def remove_item(request):
     print 'Remove Item from Assessment'
-    print request.POST
 
     sub_id=request.POST.getlist('sub_id')[0]
     question_id=request.POST.getlist('question_id')[0]
+    bank_id = Post.objects.filter(key="bank_id")[0].value
 
     print sub_id
     print question_id
 
     req_assess=AssessmentRequests()
-    #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
-    bank_id = Post.objects.filter(key="bank_id")[0].value
+
+    '''
+    Delete item form assessment
+    url: assessment/bank/<bank_id>/assessments/<sub_id>/items/<question_id>/
+    type: DELETE
+    '''
     resp = req_assess.delete(req_assess.url+bank_id+"/assessments/"+sub_id+"/items/"+question_id+"/",)
 
     print resp
@@ -736,12 +764,16 @@ def remove_item(request):
 
 '''
 Reorder Items in the assessment
-Delete all offerings and takens
 Delete all items
 Add items in new (given) order
 
 Question: do I need to create a new offering?
     probably the instructor will need to add a new link to this offering otherwise the old offerings will be lost
+
+Update: The offering is created only when the instructor requests it
+All offerings are preserved
+At some moment, for example, when reordering items or when requesting new offering, check if
+ there are any offerings for this assessment that do not have takens
 
 '''
 @csrf_exempt
@@ -759,12 +791,9 @@ def reorder_items(request):
     print sub_id
 
     data = {"itemIds": items_ids}
-    #print "Data"
-    #print data
 
   #  deleteOfferings(bank_id,sub_id) #returns true, can put in if statement
     resp=replaceAllItems(bank_id, sub_id, data)
-    #Create new offering?
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
@@ -777,7 +806,6 @@ def update_assessments(request):
     print request.GET
 
     req_assess=AssessmentRequests()
-    #bank_id = 'assessment.Bank:53d671bc33bb72de9183ce2d@birdland.mit.edu'
     bank_id = Post.objects.filter(key="bank_id")[0].value
 
     eq2=req_assess.get(req_assess.url + bank_id +"/assessments/")
@@ -795,11 +823,8 @@ Delete each item one by one, add new list of items
 '''
 def replaceAllItems(bank_id, sub_id, data):
     print "ReplaceAllItems"
-   # print "deleting all items in the assessment"
 
     req_assess=AssessmentRequests()
-
-
 
     items = getItems(bank_id, sub_id).json()
     items=items['data']
@@ -809,31 +834,36 @@ def replaceAllItems(bank_id, sub_id, data):
         question_id=item['id']
         print "Delete item"
         resp = req_assess.delete(req_assess.url+bank_id+"/assessments/"+sub_id+"/items/"+question_id+"/",)
+        #print resp
 
-        print resp
-
-    #now the assessment should be empty
-    #we can add new items
-    #Check that the assessment is empty
+    '''
+    Add new list of items only if the assessment is empty
+    '''
     resp1=getItems(bank_id,sub_id).json()
-    if(len(resp1['data'])<1):
+    if len(resp1['data']) < 1:
         resp = req_assess.post(req_assess.url+bank_id+"/assessments/"+sub_id+"/items/", json.dumps(data))
         return resp
-   # print "Printing the response"
-    #print resp
     else:
         return '{"detail":"Could not replace items"}'
 
 
 
-
+'''
+Get a list of items in this assessment
+'''
 def getItems(bank_id, sub_id):
     print "Get Items"
     req_assess=AssessmentRequests()
     resp = req_assess.get(req_assess.url+ bank_id+"/assessments/"+sub_id+"/items/")
     return resp
 
-
+'''
+Get the list of all offerings
+for each offering find the takens
+    for each taken
+        delete taken
+    delete offering
+'''
 def deleteOfferings(bank_id, sub_id):
 
     print "Deleting Offerings"
@@ -844,8 +874,8 @@ def deleteOfferings(bank_id, sub_id):
     url: /assessment/<bank_id>/assessments/<sub_id>/assessmentsoffered/
     '''
     r1=req_assess.get(req_assess.url+bank_id+'/assessments/'+sub_id+"/assessmentsoffered/")
-    print "response assessments offered"
-    print r1
+    # print "response assessments offered"
+    # print r1
     if r1.status_code == 200:
         data = r1.json()['data']
 

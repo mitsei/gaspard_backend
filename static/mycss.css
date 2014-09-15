@@ -103,6 +103,7 @@
 
 
 }
+
 #btn-reorder-items{
 
 }
@@ -164,6 +165,22 @@ removing items from the assessment
 */
 #bank-box-droppable{
 
+}
+#inpt-change-assess-name{
+    width:80%;
+    background-color:  #B8CED5;
+}
+::-webkit-input-placeholder { /* WebKit browsers */
+    color:    floralwhite;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    floralwhite;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    floralwhite;
+}
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:   floralwhite;
 }
 
 .mylist-header{

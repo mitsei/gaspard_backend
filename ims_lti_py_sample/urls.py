@@ -18,6 +18,8 @@ urlpatterns = patterns('',
     url(r'^del_assess$', 'ims_lti_py_sample.views.delete_assessment',name="DelAssessment"),
     url(r'^update_assess$', 'ims_lti_py_sample.views.update_assessments',name="UpdateAssessment"),
     url(r'^reorder_items$', 'ims_lti_py_sample.views.reorder_items',name="ReorderItems"),
+    url(r'^rename_assessment$', 'ims_lti_py_sample.views.rename_assessment',name="RenameAssessment"),
+
 
    # url(r'^items/(?P<sub_id>[-.:@%\d\w]+)/$', 'ims_lti_py_sample.views.assessment_items', name='AssessmentItems'),
 

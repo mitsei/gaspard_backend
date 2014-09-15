@@ -83,13 +83,23 @@ class AssessmentRequests(object):
         #print req.text
         return req
 
-    def delete(self,url,data=None):
+    def delete(self, url, data=None):
         url = urllib.unquote(url)
         now_headers = deepcopy(self._headers)
         now_headers['Date'] = get_now()
         req = requests.delete(url, auth=self._auth, headers=now_headers)
         return req
+    '''
+    Detele does not return json object
+    '''
 
+    def put(self,url,data):
+        url = urllib.unquote(url)
+        now_headers = deepcopy(self._headers)
+        now_headers['Date'] = get_now()
+
+        req = requests.put(url, data=data, auth=self._auth, headers=now_headers)
+        return req
 
 
 def get_now():

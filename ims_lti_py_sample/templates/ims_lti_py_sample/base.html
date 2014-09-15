@@ -63,19 +63,25 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
                         class="sr-only">Close</span></button>
-                <h4 class="modal-title">Reorder Items</h4>
+                <h4 class="modal-title">Modify Assessment</h4>
             </div>
-            <div class="modal-body">
-                <div id="reorder-items-div" class="">
-                    <div id="reorder-items">
-
+            <div class="modal-body" style="">
+                <div class="row">
+                    <div class="" style="position:relative;float:left; width:40%; padding:15px;">Click on Assessment name
+                        to change it. Drag items to change their order. </div>
+                    <div class="" style="position:relative;width:50%; float:left">
+                        <div id="reorder-items-div" class="">
+                            <div id="reorder-items">
+                            </div>
+                        </div>
                     </div>
-                </div>
 
+                </div>
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" id="submit-new-order" data-dismiss="modal">Done</button>
+                <button type="button" class="btn btn-default" id="btn-submit-new-order" data-dismiss="modal">Done
+                </button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -93,11 +99,11 @@
                 <h4 class="modal-title">Create New Assessment</h4>
             </div>
             <div class="modal-body">
-                <div class=""><label>Enter name <input type="text" id="assess-name"></label></div>
+                <div class=""><label>Enter name <input type="text" id="assess-name" autofocus></label></div>
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" id="create" data-dismiss="modal">Create</button>
+                <button type="button" class="btn btn-default" id="btn-create" data-dismiss="modal" autofocus="">Create</button>
             </div>
         </div>
         <!-- /.modal-content -->
@@ -142,6 +148,28 @@
             </div>
             <div class="modal-body">
                 Please select bank items to create new assessment.
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+<div id="modal-delete-assess-report" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                        class="sr-only">Close</span></button>
+                <h4 class="modal-title">Delete Assessment</h4>
+            </div>
+            <div class="modal-body">
+
 
             </div>
             <div class="modal-footer">
