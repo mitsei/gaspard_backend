@@ -14,6 +14,40 @@
 
 #newasses {
 }
+/*
+Collapse
+*/
+.panel-default .panel-heading{
+      background-image: -webkit-linear-gradient(top, #DBE6EA,  #EDF3F4);
+    border-radius:4px;
+     border:1px solid #4D8496;
+}
+ .panel-title a{
+    font-size: 21px;
+    color:#4D8496;
+    text-decoration: none;
+    z-index:100;
+
+
+}
+ .mylist-bank-items{
+      background-color: transparent;
+   border: 1px solid #4D8496;
+    overflow: hidden;
+    border-radius: 3px;
+
+ }
+.panel-title{
+
+}
+.panel-body{
+    padding:0;
+    border:0;
+}
+.panel-default{
+    /*border-color:#4D8496;*/
+    border:0;
+}
 .container-fluid{
     min-width:1200px;
 }
@@ -193,6 +227,7 @@ removing items from the assessment
     text-decoration: none;
     font-size: 21px;
     overflow:visible;
+    border-radius: 3px;
 
 
 }
@@ -221,18 +256,49 @@ a.mylist-head:hover{
     background-color: #fff;
     border: 1px solid #4D8496;
     overflow: hidden;
+    border-radius: 3px;
 }
 
 a.mylist-item {
+ /*border:1px solid indianred;*/
     position: relative;
     display: block;
     padding: 10px 15px;
     margin-bottom: -1px;
     color: #4D8496;
     font-size: 21px;
+
+    /*padding-right: 60px;*/
+    /*margin-right:60px;*/
      /*font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;*/
 
     text-decoration: none;
+}
+a.assess-item-placeholder, a.assess-item-placeholder:hover{
+    /*border:1px solid indianred;*/
+    position: relative;
+    display: block;
+    padding: 10px 15px;
+    margin-bottom: -1px;
+    color: #4D8496;
+    font-size: 18px;
+    text-align: center;
+    background: #F0F4F6;
+     background-image: -webkit-linear-gradient(top, #DBE6EA,  #EDF3F4);
+    text-decoration: none;
+
+}
+.mylist-item-text{
+    /*border:1px solid indianred;*/
+    postion:relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+	overflow: hidden;
+    /*margin-right: 60px;*/
+   width:70%;
+
+
+
 }
 
 .mylist-item-div{
@@ -253,13 +319,15 @@ a.mylist-item {
 
 
 }
+/* Dont use this
+*/
 .mylist-item-div-clone{
     background: white;
   background-image: -webkit-linear-gradient(top, white,  #F0F4F6);
-  /*background-image: -moz-linear-gradient(top, white,  #C7DCE3);*/
-  /*background-image: -ms-linear-gradient(top, white,  #C7DCE3);*/
-  /*background-image: -o-linear-gradient(top, white,  #C7DCE3);*/
-  /*background-image: linear-gradient(to bottom, white,  #C7DCE3);*/
+  background-image: -moz-linear-gradient(top, white, #F0F4F6);
+  background-image: -ms-linear-gradient(top, white,  #F0F4F6);
+  background-image: -o-linear-gradient(top, white, #F0F4F6);
+  background-image: linear-gradient(to bottom, white, #F0F4F6);
     z-index: 200;
 
 }

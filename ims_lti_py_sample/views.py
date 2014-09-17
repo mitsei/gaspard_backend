@@ -437,7 +437,7 @@ def instructor(request):
 
         if found:
                 '''
-                Get a list assessments in a bank
+                Get a list of assessments in a bank
                 assessment/banks/<bank_id>/assessments/
 
                 '''
@@ -458,15 +458,26 @@ def instructor(request):
                 eq3 = req_assess.get(req_assess.url + bank_id+"/items/")
                 print "Status code getting items:  "+str(eq3.status_code)
                 items = eq3.json()['data']
+                items_type1 = []
+                items_type2 = []
 
                 for a in items:
                     print a['displayName']['text']
+                    print "    "
+                    print a['question']['recordTypeIds'][0]
+                    if "label-ortho-faces" in a['question']['recordTypeIds'][0]:
+                        items_type1.append(a)
+                    if "multi-choice-ortho" in a['question']['recordTypeIds'][0]:
+                        items_type2.append(a)
+
+
 
                 name = Post.objects.filter(key='lis_person_name_given')[0].value
                 print name
                 name = name.replace("-", "")
                 return render_to_response("ims_lti_py_sample/instructor.html",
-                                          RequestContext(request, {'user_name': name,'assessments': assessments,'items': items}))
+                                          RequestContext(request, {'user_name': name,'assessments': assessments,'items': items,
+                                                                   'items_type1': items_type1,'items_type2': items_type2}))
         else:
                 print "No bank Ortho 3D found"
 

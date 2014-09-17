@@ -6,7 +6,7 @@
 
 <div class="row instructor-main-bgr" style="padding-bottom:0">
     <!--<div class="instructor-main-bgr">-->
-    <div class="main-page-img"style="padding-bottom:200px">
+    <div class="main-page-img" style="padding-bottom:200px">
         <div class="welcome-row">
             {% load static %}
             <img class="img-home" src="{% static 'css_ui/SummaryPage/image.png' %}">
@@ -22,23 +22,32 @@
         </div>
 
         <div class="row">
+
             <div class="col-lg-1 col-md-1 col-sm-1"></div>
 
             <!--Assessments-->
             <div class="col-lg-3 col-md-3 col-sm-3 col-list">
                 <div class="mylist-header">Assessments
-                    <button class="manage-assess-btn btn btn-default" id="btn-new-assess"><span
-                            class="glyphicon glyphicon-plus" style="float:right"></span></button>
+                    <button class="manage-assess-btn btn btn-default" data-toggle="tooltip" title="Tooltip on top" id="btn-new-assess">
+                        <span class="glyphicon glyphicon-plus" style="float:right"></span>
+                        <!--some text-->
+                    </button>
                     <button class="manage-assess-btn btn btn-default" id="btn-del-assess"><span
                             class="glyphicon glyphicon-minus" style="float:right"></span></button>
                     <button class="manage-assess-btn btn btn-default" id="btn-get-offering"><span
                             class="glyphicon glyphicon-cog" style="float:right"></span></button>
+                    <!--<button type="button" class="btn btn-default" data-toggle="tooltip" data-placement="top" title="Tooltip on top">Tooltip on top</button>-->
                 </div>
+
 
 
                 <div class="mylist" id="assess-list">
                     {% for a in assessments %}
-                    <a href="#" class="mylist-item assess-item" value="{{a.id}}">{{a.displayName.text}}</a>
+                    <a href="#" class="mylist-item assess-item" id="{{a.id}}" value="{{a.display.name}}">
+                        <div class="mylist-item-text">
+                            {{a.displayName.text}}
+                        </div>
+                    </a>
                     {% endfor %}
                 </div>
 
@@ -59,16 +68,64 @@
             <div class="col-lg-3 col-md-3 col-sm-3" id="bank-box-droppable">
                 <p class="mylist-header" id="bank-items-name">Items</p>
 
-                <div class="mylist" >
-                    {% for a in items %}
-                    <div class="mylist-item-div bank-item">
-                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                <!--<div class="mylist" >-->
+                    <!--{% for a in items %}-->
+                    <!--<div class="mylist-item-div bank-item">-->
+                        <!--<a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>-->
+                    <!--</div>-->
+
+                    <!--{% endfor %}-->
+                <!--</div>-->
+
+
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+                                Multiple-Choice Orthographic Question
+                            </a>
+                        </div>
                     </div>
+                    <div id="collapseOne" class="  panel-collapse collapse">
+                        <div class="panel-body " style="color:gray">
+                            <!-- Items-->
+                            <div class="mylist-bank-items">
+                                {% for a in items_type1 %}
+                                <div class="mylist-item-div bank-item">
+                                    <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                </div>
 
-                    {% endfor %}
+                                {% endfor %}
+                            </div>
+
+                        </div>
+                    </div>
                 </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <div class="panel-title">
+                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+                                Label Orthographic Faces
+                            </a>
+                        </div>
+                    </div>
+                    <div id="collapseTwo" class="panel-collapse collapse">
+                        <div class="panel-body">
+                            <!--Items-->
+                            <div class="mylist">
+                                {% for a in items_type2 %}
+                                <div class="mylist-item-div bank-item">
+                                    <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                </div>
 
+                                {% endfor %}
+                            </div>
 
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             </div>
             <div class="col-lg-1 col-md-1"></div>

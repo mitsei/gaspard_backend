@@ -61,18 +61,3 @@ scipy==0.11.0
 wsgiref==0.1.2
 xattr==0.6.4
 zope.interface==3.8.0
-
-
-----------------------
-old version
-----------------------
-Django==1.6.5
-dj-database-url==0.3.0
-gunicorn==19.0.0
-httplib2==0.9
--e git+https://github.com/starteam/ims_lti_py.git@be26d5f9dc061bdbd7c76949b6f963bcf61fe912#egg=ims_lti_py-origin
-lxml==3.3.5
-newrelic==2.22.1.20
-oauth2==1.5.211
-uWSGI==2.0.6
-wsgiref==0.1.2
