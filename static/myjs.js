@@ -7,6 +7,8 @@ var selectedBankItems=[];
 $(document).ready(function () {
 
     $('#btn-submit-new-order').click(function () {
+        /*Want to check if there are any items in the assessment*/
+
         var sub_id=selectedAssessment.attr('id');
         var idsArray = $('#reorder-items').sortable("toArray");
         console.log(idsArray);
@@ -460,6 +462,7 @@ function requestItems(obj) {
 
 
                 removeHeader('assess-items-name');
+                $('#assess-items').html('');
                     console.log($(obj).find('div').text().trim() );
                     $('#assess-box-droppable').prepend('<div class="mylist-header " id="assess-items-name">' +
                         '<div class="mylist-item-text">'+getName(obj) +"</div>"+
@@ -496,7 +499,7 @@ function requestItems(obj) {
                 $("#assess-items").append('<div class="mylist-item-div"><a href="#" class="assess-item-placeholder">-Drop items here-</a></div>');
 
                 if ($("#assess-box-droppable").is(":hidden")) {
-                        $('#assess-box-droppable').slideDown("slow");
+                        $('#assess-box-droppable').slideDown("slow").delay(800);
                 }
                 $('.assess-item-placeholder').click(function(){
                     return false;
@@ -688,7 +691,7 @@ function unselectThisAssessment(obj) {
 function removeAssessItems(){
     console.log("removing the header");
     if(!$("#assess-box-droppable").is(":hidden")){
-        $('#assess-box-droppable').slideUp();
+        $('#assess-box-droppable').hide();
 
     }
  //  removeHeader('assess-items-name');
