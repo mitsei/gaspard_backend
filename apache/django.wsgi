@@ -1,4 +1,4 @@
-ALLDIRS = ['/usr/local/pythonenv/assessments/lib/python2.6/site-packages']
+ALLDIRS = ['/usr/local/pythonenv/ortho3d/lib/python2.6/site-packages']
 
 import os
 import sys
@@ -6,7 +6,7 @@ import site
 
 # from https://code.google.com/p/modwsgi/wiki/VirtualEnvironments
 
-sys.path.insert(0, '/var/www/LTI_Provider/ims-lti-py-django/')
+sys.path.insert(0, '/var/www/LTI_Provider/ims_lti_py_django/')
 sys.path.insert(1, '/var/www/LTI_Provider/')
 
 prev_sys_path = list(sys.path)
@@ -21,7 +21,7 @@ for item in list(sys.path):
 
 sys.path[:0] = new_sys_path
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'ims-lti-py-django.settings'
+os.environ['DJANGO_SETTINGS_MODULE'] = 'ims_lti_py_django.settings'
 
 import django.core.handlers.wsgi
 application = django.core.handlers.wsgi.WSGIHandler()
