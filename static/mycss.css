@@ -1,4 +1,6 @@
-
+body{
+    min-width: 1210px;
+}
 .box{
     height:300px;
     width:250px;
@@ -125,25 +127,21 @@ Collapse
 
 
 #btn-new-assess {
-    color: white;
-    background: #4D8496;
-
 }
-
-
 #btn-del-assess {
-    color: white;
-    background: #4D8496;
-
-
+}
+#btn-get-offering{
 }
 
 #btn-reorder-items{
+    position:absolute;
+    right:25px;
+    top:10px;
+    font-size: 17px;
+
 
 }
-#btn-get-offering{
 
-}
 .hide{
     visibility: hidden ;
 }
@@ -158,6 +156,13 @@ Collapse
      background: #4D8496;
     display:inline-block;
     float:right;
+    font-size: 20px;
+}
+.manage-assess-btn:hover{
+    color:white;
+    /*background-color: #B8CED5;*/
+    border:1px #B8CED5 solid;
+    box-shadow: 3px 3px 2px black;
 }
 #display-offering-id{
 
@@ -182,6 +187,7 @@ Collapse
 }
 #assess-items{
 
+
 }
 .bank-item{
 
@@ -191,6 +197,7 @@ used for dropping items into the assessment list
 */
 
 #assess-box-droppable{
+     display:none;
 
 }
 /**
@@ -414,20 +421,15 @@ h1,h2 {
 
 **********************************/
 .question-col{
-    /*position:absolute;*/
-    /*padding:30px;*/
-    /*left:1%;*/
-    /*top:20px;            *//*rescale*/
-    /*min-width:20%;        *//*rescale*/
-    /*width:auto;*/
-    /*z-index: 100;*/
-    /*opacity:1;*/
+
     position:relative;
 
 
 }
 .instruction{
     position:relative;
+    margin-left: 15px;
+    z-index: 100;
     /*top:50%;*/
 }
 .instruction p{
@@ -444,7 +446,7 @@ h1,h2 {
     position:relative;
     left:3%;
     bottom:5%;
-    width:80%;
+    width:100%;
     min-width:382px;
     /*height:auto;*/
     float:left;
@@ -486,6 +488,9 @@ h1,h2 {
 }
 .quest-item{
 
+}
+.quest-status{
+    padding-right: 15px;
 }
 #prob-quest-header{
     font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;

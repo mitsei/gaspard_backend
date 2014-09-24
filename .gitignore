@@ -1,6 +1,5 @@
 .idea/
 db.sqlite3
 *.pyc
-
 *.DB_Store
 settings_credentials.py

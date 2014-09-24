@@ -5,7 +5,6 @@ var selectedAssessment = null;
 var selectedBankItems=[];
 
 $(document).ready(function () {
-//    $('#btn-new-assess').tooltip('show');
 
     $('#btn-submit-new-order').click(function () {
         var sub_id=selectedAssessment.attr('id');
@@ -464,7 +463,7 @@ function requestItems(obj) {
                     console.log($(obj).find('div').text().trim() );
                     $('#assess-box-droppable').prepend('<div class="mylist-header " id="assess-items-name">' +
                         '<div class="mylist-item-text">'+getName(obj) +"</div>"+
-                        '<button class="manage-assess-btn btn btn-default" style="position:absolute; right:20px;top:10px" id="btn-reorder-items" onclick="showModalReorderItems()">' +
+                        '<button class="manage-assess-btn btn" id="btn-reorder-items" onclick="showModalReorderItems()">' +
                         '<span class="glyphicon glyphicon-sort" ></span></button></div>');
 
 
@@ -476,6 +475,8 @@ function requestItems(obj) {
                     });
 
                     $('#assess-items').addClass('mylist').html(str);
+
+
                     $('.item-in-assess').click(function(){
                         return false;
                     });
@@ -493,9 +494,13 @@ function requestItems(obj) {
 
                 }
                 $("#assess-items").append('<div class="mylist-item-div"><a href="#" class="assess-item-placeholder">-Drop items here-</a></div>');
+
+                if ($("#assess-box-droppable").is(":hidden")) {
+                        $('#assess-box-droppable').slideDown("slow");
+                }
                 $('.assess-item-placeholder').click(function(){
-        return false;
-    });
+                    return false;
+                });
 
             } else {
                 if ('detail' in response) {
@@ -682,15 +687,19 @@ function unselectThisAssessment(obj) {
 
 function removeAssessItems(){
     console.log("removing the header");
-   removeHeader('assess-items-name');
-    var itemsDiv = document.getElementById("assess-items");
-    if (itemsDiv != null) {
-        itemsDiv.innerHTML = "";
-        itemsDiv.className = "";
-    } else {
-        console.log("Trying to unselect a not selected assessment");
-        console.log($(obj));
+    if(!$("#assess-box-droppable").is(":hidden")){
+        $('#assess-box-droppable').slideUp();
+
     }
+ //  removeHeader('assess-items-name');
+//    var itemsDiv = document.getElementById("assess-items");
+//    if (itemsDiv != null) {
+//        itemsDiv.innerHTML = "";
+//        itemsDiv.className = "";
+//    } else {
+//        console.log("Trying to unselect a not selected assessment");
+//        console.log($(obj));
+//    }
 
 }
 function updateAssessmentList() {
@@ -726,10 +735,12 @@ function updateAssessmentList() {
  * @param obj is the quest-item clicked on
  */
 function getProblem(obj){
+    console.log($(obj).text());
             $.ajax({
                 url:'get_question',
                 type:'POST',
-                data:{data:[$(obj).attr('value'), $(obj).attr('name'), $(obj).text(), $(obj).attr('id')]},//send the file.manip
+//                $(obj).attr('value')
+                data:{data:[ $(obj).attr('name'), $(obj).text(), $(obj).attr('id')]},//send the file.manip
                 success: function(data){
                     console.log(data);
                     //window.location.href = response.redirect;
