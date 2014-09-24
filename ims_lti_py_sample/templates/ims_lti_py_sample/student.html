@@ -35,7 +35,16 @@
                 <div class="mylist">
                     {% for a in questions %}
                     <div class="mylist-item-div">
-                    <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"name="{{a.text.text}}" id="{{a.id}}">{{a.displayName.text}}</a>
+                    <a href="#" class="mylist-item quest-item" name="{{a.text.text}}" id="{{a.id}}">
+                        {%if a.responded == 'Correct'%}
+                            <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green"></span>
+                        {%elif a.responded == 'Incorrect'%}
+                            <span class="glyphicon glyphicon-remove-circle quest-status" style="color: indianred" ></span>
+                        {%else %}
+                            <span class="glyphicon glyphicon-remove-circle quest-status" style="color: transparent"></span>
+                        {%endif%}
+
+                        {{a.displayName.text}}</a>
                         </div>
                     {% endfor %}
                 </div>

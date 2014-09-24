@@ -8,7 +8,7 @@
         {% load staticfiles %}
     {%static "Gaspard/Gaspard.logo.png" as gaspard%}
     {%static "Gaspard/" as manipFile%}
-    {%static "Gaspard/Gaspard - Web Bui.unity3d" as gaspardWebBuild%}
+    {%static "Gaspard/Gaspard - Web Build.unity3d" as gaspardWebBuild%}
 
 
 <script>
@@ -53,11 +53,14 @@
     });
  console.log("Print type");
     console.log("{{question_type}}");
-     var w=1024;
-     var h=700;
-    if("{{question_type}}".toLowerCase().indexOf("multi-choice-ortho") >= 0){
+
+    if("{{question_type}}".toLowerCase().indexOf("choose-viewset") >= 0){
         w=512;
         h=512;
+        console.log("this is a Choose viewset");
+    }else{
+        var w=1024;
+        var h=700;
     }
     var config = {
         width: w,
@@ -113,20 +116,42 @@
 			function SaySomethingToUnity()
 			{   console.log("Sending message");
 
-                 if("{{question_type}}".toLowerCase().indexOf("multi-choice-ortho") >= 0) {
-                     u.getUnity().SendMessage("QuestionLoader", "SetViewerOnly", "true");
-                 }
+//                 if("{{question_type}}".toLowerCase().indexOf("multi-choice-ortho") >= 0) {
+//                     u.getUnity().SendMessage("QuestionLoader", "SetViewerOnly", "true");
+//                 }
+                if("{{question_type}}".toLowerCase().indexOf("define-ortho-faces")>=0){
+                    console.log("Define ortho faces");
+                    u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "false");
+                    u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "true");
+
+                }else if("{{question_type}}".toLowerCase().indexOf("match-ortho-faces")>=0){
+                    console.log("Match ortho faces");
+                    u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "true");
+                    u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "true");
+
+
+                }else if("{{question_type}}".toLowerCase().indexOf("choose-viewset")>=0){
+                    console.log("Choose-viewset");
+                    u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "false");
+                    u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "false");
+                    console.log("sent message")
+
+                }
 			    u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}{{question_name}}.unity3d");
 
-                console.log("sending second message");
+
 
 			    u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");
 			}
 
-            function ReceiveResponse( arg )
+ /**
+  * This method is called by unity object in DEFINE and MATCH ortho faces
+  * @param arg
+  * @constructor
+  */
+        function ReceiveResponse( arg )
 		{
-		    // show the message
-		   // alert( arg );
+
             $.ajax({
                 url:"submit_answer",
                 type:"POST",
@@ -173,7 +198,7 @@
                         <span class="glyphicon glyphicon-chevron-right next-badge"></span>
                         </div>
 
-                        <div class="question-col col-lg-3 col-md-3 col-sm-4 col-xs-5">
+                        <div class="question-col col-lg-4 col-md-4 col-sm-4 col-xs-4">
                             <div class="dropdown" id="prob-quest-row">
                                 <a data-toggle="dropdown" href="#" >
                                     <p class="mylist-header" id="prob-quest-header" style="padding-right: 40px;">{{question_name}}
@@ -184,8 +209,17 @@
                                 </a>
                                 <div class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                     {% for a in questions %}
-                                    <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"
-                                       name="{{a.text.text}}" id="{{a.id}}">{{a.displayName.text}}</a>
+                                    <a href="#" class="mylist-item quest-item"
+                                       name="{{a.text.text}}" id="{{a.id}}">
+                                        {%if a.responded == 'Correct'%}
+                                            <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green"></span>
+                                        {%elif a.responded == 'Incorrect'%}
+                                            <span class="glyphicon glyphicon-remove-circle quest-status" style="color: indianred" ></span>
+                                        {%else %}
+                                            <span class="glyphicon glyphicon-remove-circle quest-status" style="color: transparent"></span>
+                                        {%endif%}
+
+                                        {{a.displayName.text}}</a>
                                     {% endfor %}
                                 </div>
                             </div> <!--End Dropdown-->

@@ -37,6 +37,7 @@ except ImportError:
 DATABASES = settings_credentials.DATABASES
 ALLOWED_HOSTS = settings_credentials.__dict__.get('ALLOWED_HOSTS')
 STATICFILES_DIRS = settings_credentials.__dict__.get('STATICFILES_DIRS')
+STATIC_ROOT = settings_credentials.__dict__.get('STATIC_ROOT')
 STATIC_URL = settings_credentials.__dict__.get('STATIC_URL')
 CONSUMER_KEY = settings_credentials.__dict__.get('CONSUMER_KEY')
 LTI_SECRET = settings_credentials.__dict__.get('LTI_SECRET')
