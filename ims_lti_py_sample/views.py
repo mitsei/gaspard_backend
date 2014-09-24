@@ -288,11 +288,11 @@ def display_question(request):
         '''
         Writing the manip file
         '''
-        manip =  resp2.json()['files']['manip']
-        decoded = base64.b64decode(manip)
-        text_file = open("static/Gaspard/" + q_name + ".unity3d", "w")
-        text_file.write(decoded)
-        text_file.close()
+        # manip = resp2.json()['files']['manip']
+        # decoded = base64.b64decode(manip)
+        # text_file = open("static/Gaspard/" + q_name + ".unity3d", "w")
+        # text_file.write(decoded)
+        # text_file.close()
 
         '''
         Identifying type of the question
