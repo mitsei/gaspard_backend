@@ -1,4 +1,4 @@
-ALLDIRS = ['/usr/local/pythonenv/assessments/lib/python2.6/site-packages']
+ALLDIRS = ['/usr/local/pythonenv/ortho3d/lib/python2.6/site-packages']
 
 import os
 import sys
