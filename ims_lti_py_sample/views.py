@@ -5,6 +5,8 @@ from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from ims_lti_py.tool_provider import DjangoToolProvider
 
+from django.conf import settings
+
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 import oauth2
@@ -316,8 +318,8 @@ def display_question(request):
                     largeView = c['largeOrthoViewSet']
                     decoded1 = base64.b64decode(smallView)
                     decoded2 = base64.b64decode(largeView)
-                    small_view_file = open("static/MultichoiceLayouts/smallOrthoViewSet" + str(i) + ".jpg", "w")
-                    large_view_file = open("static/MultichoiceLayouts/largeOrthoViewSet" + str(i) + ".jpg", "w")
+                    small_view_file = open(settings.STATIC_ROOT + "MultichoiceLayouts/smallOrthoViewSet" + str(i) + ".jpg", "w")
+                    large_view_file = open(settings.STATIC_ROOT + "MultichoiceLayouts/largeOrthoViewSet" + str(i) + ".jpg", "w")
                     small_view_file.write(decoded1)
                     large_view_file.write(decoded2)
 
