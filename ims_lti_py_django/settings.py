@@ -45,6 +45,7 @@ URL_ASSESSMENTS = settings_credentials.__dict__.get('URL_ASSESSMENTS')
 PUBLIC_KEY = settings_credentials.__dict__.get('PUBLIC_KEY')
 PRIVATE_KEY = settings_credentials.__dict__.get('PRIVATE_KEY')
 ASSESSMENTS_HOST = settings_credentials.__dict__.get('ASSESSMENTS_HOST')
+LOGGING = settings_credentials.__dict__.get('LOGGING')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
