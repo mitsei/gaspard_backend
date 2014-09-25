@@ -287,12 +287,16 @@ def display_question(request):
         resp2 = student_req.get(student_req.url + bank_id + '/assessmentstaken/' + taken_id +
                                 "/questions/" + question_id + "/")
 
+
+        static_folder = settings.STATIC_ROOT
+        if static_folder == '':
+            static_folder = 'static/'
         '''
         Writing the manip file
         '''
         manip = resp2.json()['files']['manip']
         decoded = base64.b64decode(manip)
-        text_file = open("static/Gaspard/" + q_name + ".unity3d", "w")
+        text_file = open(static_folder+"Gaspard/" + q_name + ".unity3d", "w")
         text_file.write(decoded)
         text_file.close()
 
@@ -318,9 +322,7 @@ def display_question(request):
                     largeView = c['largeOrthoViewSet']
                     decoded1 = base64.b64decode(smallView)
                     decoded2 = base64.b64decode(largeView)
-                    static_folder = settings.STATIC_ROOT
-                    if static_folder == '':
-                        static_folder = 'static/'
+
                     small_view_file = open(static_folder + "MultichoiceLayouts/smallOrthoViewSet" + str(i) + ".jpg", "w")
                     large_view_file = open(static_folder + "MultichoiceLayouts/largeOrthoViewSet" + str(i) + ".jpg", "w")
                     small_view_file.write(decoded1)
@@ -365,6 +367,9 @@ def submit_answer(request):
         json.dumps(answer))
     print "Got answer back"
     print resp
+    if readyToSubmit():
+        submitGrade(bank_id, taken_id, params)
+
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
@@ -413,18 +418,16 @@ def submit_multi_answer(request):
         json.dumps(answer))
     print "Got answer back"
     print resp2
-    consumer_key = settings.CONSUMER_KEY
-    secret = settings.LTI_SECRET
+
 
     request_post = params["lis_outcome_service_url"]
-    print consumer_key
-    print secret
     print request_post
 
-    tool = DjangoToolProvider(consumer_key, secret, params)
-    post_result = tool.post_replace_result(.32)
-    print post_result
+    if readyToSubmit():
+        submitGrade(bank_id, taken_id, params)
+
     return HttpResponse(json.dumps(resp2), content_type='application/json')
+
 
 
 @csrf_exempt
@@ -1004,4 +1007,29 @@ def deleteOfferings(bank_id, sub_id):
         print("Error getting the offerings")
         print r1
         return False
+
+
+def submitGrade(bank_id, taken_id, params):
+
+    questions = getQuestions(bank_id, taken_id)
+    num_questions = len(questions)
+    if num_questions > 0:
+        print "Num of questions "+str(num_questions)
+        count_correct_ans = 0
+        for a in questions:
+            if a['responded'] == 'Correct':
+                count_correct_ans += 1
+
+        consumer_key = settings.CONSUMER_KEY
+        secret = settings.LTI_SECRET
+        print consumer_key
+        print secret
+        tool = DjangoToolProvider(consumer_key, secret, params)
+        post_result = tool.post_replace_result(count_correct_ans/float(num_questions))
+        print post_result.is_success()
+
+
+def readyToSubmit():
+    return True
+
 
