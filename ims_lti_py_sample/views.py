@@ -284,17 +284,17 @@ def display_question(request):
 
         {files:{}, displayName:{text:""},description:{}, recordTypeIds:[],text:{}, responded:True,....}
         '''
-        resp2 = student_req.get(
-            student_req.url + bank_id + '/assessmentstaken/' + taken_id + "/questions/" + question_id + "/")
-        # print resp2.json()
+        resp2 = student_req.get(student_req.url + bank_id + '/assessmentstaken/' + taken_id +
+                                "/questions/" + question_id + "/")
+
         '''
         Writing the manip file
         '''
-        # manip = resp2.json()['files']['manip']
-        # decoded = base64.b64decode(manip)
-        # text_file = open("static/Gaspard/" + q_name + ".unity3d", "w")
-        # text_file.write(decoded)
-        # text_file.close()
+        manip = resp2.json()['files']['manip']
+        decoded = base64.b64decode(manip)
+        text_file = open("static/Gaspard/" + q_name + ".unity3d", "w")
+        text_file.write(decoded)
+        text_file.close()
 
         '''
         Identifying type of the question
@@ -318,8 +318,11 @@ def display_question(request):
                     largeView = c['largeOrthoViewSet']
                     decoded1 = base64.b64decode(smallView)
                     decoded2 = base64.b64decode(largeView)
-                    small_view_file = open(settings.STATIC_ROOT + "MultichoiceLayouts/smallOrthoViewSet" + str(i) + ".jpg", "w")
-                    large_view_file = open(settings.STATIC_ROOT + "MultichoiceLayouts/largeOrthoViewSet" + str(i) + ".jpg", "w")
+                    static_folder = settings.STATIC_ROOT
+                    if static_folder == '':
+                        static_folder = 'static/'
+                    small_view_file = open(static_folder + "MultichoiceLayouts/smallOrthoViewSet" + str(i) + ".jpg", "w")
+                    large_view_file = open(static_folder + "MultichoiceLayouts/largeOrthoViewSet" + str(i) + ".jpg", "w")
                     small_view_file.write(decoded1)
                     large_view_file.write(decoded2)
 
@@ -455,10 +458,10 @@ def instructor(request):
 
         if found:
             '''
-                Get a list of assessments in a bank
-                assessment/banks/<bank_id>/assessments/
+            Get a list of assessments in a bank
+            assessment/banks/<bank_id>/assessments/
 
-                '''
+            '''
             # print str(req_assess.url) + str(bank_id)+"/assessments/"
 
             eq2 = req_assess.get(req_assess.url + bank_id + "/assessments/")
