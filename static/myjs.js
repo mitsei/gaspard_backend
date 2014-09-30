@@ -6,6 +6,30 @@ var selectedBankItems=[];
 
 $(document).ready(function () {
 
+    $(".panel-title").click(function(){
+
+        var id=$(this).attr('id');
+        console.log(id);
+        var types={items_type1:"#collapseOne", items_type2: "#collapseTwo",items_type3:"#collapseThree", items_type4:"#collapseFour"};
+        var spanElement=$(this).find('span');
+           console.log(spanElement);
+
+       if($(types[id]).is(':hidden')){
+           console.log("Collapse one is hidden");
+           $(types[id]).collapse('show');
+
+           $(spanElement).removeClass("glyphicon-collapse-down");
+           $(spanElement).addClass("glyphicon-collapse-up");
+
+
+       }else{
+           console.log("Collapse one is visible");
+           $(types[id]).collapse('hide');
+           $(spanElement).removeClass("glyphicon-collapse-up");
+           $(spanElement).addClass("glyphicon-collapse-down");
+       }
+    });
+
     $('#btn-submit-new-order').click(function () {
         /*Want to check if there are any items in the assessment*/
 
@@ -169,6 +193,8 @@ $(document).ready(function () {
 
         //check if any selected
         if(selectedAssessment!= null) {
+            //check if assessment is empty or not
+            console.log(sub_id);
             if (sub_id != null) {
                 $.ajax({
                     url: 'get_offering_id',
@@ -183,11 +209,27 @@ $(document).ready(function () {
                         $('#display-bank-id').html(str);
 
                         $('#modal-offering-id').modal('show');
-                    }
+
+                        str="offering_id="+ response[0]+'/n'+"bank_id="+response[1];
+                         $('#btn-copy-offering').focus().attr('value',str);
+
+                    },
+                    statusCodes: {
+                        200: function(){},
+                        500: function (response) {
+                            console.log(response);
+
+                }
+            }
                 });
             }
         }
 
+    });
+    $('#btn-copy-offering').click(function(){
+        var copied= $(this).attr('value');
+        console.log(copied);
+        copied.execCommand("Copy");
     });
 
     /**

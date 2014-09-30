@@ -680,30 +680,14 @@ def get_offering_id(request):
     '''
 
     eq4 = req_assess.post(req_assess.url + bank_id + '/assessments/' + sub_id + '/assessmentsoffered/')
+    if 'id' in eq4:
+        print "offering id"
+        print eq4['id']
 
-    print "offering id"
-    print eq4['id']
-
-    '''
-    Get offerings of this assessment
-    url:   assessment/<bank_id>/assessments/<sub_id>/assessmentsoffered/
-
-    '''
-    # resp=req_assess.get(req_assess.url+bank_id+'/assessments/'+sub_id+"/assessmentsoffered/")
-    # data= resp.json()['data']
-    # print data
-    # if len(data)>0:
-    # offering_id=data[len(data)-1]['id'] #want to get the last offering id in case there is more than one
-    #         print len(data)
-    #         print "offering id"
-    #         print offering_id
-    #         return HttpResponse(json.dumps(offering_id))
-    # else:
-    #     return HttpResponse("no offering")
-
-
-    return HttpResponse(json.dumps([eq4['id'], bank_id]), content_type='application/json')
-
+        return HttpResponse(json.dumps([eq4['id'], bank_id]), content_type='application/json')
+    else:
+        print eq4
+        return HttpResponse(json.dumps(eq4), content_type='application/json')
 
 @csrf_exempt
 def rename_assessment(request):
