@@ -6,7 +6,7 @@ var selectedBankItems=[];
 
 $(document).ready(function () {
 
-    $("#items_type1").click(function(){
+    $(".panel-title").click(function(){
 
         var id=$(this).attr('id');
         console.log(id);
