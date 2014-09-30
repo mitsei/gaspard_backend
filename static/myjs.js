@@ -208,10 +208,13 @@ $(document).ready(function () {
                         str="bank_id="+response[1];
                         $('#display-bank-id').html(str);
 
-                        $('#modal-offering-id').modal('show');
+
 
                         str="offering_id="+ response[0]+'/n'+"bank_id="+response[1];
-                         $('#btn-copy-offering').focus().attr('value',str);
+                         $('#btn-copy-offering').attr('value',str).focus();
+
+                        $('#modal-offering-id').modal('show');
+                        selectText('display-bank-id');
 
                     },
                     statusCodes: {
@@ -226,10 +229,26 @@ $(document).ready(function () {
         }
 
     });
+    function selectText(element) {
+    var doc = document;
+    var text = doc.getElementById(element);
+
+    if (doc.body.createTextRange) { // ms
+        var range = doc.body.createTextRange();
+        range.moveToElementText(text);
+        range.select();
+    } else if (window.getSelection) { // moz, opera, webkit
+        var selection = window.getSelection();
+        var range = doc.createRange();
+        range.selectNodeContents(text);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+}
     $('#btn-copy-offering').click(function(){
         var copied= $(this).attr('value');
         console.log(copied);
-        copied.execCommand("Copy");
+       // window.clipboardData.setData("Text", copied);
     });
 
     /**
