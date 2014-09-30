@@ -23,6 +23,7 @@ Collapse
       background-image: -webkit-linear-gradient(top, #DBE6EA,  #EDF3F4);
     border-radius:4px;
      border:1px solid #4D8496;
+
 }
  .panel-title a{
     font-size: 21px;
@@ -40,7 +41,12 @@ Collapse
 
  }
 .panel-title{
+    cursor: pointer;
 
+}
+.bank-type{
+    color:#4D8496;
+    font-size: 21px;
 }
 .panel-body{
     padding:0;

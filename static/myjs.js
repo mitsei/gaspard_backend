@@ -28,6 +28,7 @@ $(document).ready(function () {
            $(spanElement).removeClass("glyphicon-collapse-up");
            $(spanElement).addClass("glyphicon-collapse-down");
        }
+        return false;
     });
 
     $('#btn-submit-new-order').click(function () {
