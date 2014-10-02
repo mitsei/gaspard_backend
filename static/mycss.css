@@ -1,6 +1,11 @@
 body{
     min-width: 1210px;
 }
+.wrapper {
+			position:absolute;
+			top:50%;
+			left:50%;
+		}
 .box{
     height:300px;
     width:250px;
@@ -271,6 +276,17 @@ a.mylist-head:hover{
     overflow: hidden;
     border-radius: 3px;
 }
+.grade{
+    /*background-image: -webkit-linear-gradient(top,  #4D8496,#DBE6EA);*/
+    color:white;
+    font-size: 25px;
+    padding:10px 15px;
+    position:absolute;
+    top:50px;
+    right:205px;
+
+}
+
 
 a.mylist-item {
  /*border:1px solid indianred;*/
@@ -478,6 +494,55 @@ h1,h2 {
     font-size:30px;
     padding:2px;
     box-shadow : 5px 5px 2px rgba(0, 0, 0, 0.25);
+    cursor:pointer;
+
+}
+.grade-area{
+    background-color:#4D8496;
+    padding: 3px;
+
+}
+.grade-header{
+    /*background-color:#4D8496;*/
+    padding: 5px;
+    font-size: 25px;
+    color:#4D8496;
+    margin:5px;
+    margin-left: 0;
+    border-bottom: 3px solid #4D8496;
+
+}
+#display-grade{
+    box-shadow : 2px 2px 2px rgba(0, 0, 0, 0.25);
+}
+#btn-submit-grade{
+    background-color:transparent;
+    font-size: 35px;
+    box-shadow : 5px 5px 2px rgba(0, 0, 0, 0.25);
+    /*color:white;*/
+
+
+}
+#btn-submit-grade:hover {
+    box-shadow : 5px 5px 2px rgba(0, 0, 0, 0.25);
+    color:#ffffff;
+    border: 0px solid white;
+    background-color: #4D8496;
+    font-size: 38px;
+
+
+}
+#btn-submit-grade:active{
+    color:white;
+}
+#btn-submit-grade::selection{
+    color: white;
+}
+#submit-grade-text{
+    position:absolute;
+    top:40px;
+    right:210px;
+    color:white;
 
 
 }

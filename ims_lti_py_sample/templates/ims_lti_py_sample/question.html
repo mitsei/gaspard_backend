@@ -20,10 +20,18 @@
         });
         $('.quest-item').click(function(){
             console.log("Clicked on question");
-            $('.prob-quest-header').html($(this).text());
+//            $('.prob-quest-header').html($(this).text());
             console.log("Changed header text");
             //goto a different question
             getProblem($(this));
+        });
+        $('.next-badge').click(function(){
+            console.log('Clicked next question');
+            if($(this).attr('id') =='home'){
+                window.location.href = 'student_home';
+            }else{
+                getProblem($(this));
+            }
         });
         $('#prob-quest-header').click(function(){
                    $('.dropdown-menu').css('width', $("#prob-quest-row").width());
@@ -194,8 +202,8 @@
                     <!--Next and prev question             position: absolute; top:3%; right:1%;-->
                     <div class="row" style="border:0px blue solid; margin:15px 0;">
                         <div class="next-question">
-                        <span class="glyphicon glyphicon-chevron-left next-badge"></span>
-                        <span class="glyphicon glyphicon-chevron-right next-badge"></span>
+                        <span class="glyphicon glyphicon-chevron-left next-badge" id="{{prev_quest_id}}"></span>
+                        <span class="glyphicon glyphicon-chevron-right next-badge" id="{{next_quest_id}}"></span>
                         </div>
 
                         <div class="question-col col-lg-4 col-md-4 col-sm-4 col-xs-4">
@@ -210,7 +218,7 @@
                                 <div class="dropdown-menu" role="menu" aria-labelledby="dLabel">
                                     {% for a in questions %}
                                     <a href="#" class="mylist-item quest-item"
-                                       name="{{a.text.text}}" id="{{a.id}}">
+                                        id="{{a.id}}"> <!--name="{{a.text.text}}"-->
                                         {%if a.responded == 'Correct'%}
                                             <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green"></span>
                                         {%elif a.responded == 'Incorrect'%}

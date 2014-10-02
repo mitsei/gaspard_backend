@@ -2,42 +2,72 @@
  * Created by anna on 8/4/14.
  */
 var selectedAssessment = null;
-var selectedBankItems=[];
+var selectedBankItems = [];
+var wait=false;
 
 $(document).ready(function () {
+    $('#btn-submit-grade').click(function(){
+        console.log("Submit Grade");
+        $.ajax({
+            url:'submit_grade',
+            type:'POST',
+            success: function(response){
+                console.log(response);
 
-    $(".panel-title").click(function(){
+            }
+        });
+    });
+    $('#submit-grade-text').hide();
 
-        var id=$(this).attr('id');
+    $('.grade').mouseenter(function(){
+        if($('#submit-grade-text').is(":visible")){ return;}
+        $('#submit-grade-text').show();
+//        setTimeout(function(){
+//
+//
+//        },2000);
+    });
+    $('.grade').mouseleave(function(){
+         $('#submit-grade-text').hide();
+    });
+
+    $('#unityPlayer').focus();
+    $('#unityPlayer').focus(function(){
+        console.log("focused");
+        $(this).css('border',"1px solid red");
+    });
+
+    $(".panel-title").click(function () {
+
+        var id = $(this).attr('id');
         console.log(id);
-        var types={items_type1:"#collapseOne", items_type2: "#collapseTwo",items_type3:"#collapseThree", items_type4:"#collapseFour"};
-        var spanElement=$(this).find('span');
-           console.log(spanElement);
+        var types = {items_type1: "#collapseOne", items_type2: "#collapseTwo", items_type3: "#collapseThree", items_type4: "#collapseFour"};
+        var spanElement = $(this).find('span');
+        console.log(spanElement);
 
-       if($(types[id]).is(':hidden')){
-           console.log("Collapse one is hidden");
-           $(types[id]).collapse('show');
+        if ($(types[id]).is(':hidden')) {
+            console.log("Collapse one is hidden");
+            $(types[id]).collapse('show');
 
-           $(spanElement).removeClass("glyphicon-collapse-down");
-           $(spanElement).addClass("glyphicon-collapse-up");
+            $(spanElement).removeClass("glyphicon-collapse-down");
+            $(spanElement).addClass("glyphicon-collapse-up");
 
 
-       }else{
-           console.log("Collapse one is visible");
-           $(types[id]).collapse('hide');
-           $(spanElement).removeClass("glyphicon-collapse-up");
-           $(spanElement).addClass("glyphicon-collapse-down");
-       }
+        } else {
+            console.log("Collapse one is visible");
+            $(types[id]).collapse('hide');
+            $(spanElement).removeClass("glyphicon-collapse-up");
+            $(spanElement).addClass("glyphicon-collapse-down");
+        }
         return false;
     });
 
     $('#btn-submit-new-order').click(function () {
         /*Want to check if there are any items in the assessment*/
 
-        var sub_id=selectedAssessment.attr('id');
+        var sub_id = selectedAssessment.attr('id');
         var idsArray = $('#reorder-items').sortable("toArray");
         console.log(idsArray);
-
 
 
         $.ajax({
@@ -91,22 +121,29 @@ $(document).ready(function () {
     $(".submit-answer").click(function () {
         u.getUnity().SendMessage("Question", "RequestRespone", "");
     });
-    $('#btn-home').click(function(){
+    $('#btn-home').click(function () {
 
     });
 
 
     /* Handle the selection of the assessment */
     $('.assess-item').click(function () {
-        clickAssessment($(this));
+
+        if(wait==false){
+            wait=true;
+            console.log('waiting');
+            clickAssessment($(this));
+
+        }
+
         return false;
     });
 
     /* Delete an assessment */
 
     $('#btn-del-assess').click(function () {
-        if(selectedAssessment!=null) {
-            var sub_id=selectedAssessment.attr('id');
+        if (selectedAssessment != null) {
+            var sub_id = selectedAssessment.attr('id');
             unselectThisAssessment();
 
             $.ajax({
@@ -143,25 +180,25 @@ $(document).ready(function () {
         }
 
     });
-    $('.bank-item').click(function(){
+    $('.bank-item').click(function () {
         clickBankItem($(this));
         return false;
     });
-     /**
+    /**
      * Click on bank item                           //change
      */
 
-     /**
-      * Plus button -> show modal, ask for name
+    /**
+     * Plus button -> show modal, ask for name
      */
 
 
-      $("#btn-new-assess").click(function () {
-          unselectThisAssessment();
+    $("#btn-new-assess").click(function () {
+        unselectThisAssessment();
 //          if (selectedBankItems.length > 0) {
-              $("#assess-name").val('');
-               $('#assess-name').focus();
-              $('#modal-create-assessment').modal('show');
+        $("#assess-name").val('');
+        $('#assess-name').focus();
+        $('#modal-create-assessment').modal('show');
 //          }else{
 //              //show modal : Please select bank items to make an assessment
 //              $('#modal-select-bank-items').modal('show');
@@ -174,16 +211,16 @@ $(document).ready(function () {
      *  check if entered name is not empty
      */
 
-    $('#btn-create').click(function() {
+    $('#btn-create').click(function () {
         createNewAssessment();
 
 
     });
 
 
-    $('#assess-name').keyup(function(e){
+    $('#assess-name').keyup(function (e) {
         var key = e.which;
-        if(key==13) {
+        if (key == 13) {
             $('#btn-create').click();
         }
     });
@@ -193,8 +230,9 @@ $(document).ready(function () {
         var sub_id = findSelectedAssess();
 
         //check if any selected
-        if(selectedAssessment!= null) {
-            //check if assessment is empty or not
+        if (selectedAssessment != null) {
+
+
             console.log(sub_id);
             if (sub_id != null) {
                 $.ajax({
@@ -202,54 +240,69 @@ $(document).ready(function () {
                     type: 'POST',
                     data: {'sub_id': sub_id},
                     success: function (response) {
-                        console.log(response[0]);
+                        console.log(response);
+                        if (response['data']) {
+                            console.log(response['data']);
+                            var str = "offering_id=" + response['data'][0];
+                            $('#display-offering-id').html(str);
+                            str = "bank_id=" + response['data'][1];
+                            $('#display-bank-id').html(str);
 
-                        var str="offering_id="+ response[0];
-                        $('#display-offering-id').html(str);
-                        str="bank_id="+response[1];
-                        $('#display-bank-id').html(str);
 
+//                            str = "offering_id=" + response['data'][0] + '/n' + "bank_id=" + response[1];
+//                            $('#btn-copy-offering').attr('value', str).focus();
 
+                            $('#modal-offering-id').modal('show');
+//                            selectText('display-bank-id');
+                        } else if (response['detail']) {
+                            console.log(response);
+                            $('#help-title').html("Create offering");
+                            $('#detail-div').html(response['detail']);
+                            $('#help-text').html("Drag items from the bank into selected assessment area.");
+                            $('#modal-display-detail').modal('show');
+                        }
 
-                        str="offering_id="+ response[0]+'/n'+"bank_id="+response[1];
-                         $('#btn-copy-offering').attr('value',str).focus();
-
-                        $('#modal-offering-id').modal('show');
-                        selectText('display-bank-id');
 
                     },
                     statusCodes: {
-                        200: function(){},
+                        200: function () {
+                        },
                         500: function (response) {
                             console.log(response);
 
-                }
-            }
+                        }
+                    }
                 });
             }
+        } else {
+            $('#help-title').html("Create offering for selected assessment");
+            $('#help-text').html("No assessment is selected.");
+            $('#modal-display-detail').modal('show');
+
         }
 
     });
     function selectText(element) {
-    var doc = document;
-    var text = doc.getElementById(element);
+        var doc = document;
+        var text = doc.getElementById(element);
 
-    if (doc.body.createTextRange) { // ms
-        var range = doc.body.createTextRange();
-        range.moveToElementText(text);
-        range.select();
-    } else if (window.getSelection) { // moz, opera, webkit
-        var selection = window.getSelection();
-        var range = doc.createRange();
-        range.selectNodeContents(text);
-        selection.removeAllRanges();
-        selection.addRange(range);
+        if (doc.body.createTextRange) { // ms
+            var range = doc.body.createTextRange();
+            range.moveToElementText(text);
+            range.select();
+        } else if (window.getSelection) { // moz, opera, webkit
+            var selection = window.getSelection();
+            var range = doc.createRange();
+            range.selectNodeContents(text);
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
     }
-}
-    $('#btn-copy-offering').click(function(){
-        var copied= $(this).attr('value');
+
+    $('#btn-copy-offering').click(function () {
+        var copied = $(this).attr('value');
         console.log(copied);
-       // window.clipboardData.setData("Text", copied);
+        // window.clipboardData.setData("Text", copied);
     });
 
     /**
@@ -365,8 +418,8 @@ function isInAssessItems(name) {
         console.log("Printing child nodes ");
         console.log(items);
         for (var i = 0; i < items.length; i++) {
-            console.log(hasclass(items[i],'item-in-assess'));
-            if(hasclass(items[i],'item-in-assess')) {
+            console.log(hasclass(items[i], 'item-in-assess'));
+            if (hasclass(items[i], 'item-in-assess')) {
                 console.log(items[i].childNodes[0].innerText);
                 console.log(name);
                 if (name === items[i].childNodes[0].innerText) {
@@ -411,37 +464,37 @@ function findSelectedAssess() {
 function hasclass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
-function clickBankItem(obj){
-         console.log("clicked on bank item");
-         var id=$(obj).find('a').attr('value');
-        if($(obj).hasClass('selected-bank-item')){
+function clickBankItem(obj) {
+    console.log("clicked on bank item");
+    var id = $(obj).find('a').attr('value');
+    if ($(obj).hasClass('selected-bank-item')) {
 
-            console.log("unselecting bank item");
+        console.log("unselecting bank item");
 
-            $(obj).removeClass('selected-bank-item');
-            var i=selectedBankItems.indexOf(id);
-            if(i!=-1){
+        $(obj).removeClass('selected-bank-item');
+        var i = selectedBankItems.indexOf(id);
+        if (i != -1) {
 
-                selectedBankItems.splice(i,1);
-            }
-
-        }else{
-            console.log("selecting new bank item");
-            $(obj).addClass('selected-bank-item');
-
-            selectedBankItems.push(id);
+            selectedBankItems.splice(i, 1);
         }
+
+    } else {
+        console.log("selecting new bank item");
+        $(obj).addClass('selected-bank-item');
+
+        selectedBankItems.push(id);
     }
-function unselectAllBankItems(){
-    $(".bank-item").each(function(i,obj){
-         console.log("unselecting bank item");
-        if($(obj).hasClass('selected-bank-item')){
+}
+function unselectAllBankItems() {
+    $(".bank-item").each(function (i, obj) {
+        console.log("unselecting bank item");
+        if ($(obj).hasClass('selected-bank-item')) {
 
             $(obj).removeClass('selected-bank-item');
 
 
         }
-         selectedBankItems=[];
+        selectedBankItems = [];
 
     });
 }
@@ -486,7 +539,7 @@ function clickAssessment(obj) {
         $('.bank-item').draggable("option", "helper", "clone");
         $('.bank-item').on("dragstart", function (event, ui) {
 
-            if(!$('.bank-item').hasClass("ui-draggable-disabled")){
+            if (!$('.bank-item').hasClass("ui-draggable-disabled")) {
 //                if(ui.helper.hasClass("mylist-item-div-clone"))
                 ui.helper.addClass("mylist-item-div-clone");
                 ui.helper.width($("#bank-items-name").width());
@@ -496,6 +549,7 @@ function clickAssessment(obj) {
 
         });
     }
+    console.log("Exiting clickAssessment")
 }
 
 
@@ -508,7 +562,7 @@ function clickAssessment(obj) {
 function requestItems(obj) {
     console.log("Request Items");
     var sub_id = $(obj).attr('id');
-    console.log("sub_id "+sub_id);
+    console.log("sub_id " + sub_id);
     console.log(obj);
 
 
@@ -520,16 +574,16 @@ function requestItems(obj) {
             if ('data' in response) {
                 //console.log('was found');
                 var str = "";
-                console.log("Number of items: "+ response['data'].length);
+                console.log("Number of items: " + response['data'].length);
 
 
                 removeHeader('assess-items-name');
                 $('#assess-items').html('');
-                    console.log($(obj).find('div').text().trim() );
-                    $('#assess-box-droppable').prepend('<div class="mylist-header " id="assess-items-name">' +
-                        '<div class="mylist-item-text">'+getName(obj) +"</div>"+
-                        '<button class="manage-assess-btn btn" id="btn-reorder-items" onclick="showModalReorderItems()">' +
-                        '<span class="glyphicon glyphicon-sort" ></span></button></div>');
+                console.log($(obj).find('div').text().trim());
+                $('#assess-box-droppable').prepend('<div class="mylist-header " id="assess-items-name">' +
+                    '<div class="mylist-item-text">' + getName(obj) + "</div>" +
+                    '<button class="manage-assess-btn btn" id="btn-reorder-items" onclick="showModalReorderItems()">' +
+                    '<span class="glyphicon glyphicon-sort" ></span></button></div>');
 
 
                 if (response['data'].length > 0) { //if there are items in assessment
@@ -542,7 +596,7 @@ function requestItems(obj) {
                     $('#assess-items').addClass('mylist').html(str);
 
 
-                    $('.item-in-assess').click(function(){
+                    $('.item-in-assess').click(function () {
                         return false;
                     });
 
@@ -555,15 +609,15 @@ function requestItems(obj) {
 
                     });
 //                    $('#assess-items').sortable();
-                }else{
+                } else {
 
                 }
                 $("#assess-items").append('<div class="mylist-item-div"><a href="#" class="assess-item-placeholder">-Drop items here-</a></div>');
 
                 if ($("#assess-box-droppable").is(":hidden")) {
-                        $('#assess-box-droppable').slideDown("slow").delay(800);
+                    $('#assess-box-droppable').slideDown("slow").delay(800);
                 }
-                $('.assess-item-placeholder').click(function(){
+                $('.assess-item-placeholder').click(function () {
                     return false;
                 });
 
@@ -578,14 +632,17 @@ function requestItems(obj) {
         error: function (xhr) {
             //Do Something to handle error
         }
+    }).done(function(){
+        wait=false;
+        console.log('Exiting RequestItems');
     });
 
 }
-function showModalReorderItems(){
-   // var obj=selectedAssessment;
+function showModalReorderItems() {
+    // var obj=selectedAssessment;
 
     var sub_id = $(selectedAssessment).attr('id');
-    console.log("sub_id "+sub_id);
+    console.log("sub_id " + sub_id);
 
     $.ajax({
         url: 'get_items',
@@ -601,12 +658,12 @@ function showModalReorderItems(){
                         str += buildListItem(value['displayName']['text'], value['id']);
                         console.log(value['id']);
                     });
-                   // console.log();
-                    $('#reorder-items-div').prepend('<p class="mylist-header" id="assess-name-reorder" value="'+getName(selectedAssessment)+'">' +
-                        getName(selectedAssessment)+'<span class="glyphicon glyphicon-edit" style="float:right;"></span>' + '</p>');
+                    // console.log();
+                    $('#reorder-items-div').prepend('<p class="mylist-header" id="assess-name-reorder" value="' + getName(selectedAssessment) + '">' +
+                        getName(selectedAssessment) + '<span class="glyphicon glyphicon-edit" style="float:right;"></span>' + '</p>');
                     $('#reorder-items').addClass('mylist').html(str);
                     $("#reorder-items").sortable();
-                    $("#assess-name-reorder").click(function(){
+                    $("#assess-name-reorder").click(function () {
                         clickAssessmentName($(this));
                     });
 
@@ -619,73 +676,73 @@ function showModalReorderItems(){
 
 
 }
-function getName(obj){
+function getName(obj) {
     return $(obj).find('div').text().trim();
 }
-function createNewAssessment(){
-         var name= $("#assess-name").val();
-        console.log("Name of the new assessment");
-        console.log(name);
+function createNewAssessment() {
+    var name = $("#assess-name").val();
+    console.log("Name of the new assessment");
+    console.log(name);
 
 
-        if(name.length>0) {
-          //  if (selectedBankItems.length > 0) {
-                $.ajax({
-                    url: "create_assessment",
-                    type: 'POST',
-                    data: {'selected': selectedBankItems, 'name': name},
-                    success: function (response) {
-                        console.log(response);
-                        updateAssessmentList();
-                        unselectAllBankItems();
-                    }
-                });
+    if (name.length > 0) {
+        //  if (selectedBankItems.length > 0) {
+        $.ajax({
+            url: "create_assessment",
+            type: 'POST',
+            data: {'selected': selectedBankItems, 'name': name},
+            success: function (response) {
+                console.log(response);
+                updateAssessmentList();
+                unselectAllBankItems();
+            }
+        });
 
 //            } else {
 //                console.log('No bank items are selected');
 //            }
-        }else{
-            console.log("the name is empty");
-            //$("#modal-create-assessment").modal('show');
-        }
-
+    } else {
+        console.log("the name is empty");
+        //$("#modal-create-assessment").modal('show');
     }
 
-function clickAssessmentName(obj){
+}
+
+function clickAssessmentName(obj) {
     console.log($(obj));
     var inputElement;
 
     /*
-    if input is active
-        want to save the input
+     if input is active
+     want to save the input
      */
-    if($(obj).has('input').length) {
-        inputElement=document.getElementById("inpt-change-assess-name");
+    if ($(obj).has('input').length) {
+        inputElement = document.getElementById("inpt-change-assess-name");
         console.log(inputElement.value);
-        var assessName=$(obj).attr('value');
-        var newName=inputElement.value;
+        var assessName = $(obj).attr('value');
+        var newName = inputElement.value;
 
-        if(newName!=null){
-            newName=newName.trim();
-            if(newName.length>0){
-                assessName=newName;
+        if (newName != null) {
+            newName = newName.trim();
+            if (newName.length > 0) {
+                assessName = newName;
             }
         }
         $(obj).html('');
         $(obj).append(assessName).attr('value', assessName);
 
-    }else{
+    } else {
         /*
-        Want to add input element
-            display old name as a placeholder
+         Want to add input element
+         display old name as a placeholder
          */
 
         $(obj).html('');
         console.log($(obj).attr('value'));
         $(obj).append('<input type="text" id="inpt-change-assess-name">');
-        inputElement=document.getElementById("inpt-change-assess-name");
-        inputElement.setAttribute('placeholder',$(obj).attr('value'));
-        $('#inpt-change-assess-name').click(function(){
+        inputElement = document.getElementById("inpt-change-assess-name");
+        inputElement.setAttribute('placeholder', $(obj).attr('value'));
+        $('#inpt-change-assess-name').click(function () {
             return false;
         });
 
@@ -695,16 +752,16 @@ function clickAssessmentName(obj){
 
 }
 
-function removeHeader(idName){
-    var header=document.getElementById(idName);
-                    if(header!=null) {
-                        header.remove();
-                    }
+function removeHeader(idName) {
+    var header = document.getElementById(idName);
+    if (header != null) {
+        header.remove();
+    }
 }
 
 //May want to change value of a and store the id in item-in-assess
 function buildListItem(value, id) {
-    return  '<div class="mylist-item-div item-in-assess" id="'+id+'">' +
+    return  '<div class="mylist-item-div item-in-assess" id="' + id + '">' +
         '<a href="#" class="mylist-item" value="' + id + '">' + value + "</a></div>";
 
 
@@ -716,7 +773,7 @@ function buildListItem(value, id) {
 
 function selectAssessment(obj) {
 
-     selectedAssessment = obj;
+    selectedAssessment = obj;
     $(obj).addClass('selected').append('<span class="glyphicon glyphicon-chevron-right" id="select-badge" style="position:absolute; right:10px;top:25%;"></span>');
 
 }
@@ -725,12 +782,11 @@ function selectAssessment(obj) {
  Return true if there is one selected
  */
 function isAnySelected() {
-    if(selectedAssessment==null){
+    if (selectedAssessment == null) {
         console.log("isAnySelected returned false");
         return false;
     }
     return true;
-
 
 
 }
@@ -740,7 +796,7 @@ function isAnySelected() {
 
  */
 function unselectThisAssessment(obj) {
-    if(selectedAssessment!=null) {
+    if (selectedAssessment != null) {
         $(selectedAssessment).removeClass('selected');
         console.log("Remove the select-badge");
         $(selectedAssessment).children('#select-badge').remove();
@@ -750,13 +806,13 @@ function unselectThisAssessment(obj) {
 
 }
 
-function removeAssessItems(){
+function removeAssessItems() {
     console.log("removing the header");
-    if(!$("#assess-box-droppable").is(":hidden")){
+    if (!$("#assess-box-droppable").is(":hidden")) {
         $('#assess-box-droppable').hide();
 
     }
- //  removeHeader('assess-items-name');
+    //  removeHeader('assess-items-name');
 //    var itemsDiv = document.getElementById("assess-items");
 //    if (itemsDiv != null) {
 //        itemsDiv.innerHTML = "";
@@ -782,7 +838,7 @@ function updateAssessmentList() {
             });
             console.log(text);
             $('#assess-list').html(text);
-            selectedAssessment=null;
+            selectedAssessment = null;
             $('.assess-item').click(function () {
                 clickAssessment($(this));
                 return false;
@@ -799,22 +855,22 @@ function updateAssessmentList() {
  * displays the problem
  * @param obj is the quest-item clicked on
  */
-function getProblem(obj){
-    console.log($(obj).text());
-            $.ajax({
-                url:'get_question',
-                type:'POST',
-//                $(obj).attr('value')
-                data:{data:[ $(obj).attr('name'), $(obj).text(), $(obj).attr('id')]},//send the file.manip
-                success: function(data){
-                    console.log(data);
-                    //window.location.href = response.redirect;
-                    if(data['redirect']) {
-                         window.location = data['redirectURL'];
-                     }
-                }
-            });
+function getProblem(obj) {
+    console.log($(obj).attr('id'));
+    $.ajax({
+        url: 'get_question',
+        type: 'POST',
+//                $(obj).attr('value'),$(obj).attr('name'), $(obj).text(),
+        data: {data: [  $(obj).attr('id')]},//send the file.manip
+        success: function (data) {
+            console.log(data);
+            //window.location.href = response.redirect;
+            if (data['redirect']) {
+                window.location = data['redirectURL'];
+            }
         }
+    });
+}
 
 
 

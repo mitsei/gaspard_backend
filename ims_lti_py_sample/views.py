@@ -120,6 +120,7 @@ def student(request):
             student_req.url + bank_id + "/assessmentsoffered/" + offering_id + "/assessmentstaken/")  # /assessmentstaken/
         # print resp
 
+
         if 'id' in resp:
             taken_id = resp['id']
             p = Post(key="taken_id", value=taken_id)
@@ -127,10 +128,24 @@ def student(request):
             print "Got Taken Id"
             print taken_id
 
+
             questions = getQuestions(bank_id, taken_id)
+            grade = int(getOverallGrade(bank_id,taken_id)*100)
+
+            #Want to get name of the assessment, but there is not name in the details
+            '''
+            Get details of an assessment taken
+            url: assessment/banks/<bank_id>/assessmentstaken/<taken_id>/
+            type: "GET"
+            '''
+            print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/"
+            # resp2 = student_req.post(
+            #     student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/")
+            #End
+
 
             return render_to_response("ims_lti_py_sample/student.html",
-                                          RequestContext(request, {'userName': name, 'questions': questions}))
+                                          RequestContext(request, {'userName': name, 'questions': questions, 'grade':grade}))
 
         else:
             return render_to_response(("ims_lti_py_sample/student.html"),
@@ -156,9 +171,32 @@ def student_home(request):
         name = params["lis_person_name_given"]
 
         questions = getQuestions(bank_id, taken_id)
+        grade = int(getOverallGrade(bank_id,taken_id)*100)
 
         return render_to_response("ims_lti_py_sample/student.html",
-                                      RequestContext(request, {'userName': name, 'questions': questions}))
+                                      RequestContext(request, {'userName': name, 'questions': questions,'grade':grade}))
+
+    except KeyError, e:
+        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+
+@csrf_exempt
+def submit_grade(request):
+    print "Sumbit Grade"
+    try:
+        '''
+        get bank id and offering id
+        request questions for this assessment
+        '''
+        params = {}
+        for g in Post.objects.all():
+            params[g.key] = g.value
+        bank_id = params['custom_bank_id']
+        taken_id = params['taken_id']
+        name = params["lis_person_name_given"]
+
+        ans=submitGrade(bank_id,taken_id,params)
+
+        return HttpResponse(json.dumps(ans), content_type='application/json')
 
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
@@ -173,7 +211,9 @@ def getQuestions(bank_id, taken_id):
     '''
     Get questions from this assessment
     assessment/banks/<bank_id>/assessmentstaken/<taken_id>/questions/
+
     '''
+    print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/"
     resp1 = student_req.get(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/")
     resp1 = resp1.json()
     questions = resp1['data']  # a list of questions
@@ -212,11 +252,11 @@ def get_question(request):
     print "Size of data " + str(len(data))
     print "selected question"
 
-    question = data[0]
-    question_name = data[1].strip()
-    question_id = data[2]
-    print question  ## item object
-    print question_name
+    # question = data[0]
+    # question_name = data[0].strip()
+    question_id = data[0]
+    # print question  ## item object
+    # print question_name
     print question_id
 
     #make sure there isn't one in the database already
@@ -224,31 +264,12 @@ def get_question(request):
     Post.objects.filter(key="question").delete()
     Post.objects.filter(key="question_id").delete()
 
-    p1 = Post(key="question_name", value=question_name)
-    p2 = Post(key="question", value=question)
+    # p1 = Post(key="question_name", value=question_name)
+    # p2 = Post(key="question", value=question)
     p3 = Post(key="question_id", value=question_id)
-    p1.save()
-    p2.save()
+    # p1.save()
+    # p2.save()
     p3.save()
-
-    ########################################
-    #Testing if key is unique
-    #########################################
-    # print "Testing Post for duplicates"
-    # params = {}
-    #
-    # for g in Post.objects.all():
-    #     params[g.key]= g.value
-    #     #print str(g.key) +"      "+ str(g.value)
-
-    ##########################################
-    #end of testing
-
-
-    # return render_to_response("ims_lti_py_sample/question.html",
-    #                                           RequestContext(request,{'userName':"Hannah"}))
-    # except KeyError, e:
-    #     return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
     question = {'success': True, 'redirect': True, 'redirectURL': "display_question"}  #d_question  display_question
     return HttpResponse(json.dumps(question), content_type='application/json')
@@ -264,19 +285,22 @@ def display_question(request):
             params[g.key] = g.value
 
 
-        question = "No Description"
+        # question = "No Description"
 
-        q_name = params['question_name']
-        question_id = params['question_id']
-        if len(params['question']) > 0:
-            question = params['question']
-        print q_name
+        # q_name = params['question_name']
+
+        # if len(params['question']) > 0:
+        #     question = params['question']
+        # print q_name
 
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
         student_req = AssessmentRequests('taaccct_student')
 
         questions = getQuestions(bank_id, taken_id)
+
+        question_id = params['question_id']
+
 
         '''
         Get information about the question
@@ -291,6 +315,8 @@ def display_question(request):
         static_folder = settings.STATIC_ROOT
         if static_folder == '':
             static_folder = 'static/'
+
+        q_name = resp2.json()['displayName']['text']
         '''
         Writing the manip file
         '''
@@ -305,13 +331,30 @@ def display_question(request):
         '''
         question_record_type = resp2.json()['recordTypeIds'][0]
         question_type = resp2.json()['genusTypeId']
+        question = resp2.json()['text']['text']
+
+        next_quest_id = "home"
+        prev_quest_id = "home"
+        for i, a in enumerate(questions):
+            if a['id'] == question_id:
+                if i <len(questions)-1:
+                    next_quest_id = questions[i + 1]['id']
+                if i!=0:
+                    prev_quest_id = questions[i-1]['id']
+
+
+        # next_quest_id = getNextQuestionId('next', questions, question_id)
+        # prev_quest_id = getNextQuestionId('prev', questions, question_id)
+
 
         if "label-ortho-faces" in question_record_type:
 
             return render_to_response("ims_lti_py_sample/unity.html", RequestContext(request,
                                                      {'question_name': q_name, 'question': question,
                                                       'questions': questions,
-                                                      'question_type': question_type}))
+                                                      'question_type': question_type,
+                                                      'next_quest_id': next_quest_id,
+                                                      'prev_quest_id': prev_quest_id }))
         else:
             if "choose-viewset" in question_type:
                 list_choices = resp2.json()['choices']
@@ -335,7 +378,9 @@ def display_question(request):
                                           RequestContext(request,
                                                          {'question_name': q_name, 'question': question,
                                                           'questions': questions,
-                                                          'question_type': question_type, "choices": list_choices}))
+                                                          'question_type': question_type, "choices": list_choices,
+                                                          'next_quest_id': next_quest_id,
+                                                          'prev_quest_id': prev_quest_id }))
             else:
                 return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
@@ -344,6 +389,22 @@ def display_question(request):
 
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))  # # Testin unity web player
+
+
+def getNextQuestionId(next,questions,question_id):
+    new_id = ''
+    for i, a in enumerate(questions):
+        if a['id'] == question_id:
+            if 'next' in next:
+                new_id = questions[i + 1]['id']
+            else:
+                new_id = questions[i-1]['id']
+
+    return new_id
+
+
+
+
 
 
 @csrf_exempt
@@ -368,7 +429,8 @@ def submit_answer(request):
     print "Got answer back"
     print resp
     if readyToSubmit():
-        submitGrade(bank_id, taken_id, params)
+        resp['overall_grade'] = submitGrade(bank_id, taken_id, params)
+
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
@@ -684,7 +746,7 @@ def get_offering_id(request):
         print "offering id"
         print eq4['id']
 
-        return HttpResponse(json.dumps([eq4['id'], bank_id]), content_type='application/json')
+        return HttpResponse(json.dumps({'data': [eq4['id'], bank_id]}), content_type='application/json')
     else:
         print eq4
         return HttpResponse(json.dumps(eq4), content_type='application/json')
@@ -992,11 +1054,10 @@ def deleteOfferings(bank_id, sub_id):
         print r1
         return False
 
-
-def submitGrade(bank_id, taken_id, params):
-
+def getOverallGrade(bank_id, taken_id):
     questions = getQuestions(bank_id, taken_id)
     num_questions = len(questions)
+    grade=0
     if num_questions > 0:
         print "Num of questions "+str(num_questions)
         count_correct_ans = 0
@@ -1004,13 +1065,20 @@ def submitGrade(bank_id, taken_id, params):
             if a['responded'] == 'Correct':
                 count_correct_ans += 1
 
-        consumer_key = settings.CONSUMER_KEY
-        secret = settings.LTI_SECRET
-        print consumer_key
-        print secret
-        tool = DjangoToolProvider(consumer_key, secret, params)
-        post_result = tool.post_replace_result(count_correct_ans/float(num_questions))
-        print post_result.is_success()
+        grade=count_correct_ans/float(num_questions)
+
+    return grade
+
+def submitGrade(bank_id, taken_id, params):
+
+    grade=getOverallGrade(bank_id,taken_id)
+    consumer_key = settings.CONSUMER_KEY
+    secret = settings.LTI_SECRET
+    print consumer_key
+    print secret
+    tool = DjangoToolProvider(consumer_key, secret, params)
+    post_result = tool.post_replace_result(grade)
+    print post_result.is_success()
 
 
 def readyToSubmit():
