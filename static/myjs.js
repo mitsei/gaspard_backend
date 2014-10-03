@@ -19,7 +19,7 @@ $(document).ready(function () {
     });
     $('#submit-grade-text').hide();
 
-    $('.grade').mouseenter(function(){
+    $('.upload-grade').mouseenter(function(){
         if($('#submit-grade-text').is(":visible")){ return;}
         $('#submit-grade-text').show();
 //        setTimeout(function(){
@@ -27,7 +27,7 @@ $(document).ready(function () {
 //
 //        },2000);
     });
-    $('.grade').mouseleave(function(){
+    $('.upload-grade').mouseleave(function(){
          $('#submit-grade-text').hide();
     });
 

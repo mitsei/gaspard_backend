@@ -130,7 +130,7 @@ def student(request):
 
 
             questions = getQuestions(bank_id, taken_id)
-            grade = int(getOverallGrade(bank_id,taken_id)*100)
+            grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
 
             #Want to get name of the assessment, but there is not name in the details
             '''
@@ -171,7 +171,7 @@ def student_home(request):
         name = params["lis_person_name_given"]
 
         questions = getQuestions(bank_id, taken_id)
-        grade = int(getOverallGrade(bank_id,taken_id)*100)
+        grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
 
         return render_to_response("ims_lti_py_sample/student.html",
                                       RequestContext(request, {'userName': name, 'questions': questions,'grade':grade}))
