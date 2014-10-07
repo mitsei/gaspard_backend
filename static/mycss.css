@@ -1,6 +1,9 @@
 body{
     min-width: 1210px;
 }
+@media (min-width: 1200px) {
+
+}
 .wrapper {
 			position:absolute;
 			top:50%;
@@ -61,60 +64,21 @@ Collapse
     /*border-color:#4D8496;*/
     border:0;
 }
-.container-fluid{
-    min-width:1200px;
-}
-.container {
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
-}
-@media (min-width: 790px) {
-  .container {
-    width: 1190px;
+/*.container-fluid{*/
+    /*min-width:1200px;*/
+/*}*/
 
-  }
-    .unity-content-multichoice{
-        width:70%;
-    }
-}
 @media (min-width: 1190px) {
   .container {
     width: 1190px;
   }
 }
-@media (min-width: 1290px) {
-  .container {
-    width: 1290px;
-
-
-  }
-}
-@media (min-width: 1390px) {
-  .container {
-    width: 1390px;
-
-  }
-}
-@media (min-width: 1490px) {
-  .container {
-    width: 1490px;
-  }
-}
-@media (min-width: 1590px) {
-  .container {
-    width: 1590px;
-
-  }
-
-}
-.container-fluid {
-  padding-right: 15px;
-  padding-left: 15px;
-  margin-right: auto;
-  margin-left: auto;
-}
+/*.container-fluid {*/
+  /*padding-right: 15px;*/
+  /*padding-left: 15px;*/
+  /*margin-right: auto;*/
+  /*margin-left: auto;*/
+/*}*/
 
 .main-header{
     background : #4D8496;

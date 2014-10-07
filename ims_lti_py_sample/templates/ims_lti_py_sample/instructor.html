@@ -11,7 +11,12 @@
             {% load static %}
             <img class="img-home" src="{% static 'css_ui/SummaryPage/image.png' %}">
 
-            <h2 class="welcome">Welcome, {{user_name}}</h2>
+            {%if user_name == 'none' %}
+         <h2 class="welcome">Welcome!</h2>
+         {%else%}
+
+         <h2 class="welcome">Welcome, {{user_name}}!</h2>
+         {%endif%}
         </div>
         <div class="row">
             <div class="col-lg-1 col-md-1 col-sm-1"></div>

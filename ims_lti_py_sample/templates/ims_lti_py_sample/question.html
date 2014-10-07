@@ -124,9 +124,7 @@
 			function SaySomethingToUnity()
 			{   console.log("Sending message");
 
-//                 if("{{question_type}}".toLowerCase().indexOf("multi-choice-ortho") >= 0) {
-//                     u.getUnity().SendMessage("QuestionLoader", "SetViewerOnly", "true");
-//                 }
+//
                 if("{{question_type}}".toLowerCase().indexOf("define-ortho-faces")>=0){
                     console.log("Define ortho faces");
                     u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "false");

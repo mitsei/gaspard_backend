@@ -17,25 +17,29 @@ $(document).ready(function () {
             }
         });
     });
+
     $('#submit-grade-text').hide();
 
     $('.upload-grade').mouseenter(function(){
         if($('#submit-grade-text').is(":visible")){ return;}
         $('#submit-grade-text').show();
-//        setTimeout(function(){
-//
-//
-//        },2000);
     });
     $('.upload-grade').mouseleave(function(){
          $('#submit-grade-text').hide();
     });
 
-    $('#unityPlayer').focus();
-    $('#unityPlayer').focus(function(){
-        console.log("focused");
-        $(this).css('border',"1px solid red");
+
+    $('.instruction').click(function(){
+        console.log("clicked on instruction");
     });
+    $('.instruction').trigger("click");
+    $('#UnityPlayer').click();
+
+//    $('#unityPlayer').focus();
+//    $('#unityPlayer').focus(function(){
+//        console.log("focused");
+//        $(this).css('border',"1px solid red");
+//    });
 
     $(".panel-title").click(function () {
 

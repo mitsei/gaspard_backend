@@ -71,8 +71,9 @@ def index(request):
         # print str(k)+"   "+str(request.POST[k])
         #print k
     # print request.POST['lis_person_name_full']
-    print request.POST['lis_person_name_given']
-    print request.POST['lis_outcome_service_url']
+
+    # print request.POST['lis_person_name_given']
+    # print request.POST['lis_outcome_service_url']
     #url = "https://assessments-dev.mit.edu/api/v1"
 
     '''
@@ -106,7 +107,11 @@ def student(request):
             # print str(g.key) +str(g.value)
         bank_id = params['custom_bank_id']
         offering_id = params['custom_offering_id']
-        name = params["lis_person_name_given"]
+        name = 'none'
+        if 'lis_person_name_given' in params:
+            name = params["lis_person_name_given"]
+            print name
+            name = name.replace("-", "")
 
         print bank_id
         print offering_id
@@ -123,6 +128,7 @@ def student(request):
 
         if 'id' in resp:
             taken_id = resp['id']
+            Post.objects.filter(key="taken_id").delete()
             p = Post(key="taken_id", value=taken_id)
             p.save()
             print "Got Taken Id"
@@ -168,7 +174,9 @@ def student_home(request):
             params[g.key] = g.value
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
-        name = params["lis_person_name_given"]
+        name = 'none'
+        if 'lis_person_name_given' in params:
+            name = params["lis_person_name_given"]
 
         questions = getQuestions(bank_id, taken_id)
         grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
@@ -192,7 +200,6 @@ def submit_grade(request):
             params[g.key] = g.value
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
-        name = params["lis_person_name_given"]
 
         ans=submitGrade(bank_id,taken_id,params)
 
@@ -264,11 +271,9 @@ def get_question(request):
     Post.objects.filter(key="question").delete()
     Post.objects.filter(key="question_id").delete()
 
-    # p1 = Post(key="question_name", value=question_name)
-    # p2 = Post(key="question", value=question)
+
     p3 = Post(key="question_id", value=question_id)
-    # p1.save()
-    # p2.save()
+
     p3.save()
 
     question = {'success': True, 'redirect': True, 'redirectURL': "display_question"}  #d_question  display_question
@@ -574,10 +579,13 @@ def instructor(request):
                     items_type3.append(a)
                 else:
                     items_type4.append(a)
-
-            name = Post.objects.filter(key='lis_person_name_given')[0].value
-            print name
-            name = name.replace("-", "")
+            name = 'none'
+            print "counting number of keys"
+            print Post.objects.filter(key='lis_person_name_given').count()
+            if Post.objects.filter(key='lis_person_name_given').count() > 0:
+                name = Post.objects.filter(key='lis_person_name_given')[0].value
+                print name
+                name = name.replace("-", "")
             return render_to_response("ims_lti_py_sample/instructor.html",
                                       RequestContext(request,
                                                      {'user_name': name, 'assessments': assessments, 'items': items,
