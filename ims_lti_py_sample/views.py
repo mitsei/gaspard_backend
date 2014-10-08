@@ -74,21 +74,21 @@ def index(request):
 
     # print request.POST['lis_person_name_given']
     # print request.POST['lis_outcome_service_url']
-    #url = "https://assessments-dev.mit.edu/api/v1"
+    # url = "https://assessments-dev.mit.edu/api/v1"
 
     '''
     Save the url, public_key, private_key
     '''
-    #Headers(key='url',value=url).save()
-    #Headers(key='public_key',value='E5IFLfKuxNdhLKh+tLRN').save()
-    #Headers(key ='private_key',value='0/e10IAyBE1VkqtK+8PzPh2ViXVl5us1Zrj2rYQs').save()
 
     print request.POST['roles']
     if 'Instructor' in request.POST['roles']:
         return redirect('InstructorView')
+    elif 'Administrator' in request.POST['roles']:
+        return redirect('InstructorView')
+    elif "Learner" in request.POST['roles']:
+        return redirect('StudentView')
     else:
-        if "Learner" in request.POST['roles']:
-            return redirect('StudentView')
+        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
 
 @csrf_exempt
@@ -134,7 +134,6 @@ def student(request):
             print "Got Taken Id"
             print taken_id
 
-
             questions = getQuestions(bank_id, taken_id)
             grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
 
@@ -151,7 +150,7 @@ def student(request):
 
 
             return render_to_response("ims_lti_py_sample/student.html",
-                                          RequestContext(request, {'userName': name, 'questions': questions, 'grade':grade}))
+                                          RequestContext(request, {'userName': name, 'questions': questions, 'grade': grade}))
 
         else:
             return render_to_response(("ims_lti_py_sample/student.html"),
