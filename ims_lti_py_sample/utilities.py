@@ -31,6 +31,12 @@ class AssessmentRequests(object):
                 'X-Api-Key'     : self._pub_key,
                 'X-Api-Proxy'   : username
             }
+        print self._pub_key
+        print self._pri_key
+        print self._assessments_host
+        print self._service
+        print self._headers
+
 
         if 'instructor' in username:
             self._sig_headers = ['request-line','accept','date','host','x-api-proxy']
@@ -43,7 +49,7 @@ class AssessmentRequests(object):
 
             lti_headers = ['request-line','accept','date','host','x-api-proxy',
                                        'lti-user-id','lti-tool-consumer-instance-guid','lti-user-role','lti-bank']
-            params={}
+            params = {}
             for g in Post.objects.all():
                 params[g.key] = g.value
             #print params
@@ -68,9 +74,9 @@ class AssessmentRequests(object):
         now_headers['Date'] = get_now()
 
         # print self._auth
-        req = requests.post(url, data = str(data),
-                            auth=str(self._auth), headers=str(now_headers), verify=False)
-        print "status code: "+str(req.status_code)
+        req = requests.post(url, data=data,
+                            auth=self._auth, headers=now_headers, verify=False)
+        print "status code: " + str(req.status_code)
         return req.json()
 
 
@@ -79,7 +85,7 @@ class AssessmentRequests(object):
         url = urllib.unquote(url)
         now_headers = deepcopy(self._headers)
         now_headers['Date'] = get_now()
-        req = requests.get(url, auth=str(self._auth), headers=str(now_headers), verify=False)
+        req = requests.get(url, auth=self._auth, headers=now_headers, verify=False)
         #print req.text
         return req
 
