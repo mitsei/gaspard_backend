@@ -47,17 +47,21 @@ class AssessmentRequests(object):
         else:
 
 
-            lti_headers = ['request-line','accept','date','host','x-api-proxy',
-                                       'lti-user-id','lti-tool-consumer-instance-guid','lti-user-role','lti-bank']
+            lti_headers = ['request-line', 'accept', 'date', 'host', 'x-api-proxy',
+                           'lti-user-id', 'lti-tool-consumer-instance-guid', 'lti-user-role', 'lti-bank']
             params = {}
             for g in Post.objects.all():
                 params[g.key] = g.value
             #print params
-            self._headers['LTI-User-ID'] =                     params['user_id']
-            self._headers['LTI-Tool-Consumer-Instance-GUID'] = params['tool_consumer_instance_guid']
-            self._headers['LTI-User-Role'] =                   params['roles']
+            self._headers['LTI-User-ID'] =                      str( params['user_id'])
+            self._headers['LTI-Tool-Consumer-Instance-GUID'] = str(params['tool_consumer_instance_guid'])
+            self._headers['LTI-User-Role'] =                   str(params['roles'])
             self._headers['LTI-Bank'] ='assessment.Bank%3A53cec85833bb72730f66da92%40birdland.mit.edu'
 
+            print params['user_id']
+            print params['tool_consumer_instance_guid']
+            print params['roles']
+            print json.dumps(self._headers)
 
             self._auth = HTTPSignatureAuth(key_id=settings.PUBLIC_KEY,
                                      secret=settings.PRIVATE_KEY,
