@@ -115,10 +115,12 @@
 					}
 				});
                 console.log("Calling initPlugin");
-				u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}");
+        $.when(u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}")).then(function(){
+                    SaySomethingToUnity();
+                });
 
-                console.log("saying smth");
-				SaySomethingToUnity();
+
+
                 console.log("Done")
 			});
 			function SaySomethingToUnity()
