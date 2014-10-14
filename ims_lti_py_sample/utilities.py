@@ -68,8 +68,8 @@ class AssessmentRequests(object):
         now_headers['Date'] = get_now()
 
         # print self._auth
-        req = requests.post(url, data= str(data),
-                            auth=str(self._auth), headers=str(now_headers))
+        req = requests.post(url, data = str(data),
+                            auth=str(self._auth), headers=str(now_headers), verify=False)
         print "status code: "+str(req.status_code)
         return req.json()
 
@@ -79,7 +79,7 @@ class AssessmentRequests(object):
         url = urllib.unquote(url)
         now_headers = deepcopy(self._headers)
         now_headers['Date'] = get_now()
-        req = requests.get(url, auth=self._auth, headers=now_headers)
+        req = requests.get(url, auth=str(self._auth), headers=str(now_headers), verify=False)
         #print req.text
         return req
 
