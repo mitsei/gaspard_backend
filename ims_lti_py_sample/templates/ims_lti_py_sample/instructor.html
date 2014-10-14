@@ -19,35 +19,27 @@
          {%endif%}
         </div>
         <div class="row">
-            <div class="col-lg-1 col-md-1 col-sm-1"></div>
-            <div class="col-lg-3 col-md-3 col-sm-3"><p class="whitetext">Choose an assessment, drag and drop items into selected assessment</p></div>
-            <div class="col-lg-4 col-md-4 col-sm-4"></div>
-            <div class="col-lg-3 col-md-3 col-sm-3"><p class="whitetext">Choose problems from the Bank to
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"><p class="whitetext">Choose an assessment, drag and drop items into selected assessment</p></div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"></div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"><p class="whitetext">Choose problems from the Bank to
             create new assessment, click +</p></div>
-            <div class="col-lg-1 col-md-1 col-sm-1"></div>
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
         </div>
 
         <div class="row">
 
-            <div class="col-lg-1 col-md-1 col-sm-1"></div>
-
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
             <!--Assessments-->
-            <div class="col-lg-3 col-md-3 col-sm-3 col-list">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-list">
                 <div class="mylist-header">Assessments
-
-
                     <button class=" manage-assess-btn btn" id="btn-new-assess">
-                        <span class="glyphicon glyphicon-plus" style="float:right"></span>
-                        <!--some text-->
-                    </button>
-                    <button class="manage-assess-btn btn " id="btn-del-assess"><span
-                            class="glyphicon glyphicon-minus" style="float:right"></span></button>
-                    <button class="manage-assess-btn btn " id="btn-get-offering"><span
-                            class="glyphicon glyphicon-share" style="float:right;"></span></button>
+                        <span class="glyphicon glyphicon-plus" style="float:right"></span></button>
+                    <button class="manage-assess-btn btn " id="btn-del-assess">
+                        <span class="glyphicon glyphicon-minus" style="float:right"></span></button>
+                    <button class="manage-assess-btn btn " id="btn-get-offering">
+                        <span class="glyphicon glyphicon-share" style="float:right;"></span></button>
                 </div>
-
-
-
                 <div class="mylist" id="assess-list">
                     {% for a in assessments %}
                     <a href="#" class="mylist-item assess-item" id="{{a.id}}" value="{{a.display.name}}">
@@ -57,138 +49,121 @@
                     </a>
                     {% endfor %}
                 </div>
-
             </div>
-
             <!--Items in the assessment-->
-            <div class="col-lg-3 col-md-3 col-sm-3">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
                 <div id="assess-box-droppable">
-
                     <div id="assess-items">
                     </div>
                 </div>
-
             </div>
-            <div class="col-lg-1 col-md-1 col-sm-1">
-
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
             </div>
 
             <!--Items in a Bank-->
-            <div class="col-lg-3 col-md-3 col-sm-3" id="bank-box-droppable">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" id="bank-box-droppable">
                 <p class="mylist-header" id="bank-items-name">Items</p>
 
-                <!--<div class="mylist" >-->
-                    <!--{% for a in items %}-->
-                    <!--<div class="mylist-item-div bank-item">-->
-                        <!--<a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>-->
-                    <!--</div>-->
-
-                    <!--{% endfor %}-->
-                <!--</div>-->
-
-
-            <!--Type 1-->
-            <div class="panel-group" id="accordion">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <div class="panel-title" id="items_type1">
-                            <p class="bank-type" data-toggle="" data-parent="#">
-                            Match Orthographic Faces
-                                <span class="glyphicon glyphicon-collapse-down" style="float:right"></span>
-                            </p>
+                <!--Type 1-->
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title" id="items_type1">
+                                <p class="bank-type">
+                                    Match Orthographic Faces
+                                </p>
+                                <span class="glyphicon glyphicon-collapse-down glyphicon-position"></span>
+                            </div>
                         </div>
-                    </div>
-                    <div id="collapseOne" class="  panel-collapse collapse">
-                        <div class="panel-body " style="">
-                            <!-- Items-->
-                            <div class="mylist-bank-items">
-                                {% for a in items_type1 %}
-                                <div class="mylist-item-div bank-item">
-                                    <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                        <div id="collapseOne" class="  panel-collapse collapse">
+                            <div class="panel-body " style="">
+                                <!-- Items-->
+                                <div class="mylist-bank-items">
+                                    {% for a in items_type1 %}
+                                    <div class="mylist-item-div bank-item">
+                                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                    </div>
+                                    {% endfor %}
                                 </div>
 
-                                {% endfor %}
                             </div>
+                        </div>
+                    </div>
+                    <!--Type 2-->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title" id="items_type2">
+                                <p class="bank-type">
+                                    Multiple-Choice Orthographic Question
+                                    <span class="glyphicon glyphicon-collapse-down glyphicon-position"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <!--Items-->
+                                <div class="mylist">
+                                    {% for a in items_type2 %}
+                                    <div class="mylist-item-div bank-item">
+                                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                    </div>
+                                    {% endfor %}
+                                </div>
 
+                            </div>
+                        </div>
+                    </div>
+                    <!--Type 3-->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title" id="items_type3">
+                                <p class="bank-type">
+                                    Define Orthographic Faces
+                                    <span class="glyphicon glyphicon-collapse-down glyphicon-position" ></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <!--Items-->
+                                <div class="mylist">
+                                    {% for a in items_type3 %}
+                                    <div class="mylist-item-div bank-item">
+                                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                    </div>
+
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!--Type 4-->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title" id="items_type4">
+                                <p class="bank-type">
+                                    Other: Default Genus Type
+                                    <span class="glyphicon glyphicon-collapse-down glyphicon-position" style=""></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div id="collapseFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <!--Items-->
+                                <div class="mylist">
+                                    {% for a in items_type4 %}
+                                    <div class="mylist-item-div bank-item">
+                                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                    </div>
+
+                                    {% endfor %}
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
-                <!--Type 2-->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <div class="panel-title" id="items_type2">
-                            <p class="bank-type">
-                                Multiple-Choice Orthographic Question
-                                 <span class="glyphicon glyphicon-collapse-down" style="float:right"></span>
-                            </p>
-                        </div>
-                    </div>
-                    <div id="collapseTwo" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <!--Items-->
-                            <div class="mylist">
-                                {% for a in items_type2 %}
-                                <div class="mylist-item-div bank-item">
-                                    <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
-                                </div>
-
-                                {% endfor %}
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <!--Type 3-->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <div class="panel-title" id="items_type3">
-                            <p class="bank-type">
-                                Define Orthographic Faces
-                                 <span class="glyphicon glyphicon-collapse-down" style="float:right"></span>
-                            </p>
-                        </div>
-                    </div>
-                    <div id="collapseThree" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <!--Items-->
-                            <div class="mylist">
-                                {% for a in items_type3 %}
-                                <div class="mylist-item-div bank-item">
-                                    <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
-                                </div>
-
-                                {% endfor %}
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <!--Type 4-->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <div class="panel-title" id="items_type4">
-                            <p class="bank-type">
-                              Other: Default Genus Type
-                                 <span class="glyphicon glyphicon-collapse-down" style="float:right"></span>
-                            </p>
-                        </div>
-                    </div>
-                    <div id="collapseFour" class="panel-collapse collapse">
-                        <div class="panel-body">
-                            <!--Items-->
-                            <div class="mylist">
-                                {% for a in items_type4 %}
-                                <div class="mylist-item-div bank-item">
-                                    <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
-                                </div>
-
-                                {% endfor %}
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             </div>
             <div class="col-lg-1 col-md-1"></div>

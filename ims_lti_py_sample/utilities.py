@@ -68,8 +68,8 @@ class AssessmentRequests(object):
         now_headers['Date'] = get_now()
 
         # print self._auth
-        req = requests.post(url, data=data,
-                            auth=self._auth, headers=now_headers)
+        req = requests.post(url, data= str(data),
+                            auth=str(self._auth), headers=str(now_headers))
         print "status code: "+str(req.status_code)
         return req.json()
 
@@ -93,7 +93,7 @@ class AssessmentRequests(object):
     Detele does not return json object
     '''
 
-    def put(self,url,data):
+    def put(self, url, data):
         url = urllib.unquote(url)
         now_headers = deepcopy(self._headers)
         now_headers['Date'] = get_now()

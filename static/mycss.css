@@ -50,11 +50,19 @@ Collapse
  }
 .panel-title{
     cursor: pointer;
+    position:relative;
+     color:#4D8496;
+    font-size: 21px;
 
 }
+.glyphicon-position{
+    position: absolute;
+    top:8px;
+    right:0;
+}
 .bank-type{
-    color:#4D8496;
-    font-size: 21px;
+    margin-right:35px;
+
 }
 .panel-body{
     padding:0;

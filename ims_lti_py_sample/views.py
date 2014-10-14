@@ -6,6 +6,7 @@ from django.template import RequestContext
 from ims_lti_py.tool_provider import DjangoToolProvider
 
 from django.conf import settings
+from django.http import Http404
 
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
@@ -157,6 +158,7 @@ def student(request):
                                       RequestContext(request, {'userName': name, 'questions': []}))
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+        # raise Http404
 
 
 
