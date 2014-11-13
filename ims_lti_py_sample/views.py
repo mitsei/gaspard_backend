@@ -224,7 +224,7 @@ def getQuestions(bank_id, taken_id):
     print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/"
     resp1 = student_req.get(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/")
     resp1 = resp1.json()
-    questions = resp1['data']  # a list of questions
+    questions = resp1['data']['results']  # a list of questions
     for a in questions:
         print a['displayName']['text']
         '''
@@ -510,7 +510,7 @@ def instructor(request):
         url: assessment/banks
         '''
         eq = req_assess.get(req_assess.url)
-        banks = eq.json()['data']
+        banks = eq.json()['data']['results']
 
         print "Number of banks: " + str(len(banks))
         found = False
@@ -537,7 +537,7 @@ def instructor(request):
 
             eq2 = req_assess.get(req_assess.url + bank_id + "/assessments/")
 
-            assessments = eq2.json()['data']
+            assessments = eq2.json()['data']['results']
             print "Number of assessments: " + str(len(assessments))
 
             for a in assessments:
@@ -549,7 +549,7 @@ def instructor(request):
                 '''
             eq3 = req_assess.get(req_assess.url + bank_id + "/items/")
             print "Status code getting items:  " + str(eq3.status_code)
-            items = eq3.json()['data']
+            items = eq3.json()['data']['results']
             items_type1 = []
             items_type2 = []
             items_type3 = []
