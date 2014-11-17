@@ -113,8 +113,9 @@ def student(request):
         for g in Post.objects.all():
             params[g.key] = g.value
 
-        if 'tool_consumer_instance_guid' not in params:
-            params['tool_consumer_instance_guid']=get_client_ip(request)
+        # if 'tool_consumer_instance_guid' not in params:
+
+        params['tool_consumer_instance_guid'] = get_client_ip(request)
 
         student_req = AssessmentRequests('taaccct_student')
 
