@@ -23,11 +23,23 @@ def flush():
     print "Cleared CACHE"
 
 
+'''
+If the 'tool_consumer_instance_guid' LTI parameter is not passed want to get
+the IP address
+'''
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 @csrf_exempt
 def index(request):
     if settings.LTI_DEBUG:
         print "META"
-        # print request.META
+        print request.META
         print "PARAMS"
 
         flush()
@@ -101,6 +113,9 @@ def student(request):
         for g in Post.objects.all():
             params[g.key] = g.value
         student_req = AssessmentRequests('taaccct_student')
+        if 'tool_consumer_instance_guid' not in params:
+            params['tool_consumer_instance_guid']=get_client_ip(request)
+
         '''
         get bank id and offering id
         request questions for this assessment
