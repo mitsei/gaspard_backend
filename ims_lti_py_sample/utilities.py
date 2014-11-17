@@ -31,11 +31,11 @@ class AssessmentRequests(object):
                 'X-Api-Key'     : self._pub_key,
                 'X-Api-Proxy'   : username
             }
-        print self._pub_key
-        print self._pri_key
-        print self._assessments_host
-        print self._service
-        print self._headers
+        # print self._pub_key
+        # print self._pri_key
+        # print self._assessments_host
+        # print self._service
+        # print self._headers
 
 
         if 'instructor' in username:
@@ -61,7 +61,7 @@ class AssessmentRequests(object):
             print params['user_id']
             print params['tool_consumer_instance_guid']
             print params['roles']
-            print json.dumps(self._headers)
+            # print json.dumps(self._headers)
 
             self._auth = HTTPSignatureAuth(key_id=settings.PUBLIC_KEY,
                                      secret=settings.PRIVATE_KEY,
