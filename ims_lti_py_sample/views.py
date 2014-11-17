@@ -157,7 +157,7 @@ def student(request):
             return render_to_response(("ims_lti_py_sample/student.html"),
                                       RequestContext(request, {'userName': name, 'questions': []}))
     except KeyError, e:
-        return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e}))
+        return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e, 'params': params}))
     except Exception, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request, {'error': e}))
 
