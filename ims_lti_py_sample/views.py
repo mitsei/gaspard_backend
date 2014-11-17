@@ -106,7 +106,7 @@ def student(request):
         for g in Post.objects.all():
             params[g.key] = g.value
             # print str(g.key) +str(g.value)
-        bank_id = params['custom_bank_id']
+        bank_id = params['custom_bank_i']
         offering_id = params['custom_offering_id']
         name = 'none'
         if 'lis_person_name_given' in params:
@@ -157,7 +157,10 @@ def student(request):
             return render_to_response(("ims_lti_py_sample/student.html"),
                                       RequestContext(request, {'userName': name, 'questions': []}))
     except KeyError, e:
-        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+        return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e}))
+    except Exception, e:
+        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request, {'error': e}))
+
         # raise Http404
 
 
