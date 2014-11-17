@@ -95,6 +95,7 @@ def index(request):
 @csrf_exempt
 def student(request):
     print "Student View"
+    params = {}
 
     try:
         student_req = AssessmentRequests('taaccct_student')
@@ -102,7 +103,7 @@ def student(request):
         get bank id and offering id
         request questions for this assessment
         '''
-        params = {}
+        # params = {}
         for g in Post.objects.all():
             params[g.key] = g.value
             # print str(g.key) +str(g.value)
@@ -157,7 +158,8 @@ def student(request):
             return render_to_response(("ims_lti_py_sample/student.html"),
                                       RequestContext(request, {'userName': name, 'questions': []}))
     except KeyError, e:
-        return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e, 'params': params}))
+        return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e,
+                                                                                              'params': params}))
     except Exception, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request, {'error': e}))
 
