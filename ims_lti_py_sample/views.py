@@ -224,7 +224,7 @@ def getQuestions(bank_id, taken_id):
     print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/"
     resp1 = student_req.get(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/")
     resp1 = resp1.json()
-    questions = resp1['data']  # a list of questions
+    questions = resp1['data']['results']  # a list of questions
     for a in questions:
         print a['displayName']['text']
         '''
@@ -510,7 +510,7 @@ def instructor(request):
         url: assessment/banks
         '''
         eq = req_assess.get(req_assess.url)
-        banks = eq.json()['data']
+        banks = eq.json()['data']['results']
 
         print "Number of banks: " + str(len(banks))
         found = False
@@ -537,7 +537,7 @@ def instructor(request):
 
             eq2 = req_assess.get(req_assess.url + bank_id + "/assessments/")
 
-            assessments = eq2.json()['data']
+            assessments = eq2.json()['data']['results']
             print "Number of assessments: " + str(len(assessments))
 
             for a in assessments:
@@ -549,7 +549,9 @@ def instructor(request):
                 '''
             eq3 = req_assess.get(req_assess.url + bank_id + "/items/")
             print "Status code getting items:  " + str(eq3.status_code)
-            items = eq3.json()['data']
+            items = eq3.json()['data']['results']
+            count= eq3.json()['data']['count']
+            print "Number of items: " + str(count)
             items_type1 = []
             items_type2 = []
             items_type3 = []
@@ -806,10 +808,13 @@ def get_items(request):
         Get items of an assessment
         url: assessment/bank/<bank_id>/assessments/<sub_id>/items/
         type: 'GET'
-        returns: {'data':[]}
+        returns: {'data':[]}   OLD
+        returns: {'data': { count:'',results:[]}}
         '''
         resp = req_assess.get(req_assess.url + bank_id + "/assessments/" + sub_id + "/items/")
         items = resp.json()
+        if 'data' in items.keys():
+            items = resp.json()['data']['results']
         # print items
         print "Number of items: " + str(len(items))
         return HttpResponse(json.dumps(items), content_type='application/json')
@@ -930,7 +935,7 @@ def update_assessments(request):
     bank_id = Post.objects.filter(key="bank_id")[0].value
 
     eq2 = req_assess.get(req_assess.url + bank_id + "/assessments/")
-    assessments = eq2.json()['data']
+    assessments = eq2.json()['data']['results']
     # print assessments
     return HttpResponse(json.dumps(assessments), content_type='application/json')
 
