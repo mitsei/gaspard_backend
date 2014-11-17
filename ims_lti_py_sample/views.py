@@ -98,15 +98,17 @@ def student(request):
     params = {}
 
     try:
+        for g in Post.objects.all():
+            params[g.key] = g.value
         student_req = AssessmentRequests('taaccct_student')
         '''
         get bank id and offering id
         request questions for this assessment
         '''
         # params = {}
-        for g in Post.objects.all():
-            params[g.key] = g.value
-            # print str(g.key) +str(g.value)
+        # for g in Post.objects.all():
+        #     params[g.key] = g.value
+        #     # print str(g.key) +str(g.value)
         bank_id = params['custom_bank_id']
         offering_id = params['custom_offering_id']
         name = 'none'
