@@ -112,9 +112,11 @@ def student(request):
     try:
         for g in Post.objects.all():
             params[g.key] = g.value
-        student_req = AssessmentRequests('taaccct_student')
+
         if 'tool_consumer_instance_guid' not in params:
             params['tool_consumer_instance_guid']=get_client_ip(request)
+
+        student_req = AssessmentRequests('taaccct_student')
 
         '''
         get bank id and offering id
