@@ -106,7 +106,7 @@ def student(request):
         for g in Post.objects.all():
             params[g.key] = g.value
             # print str(g.key) +str(g.value)
-        bank_id = params['custom_bank_i']
+        bank_id = params['custom_bank_id']
         offering_id = params['custom_offering_id']
         name = 'none'
         if 'lis_person_name_given' in params:
