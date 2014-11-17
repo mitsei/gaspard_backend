@@ -86,7 +86,7 @@ def index(request):
         return redirect('InstructorView')
     elif 'Administrator' in request.POST['roles']:
         return redirect('InstructorView')
-    elif "Learner" in request.POST['roles']:
+    elif "Learner" or 'student' in request.POST['roles']:
         return redirect('StudentView')
     else:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
