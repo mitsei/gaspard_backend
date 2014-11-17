@@ -132,7 +132,7 @@ $(document).ready(function () {
 
     /* Handle the selection of the assessment */
     $('.assess-item').click(function () {
-
+        console.log("before wait");
         if(wait==false){
             wait=true;
             console.log('waiting');
@@ -575,10 +575,14 @@ function requestItems(obj) {
         type: 'GET',
         data: {'sub_id': sub_id},
         success: function (response) {
-            if ('data' in response) {
+            if ('detail' in response) {
+                console.log(response['detail']);
+                console.log('The assessment was not found');
+
+            }else {
                 //console.log('was found');
                 var str = "";
-                console.log("Number of items: " + response['data'].length);
+                console.log("Number of items: " + response.length);
 
 
                 removeHeader('assess-items-name');
@@ -590,8 +594,8 @@ function requestItems(obj) {
                     '<span class="glyphicon glyphicon-sort" ></span></button></div>');
 
 
-                if (response['data'].length > 0) { //if there are items in assessment
-                    $.each(response['data'], function (key, value) {
+                if (response.length > 0) { //if there are items in assessment
+                    $.each(response, function (key, value) {
 
                         str += buildListItem(value['displayName']['text'], value['id']);
                         console.log(value['id']);
@@ -625,13 +629,9 @@ function requestItems(obj) {
                     return false;
                 });
 
-            } else {
-                if ('detail' in response) {
-                    console.log(response['detail']);
-                    console.log('The assessment was not found');
-                }
-                console.log('The assessment was not found');
             }
+
+
         },
         error: function (xhr) {
             //Do Something to handle error
@@ -815,7 +815,9 @@ function removeAssessItems() {
     if (!$("#assess-box-droppable").is(":hidden")) {
         $('#assess-box-droppable').hide();
 
+
     }
+    wait=false;
     //  removeHeader('assess-items-name');
 //    var itemsDiv = document.getElementById("assess-items");
 //    if (itemsDiv != null) {
