@@ -14,6 +14,19 @@ body{
     width:250px;
     border:1px solid blue;
 }
+.glyphicon-question-sign{
+    color: white;
+}
+.glyphicon-question-sign:hover {
+
+
+}
+.popover{
+    color:#4D8496;
+}
+
+
+
 
 .header-img {
             position: absolute;
