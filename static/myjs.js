@@ -17,7 +17,23 @@ $(document).ready(function () {
             }
         });
     });
-
+//    $('help').popover();
+//    $('#help').addClass('shown');
+    $('#help-bank').popover('hide');
+    $('#help-assessment').popover('hide');
+//    $('#help').click(function(){
+//        if($('#help').hasClass('shown')){
+//            $('#help').removeClass('shown');
+////            $('#help').popover('hide');
+//        }else {
+//            $('#help').addClass('shown');
+////            $('#help').popover('show');
+//        }
+//        //$('#help').popover('toggle');
+//    });
+    $('#help').on('show.bs.popover', function () {
+        console.log("show");
+});
     $('#submit-grade-text').hide();
 
     $('.upload-grade').mouseenter(function(){
@@ -149,13 +165,23 @@ $(document).ready(function () {
         if (selectedAssessment != null) {
             var sub_id = selectedAssessment.attr('id');
             unselectThisAssessment();
+//             $("#modal-delete-assess-report .modal-body").html('');
 
             $.ajax({
                 url: 'del_assess',
                 type: 'GET',
                 data: {'sub_id': sub_id},
                 success: function (response) {
-                    console.log(response);
+                    response= JSON.parse(response);
+                    console.log('success' in response);
+                    if(response['success']) {
+                           $("#modal-delete-assess-report .modal-body").html("Assessment successfully deleted!");
+                        $("#modal-delete-assess-report").modal('show');
+                    }else{
+                         $("#modal-delete-assess-report .modal-body").html("This assessment has AssessmentTakens" +
+                            " and cannot be deleted.");
+                        $("#modal-delete-assess-report").modal('show');
+                    }
 
                     updateAssessmentList();
 
@@ -165,17 +191,15 @@ $(document).ready(function () {
                 },
                 statusCode: {
                     200: function () {
-                        $("#modal-delete-assess-report .modal-body").html("Assessment successfully deleted!");
-                        $("#modal-delete-assess-report").modal('show');
+
 
                     },
                     406: function () {
-                        $("#modal-delete-assess-report .modal-body").html("This assessment has AssessmentTakens" +
-                            "and cannot be deleted.");
-                        $("#modal-delete-assess-report").modal('show');
+
 //
                     },
                     500: function () {
+
 
                     }
 
@@ -653,11 +677,12 @@ function showModalReorderItems() {
         type: 'GET',
         data: {'sub_id': sub_id},
         success: function (response) {
-            if ('data' in response) {
+            if ('detail' in response) {
+            }else{ //if successful response is a list of items
                 var str = "";
                 removeHeader('assess-name-reorder');
-                if (response['data'].length > 0) { //if there are items in assessment
-                    $.each(response['data'], function (key, value) {
+                if (response.length > 0) { //if there are items in assessment
+                    $.each(response, function (key, value) {
 
                         str += buildListItem(value['displayName']['text'], value['id']);
                         console.log(value['id']);
