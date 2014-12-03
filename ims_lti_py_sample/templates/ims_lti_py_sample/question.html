@@ -115,9 +115,11 @@
 					}
 				});
                 console.log("Calling initPlugin");
-        $.when(u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}")).then(function(){
-                    SaySomethingToUnity();
-                });
+//          $.when(u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}")).then(function(){
+//                    SaySomethingToUnity();
+//                });
+            u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}");
+            SaySomethingToUnity();
 
 
 
