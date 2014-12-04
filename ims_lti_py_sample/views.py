@@ -173,7 +173,8 @@ def student(request):
             #     student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/")
             #End
 
-
+            if 'detail' in questions:
+                return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
             return render_to_response("ims_lti_py_sample/student.html",
                                           RequestContext(request, {'userName': name, 'questions': questions, 'grade': grade}))
 
@@ -210,6 +211,9 @@ def student_home(request):
         questions = getQuestions(bank_id, taken_id)
         grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
 
+        if 'detail' in questions:
+                return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+
         return render_to_response("ims_lti_py_sample/student.html",
                                       RequestContext(request, {'userName': name, 'questions': questions,'grade':grade}))
 
@@ -242,6 +246,7 @@ Get questions for this taken
 add status to each question
 '''
 def getQuestions(bank_id, taken_id):
+    print "Get Questions"
 
     student_req = AssessmentRequests('taaccct_student')
     '''
@@ -252,6 +257,9 @@ def getQuestions(bank_id, taken_id):
     print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/"
     resp1 = student_req.get(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/")
     resp1 = resp1.json()
+    print resp1
+    if 'detail' in resp1:
+        return resp1
     questions = resp1['data']['results']  # a list of questions
     for a in questions:
         print a['displayName']['text']
@@ -328,6 +336,8 @@ def display_question(request):
         student_req = AssessmentRequests('taaccct_student')
 
         questions = getQuestions(bank_id, taken_id)
+        if 'detail' in questions:
+                return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
         question_id = params['question_id']
 

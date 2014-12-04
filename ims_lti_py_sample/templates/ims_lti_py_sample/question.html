@@ -118,8 +118,17 @@
 //          $.when(u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}")).then(function(){
 //                    SaySomethingToUnity();
 //                });
+        u.observeProgress(function(progress){
+            console.log("Inside observe Progress");
+            console.log(progress);
+            console.log(progress['pluginStatus']);
+            if(progress['pluginStatus']=='first'){
+                SaySomethingToUnity();
+
+            }
+        });
             u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}");
-            SaySomethingToUnity();
+
 
 
 
