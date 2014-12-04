@@ -574,6 +574,7 @@ h1,h2 {
 
 }
 .quest-item{
+    z-index:100;
 
 }
 .quest-status{
@@ -601,6 +602,7 @@ overflow-wrap:break-word  ;
     background-color : #4D8496;
     color: white;
     font-size : 33px;
+    z-index:100;
 
 }
 #submit-match-answer{
@@ -785,7 +787,7 @@ border:2px #4D8496 solid;
 
     diplay:block;
     /*margin:;*/
-    padding:10% 5% 0 12%;
+    padding:10% 3% 1% 12%;
 }
 .multichoice-img-small{
     width:80%;
