@@ -58,9 +58,9 @@ class AssessmentRequests(object):
             self._headers['LTI-User-Role'] =                   str(params['roles'])
             self._headers['LTI-Bank'] ='assessment.Bank%3A53cec85833bb72730f66da92%40birdland.mit.edu'
 
-            print params['user_id']
-            print params['tool_consumer_instance_guid']
-            print params['roles']
+            # print params['user_id']
+            # print params['tool_consumer_instance_guid']
+            # print params['roles']
             # print json.dumps(self._headers)
 
             self._auth = HTTPSignatureAuth(key_id=settings.PUBLIC_KEY,
