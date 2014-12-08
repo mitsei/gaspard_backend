@@ -23,7 +23,7 @@ var selectedLayout=null;
 
 
           showFourChoices();
-            var str='<div id=report-multi-answer style=""></div>'+
+            var str='<div id=report-answer style=""></div>'+
                             ' <button class="btn  btn-lg submit-answer" id="submit-multi-answer" type="button">Submit</button>';
             $("#bottom-row").append(str);
             $('#submit-multi-answer').click(function(){
@@ -40,21 +40,19 @@ var selectedLayout=null;
                     data: {"answer": answer},
                     success: function (response) {
                         console.log(response);
-                        var reportDiv = document.getElementById("report-multi-answer");
+                        var reportDiv = document.getElementById("report-answer");
                         if (response['correct'] === true) {
 
                             answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
-//                        $(reportDiv).css("color","green");
                             reportDiv.style.color = "green";
 
                         } else {
                             answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + " Wrong!";
                             reportDiv.style.color = "red";
 
-//                        $(reportDiv).css("color","red");
                         }
                         reportDiv.innerHTML = answer;
-//                    $(reportDiv).html(answer);
+//                        printResponse();
 
                     }
                 });

@@ -5,7 +5,20 @@
     <!--{%static "Gaspard/Gaspard.logo.png" as gaspard%}-->
     <!--{%static "Gaspard/" as manipFile%}-->
     <!--{%static "Gaspard/Gaspard - Web Bui.unity3d" as gaspardWebBuild%}-->
+<script type="text/javascript">
+var selectedLayout=null;
+        $(document).ready(function () {
 
+            var str = '<div id=report-answer style=""></div>' +
+                    ' <button class="btn  btn-lg submit-answer" id="submit-match-answer" type="button">Submit</button>';
+            $("#bottom-row").append(str);
+            $("#submit-match-answer").click(function () {
+
+                u.getUnity().SendMessage("Question", "RequestRespone", "");
+                console.log("send response");
+            });
+        });
+</script>
 
 <div class="col-lg-2 " style=""><!-- want to set height of this col as UnityPlayer-->
     <div class="instruction" style="border:0px solid yellow;">
@@ -17,7 +30,7 @@
 </div>
 
 <div class="col-lg-10" style="border:0px solid paleturquoise;min-height:600px;">
-     <button class="btn  btn-lg submit-answer" id="submit-match-answer" type="button">Submit</button>
+     <!--<button class="btn  btn-lg submit-answer" id="submit-match-answer" type="button">Submit</button>-->
 
     <div class="unity-content">
         <div id="unityPlayer" style="border:0px lawngreen solid">
@@ -34,10 +47,6 @@
                          src="http://webplayer.unity3d.com/installation/getunityrestart.png" width="193" height="63"/>
                 </a>
             </div>
-        </div>
-
-        <div id="report-answer">
-
         </div>
     </div>
 </div>
