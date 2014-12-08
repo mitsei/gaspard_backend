@@ -159,12 +159,14 @@ def student(request):
             print "Got Taken Id"
             print taken_id
 
-            review_whether_correct = True
+            review_whether_correct = False
+            grade='none'
             Post.objects.filter(key="see_answer").delete()
             p = Post(key="see_answer", value=review_whether_correct).save()
 
             questions = getQuestions(bank_id, taken_id)
-            grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
+            if review_whether_correct:
+                grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
 
             #Want to get name of the assessment, but there is not name in the details
             '''
@@ -176,6 +178,7 @@ def student(request):
             # resp2 = student_req.post(
             #     student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/")
             #End
+
 
             if 'detail' in questions:
                 return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error':'Could not get questions'}))
@@ -209,13 +212,18 @@ def student_home(request):
             params[g.key] = g.value
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
-        review_whether_correct = params['see_answer']
+        review_whether_correct = params['see_answer'] == 'True'
+        print "REview weather correct"
+        print review_whether_correct
         name = 'none'
+        grade = 'none'
         if 'lis_person_name_given' in params:
             name = params["lis_person_name_given"]
 
         questions = getQuestions(bank_id, taken_id)
-        grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
+
+        if review_whether_correct:
+            grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
 
         if 'detail' in questions:
                 return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
@@ -264,7 +272,7 @@ def getQuestions(bank_id, taken_id):
     print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/"
     resp1 = student_req.get(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/")
     resp1 = resp1.json()
-    print resp1
+    # print resp1
     if 'detail' in resp1:
         return resp1
     questions = resp1['data']['results']  # a list of questions
@@ -278,8 +286,8 @@ def getQuestions(bank_id, taken_id):
         resp2 = student_req.get(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/" + a['id']
                                 + '/status/')
         resp2 = resp2.json()
-        print resp2
-        print resp2['responded']
+        # print resp2
+        # print resp2['responded']
         if resp2['responded'] == True:
             if resp2['correct'] == True:
                 a['responded'] = 'Correct'
@@ -340,6 +348,7 @@ def display_question(request):
 
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
+        review_whether_correct = params['see_answer'] == 'True'
         student_req = AssessmentRequests('taaccct_student')
 
         questions = getQuestions(bank_id, taken_id)
@@ -401,7 +410,8 @@ def display_question(request):
                                                       'questions': questions,
                                                       'question_type': question_type,
                                                       'next_quest_id': next_quest_id,
-                                                      'prev_quest_id': prev_quest_id }))
+                                                      'prev_quest_id': prev_quest_id,
+                                                      'seeAnswer': review_whether_correct}))
         else:
             if "choose-viewset" in question_type:
                 list_choices = resp2.json()['choices']
@@ -427,7 +437,8 @@ def display_question(request):
                                                           'questions': questions,
                                                           'question_type': question_type, "choices": list_choices,
                                                           'next_quest_id': next_quest_id,
-                                                          'prev_quest_id': prev_quest_id }))
+                                                          'prev_quest_id': prev_quest_id,
+                                                          'seeAnswer': review_whether_correct}))
             else:
                 return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
@@ -474,6 +485,7 @@ def submit_answer(request):
         student_req.url + bank_id + '/assessmentstaken/' + taken_id + '/questions/' + question_id + '/submit/',
         json.dumps(answer))
     print "Got answer back"
+    resp['see_answer']=params['see_answer']
     print resp
     if readyToSubmit():
         resp['overall_grade'] = submitGrade(bank_id, taken_id, params)

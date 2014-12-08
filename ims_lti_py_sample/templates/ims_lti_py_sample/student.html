@@ -17,7 +17,11 @@
          <h2 class="welcome">Welcome, {{userName}}!</h2>
          {%endif%}
          <div class="display-grade">
+             {%if grade == 'none' %}
+             Submit Answers
+             {% else %}
              Overall Grade: {{grade}}%
+             {%endif%}
         </div>
          <div class="upload-grade">
             <button class="btn" id="btn-submit-grade"> <span class="glyphicon glyphicon-cloud-upload"></span></button>
@@ -68,7 +72,7 @@
                     {% for a in questions %}
                     <div class="mylist-item-div">
                     <a href="#" class="mylist-item quest-item" name="{{a.text.text}}" id="{{a.id}}">
-                    {%if seeAnswer  %}
+                    {%if seeAnswer %}
                         {%if a.responded == 'Correct'%}
                             <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green"></span>
                         {%elif a.responded == 'Incorrect'%}
