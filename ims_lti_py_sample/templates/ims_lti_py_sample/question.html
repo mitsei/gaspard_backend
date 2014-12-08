@@ -42,22 +42,23 @@
 </script>
         <script type="text/javascript">
  $(document).ready(function () {
-        $("#submit-match-answer").click(function () {
+//        $("#submit-match-answer").click(function () {
+//
+//            u.getUnity().SendMessage("Question", "RequestRespone", "");
+//            console.log("send response");
+//        });
 
-            u.getUnity().SendMessage("Question", "RequestRespone", "");
-            console.log("send response");
-        });
-        $("#submit-multi-answer").click(function(){
-            var choice_id=$(this).attr('');
-            $.ajax({
-                url:"submit_multi_answer",
-                type:'POST',
-                data:choice_id,
-                success: function(){
+//        $("#submit-multi-answer").click(function(){
+//            var choice_id=$(this).attr('');
+//            $.ajax({
+//                url:"submit_multi_answer",
+//                type:'POST',
+//                data:choice_id,
+//                success: function(){
 
-                }
-            });
-        });
+//                }
+//            });
+//        });
     });
  console.log("Print type");
     console.log("{{question_type}}");
@@ -111,6 +112,7 @@
 							$missingScreen.remove();
 						break;
 						case "first":
+                                SaySomethingToUnity();
 						break;
 					}
 				});
@@ -118,15 +120,15 @@
 //          $.when(u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}")).then(function(){
 //                    SaySomethingToUnity();
 //                });
-        u.observeProgress(function(progress){
-            console.log("Inside observe Progress");
-            console.log(progress);
-            console.log(progress['pluginStatus']);
-            if(progress['pluginStatus']=='first'){
-                SaySomethingToUnity();
-
-            }
-        });
+//        u.observeProgress(function(progress){
+//            console.log("Inside observe Progress");
+//            console.log(progress);
+//            console.log(progress['pluginStatus']);
+//            if(progress['pluginStatus']=='first'){
+//                SaySomethingToUnity();
+//
+//            }
+//        });
             u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}");
 
 
@@ -182,27 +184,44 @@
                 success: function(response){
                     console.log("Got the answer back");
                     console.log(response);
-                    var answer='';
-                   // console.log("Got here");
-                    console.log(response['correct']=== true );
-                    if(response['correct']=== true ){
-                        answer='<span class="glyphicon glyphicon-ok" style="top:5px" ></span>'+ " Correct!";
-                        $('#report-answer').css("color","green");
+                    printResponse(response);
 
-                    }else{
-                        answer='<span class="glyphicon glyphicon-remove" style="top:5px;"></span>'+" Wrong!";
-
-
-                        $('#report-answer').css("color","red");
-                    }
-
-                    $('#report-answer').html(answer);
 //                    console.log("Print variable: ");
 //                    console.log('{{question_name}}');
 
                 }
             });
 		}
+            function printResponseOld(response){
+                var answer='';
+                   // console.log("Got here");
+                    console.log(response['correct']=== true );
+                    if(response['correct']=== true ){
+                        answer='<span class="glyphicon glyphicon-ok" style="top:5px" ></span>'+ " Correct!";
+                        $('#report-answer').css("color","green");
+                    }else{
+                        answer='<span class="glyphicon glyphicon-remove" style="top:5px;"></span>'+" Wrong!";
+                        $('#report-answer').css("color","red");
+                    }
+                    $('#report-answer').html(answer);
+
+            }
+            function printResponse(response){
+                var reportDiv = document.getElementById("report-answer");
+                        if (response['correct'] === true) {
+
+                            answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
+//                        $(reportDiv).css("color","green");
+                            reportDiv.style.color = "green";
+
+                        } else {
+                            answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + " Wrong!";
+                            reportDiv.style.color = "red";
+
+//                        $(reportDiv).css("color","red");
+                        }
+                        reportDiv.innerHTML = answer;
+            }
 </script>
 
 <div class="row main-problem-bgr" >

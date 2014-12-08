@@ -89,17 +89,25 @@ $(document).ready(function () {
         var idsArray = $('#reorder-items').sortable("toArray");
         console.log(idsArray);
 
+        if(idsArray.length>1) {
+            $.ajax({
+                url: 'reorder_items',
+                type: 'POST',
+                data: {sub_id: sub_id, 'items': idsArray},
+                success: function (response) {
+                    console.log(response);
+                    //requestItems(selectedAssessment);
+                }
 
-        $.ajax({
-            url: 'reorder_items',
-            type: 'POST',
-            data: {sub_id: sub_id, 'items': idsArray},
-            success: function (response) {
-                console.log(response);
-                //requestItems(selectedAssessment);
-            }
+            }).done(function () {
+                changeAssessmentName(sub_id);
 
-        }).done(function () {
+            });
+        }else{
+            changeAssessmentName(sub_id);
+        }
+    });
+        function changeAssessmentName(sub_id){
             var oldName = selectedAssessment.text();
             var newName;
             var finalName = selectedAssessment.text();
@@ -135,15 +143,15 @@ $(document).ready(function () {
                     }
                 });
             }
-        });
-    });
+        }
 
-    $(".submit-answer").click(function () {
-        u.getUnity().SendMessage("Question", "RequestRespone", "");
-    });
+//    $(".submit-answer").click(function () {
+//        u.getUnity().SendMessage("Question", "RequestRespone", "");
+//    });
     $('#btn-home').click(function () {
 
     });
+
 
 
     /* Handle the selection of the assessment */
@@ -271,9 +279,9 @@ $(document).ready(function () {
                         console.log(response);
                         if (response['data']) {
                             console.log(response['data']);
-                            var str = "offering_id=" + response['data'][0];
+                            var str = "<b>offering_id=" + response['data'][0]+'</b>';
                             $('#display-offering-id').html(str);
-                            str = "bank_id=" + response['data'][1];
+                            str = "<b>bank_id=" + response['data'][1]+'</b>';
                             $('#display-bank-id').html(str);
 
 
@@ -687,17 +695,14 @@ function showModalReorderItems() {
                         str += buildListItem(value['displayName']['text'], value['id']);
                         console.log(value['id']);
                     });
-                    // console.log();
-                    $('#reorder-items-div').prepend('<p class="mylist-header" id="assess-name-reorder" value="' + getName(selectedAssessment) + '">' +
-                        getName(selectedAssessment) + '<span class="glyphicon glyphicon-edit" style="float:right;"></span>' + '</p>');
-                    $('#reorder-items').addClass('mylist').html(str);
-                    $("#reorder-items").sortable();
-                    $("#assess-name-reorder").click(function () {
-                        clickAssessmentName($(this));
-                    });
-
-
                 }
+                $('#reorder-items-div').prepend('<p class="mylist-header" id="assess-name-reorder" value="' + getName(selectedAssessment) + '">' +
+                        getName(selectedAssessment) + '<span class="glyphicon glyphicon-edit" style="float:right;"></span>' + '</p>');
+                $('#reorder-items').addClass('mylist').html(str);
+                $("#reorder-items").sortable();
+                $("#assess-name-reorder").click(function () {
+                        clickAssessmentName($(this));
+                });
                 $("#modal-reorder-items").modal('show');
             }
         }

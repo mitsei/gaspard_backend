@@ -159,6 +159,10 @@ def student(request):
             print "Got Taken Id"
             print taken_id
 
+            review_whether_correct = True
+            Post.objects.filter(key="see_answer").delete()
+            p = Post(key="see_answer", value=review_whether_correct).save()
+
             questions = getQuestions(bank_id, taken_id)
             grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
 
@@ -174,9 +178,10 @@ def student(request):
             #End
 
             if 'detail' in questions:
-                return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+                return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error':'Could not get questions'}))
             return render_to_response("ims_lti_py_sample/student.html",
-                                          RequestContext(request, {'userName': name, 'questions': questions, 'grade': grade}))
+                                          RequestContext(request, {'userName': name, 'questions': questions, 'grade': grade,
+                                          'seeAnswer': review_whether_correct}))
 
         else:
             return render_to_response(("ims_lti_py_sample/student.html"),
@@ -204,6 +209,7 @@ def student_home(request):
             params[g.key] = g.value
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
+        review_whether_correct = params['see_answer']
         name = 'none'
         if 'lis_person_name_given' in params:
             name = params["lis_person_name_given"]
@@ -215,7 +221,8 @@ def student_home(request):
                 return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
         return render_to_response("ims_lti_py_sample/student.html",
-                                      RequestContext(request, {'userName': name, 'questions': questions,'grade':grade}))
+                                      RequestContext(request, {'userName': name, 'questions': questions,'grade':grade,
+                                                               'seeAnswer': review_whether_correct}))
 
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))

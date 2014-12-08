@@ -64,9 +64,11 @@
                 <div class="mylist-header">Questions</div>
 
                 <div class="mylist">
+
                     {% for a in questions %}
                     <div class="mylist-item-div">
                     <a href="#" class="mylist-item quest-item" name="{{a.text.text}}" id="{{a.id}}">
+                    {%if seeAnswer  %}
                         {%if a.responded == 'Correct'%}
                             <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green"></span>
                         {%elif a.responded == 'Incorrect'%}
@@ -74,10 +76,23 @@
                         {%else %}
                             <span class="glyphicon glyphicon-remove-circle quest-status" style="color: transparent"></span>
                         {%endif%}
+                    {%else %}
+                        {%if a.responded == 'Correct'%}
+                            <span class="glyphicon glyphicon-saved quest-status" style="color:#4D8496;"></span>
+                        {%elif a.responded == 'Incorrect'%}
+                            <span class="glyphicon glyphicon-saved quest-status" style="color:#4D8496;" ></span>
+                        {%else %}
+                            <span class="glyphicon glyphicon-remove-circle quest-status" style="color: transparent"></span>
+                        {%endif%}
 
-                        {{a.displayName.text}}</a>
+                    {%endif%}
+                        {{a.displayName.text}}
+
+                    </a>
                         </div>
                     {% endfor %}
+
+
                 </div>
             </div>
         </div>
