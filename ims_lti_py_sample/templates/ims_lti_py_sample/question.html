@@ -208,19 +208,31 @@
             }
             function printResponse(response){
                 var reportDiv = document.getElementById("report-answer");
-                        if (response['correct'] === true) {
+                var answer='';
+                if('detail' in response){
+                    answer="Could not submit answer!"
+                }
+                else if(response['see_answer']=='True') {
 
-                            answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
+
+                    if (response['correct'] === true) {
+
+                        answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
 //                        $(reportDiv).css("color","green");
-                            reportDiv.style.color = "green";
+                        reportDiv.style.color = "green";
 
-                        } else {
-                            answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + " Wrong!";
-                            reportDiv.style.color = "red";
+                    } else {
+                        answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + " Wrong!";
+                        reportDiv.style.color = "red";
 
 //                        $(reportDiv).css("color","red");
-                        }
-                        reportDiv.innerHTML = answer;
+                    }
+
+                }else{
+
+                    answer="Saved!";
+                }
+                reportDiv.innerHTML = answer;
             }
 </script>
 

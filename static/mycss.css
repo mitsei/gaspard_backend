@@ -278,8 +278,9 @@ a.mylist-head:hover{
     width:250px;
     position:absolute;
     top:50px;
-    right:100px;
+    right:110px;
     border: 0px solid yellow;
+    text-align: right;
 
 
 }
@@ -624,11 +625,11 @@ overflow-wrap:break-word  ;
 /*}*/
 #report-answer{
     position:absolute;
-    right:20%;
-    bottom:15px;
+    right:15%;
+    bottom:20px;
     /*height:auto;*/
     font-size: 33px;
-    /*border: 1px solid red;*/
+    border: 0px solid red;
     color:#4D8496;
 }
 
