@@ -158,11 +158,12 @@ def student(request):
             p.save()
             print "Got Taken Id"
             print taken_id
+            print resp['reviewWhetherCorrect']
 
             '''
             This is the attribute that controls whether the answers should be visible to the student or not
             '''
-            review_whether_correct=resp['reviewWhetherCorrect']=='true'
+            review_whether_correct=resp['reviewWhetherCorrect'] == True
             # review_whether_correct = False
             grade='none'
             Post.objects.filter(key="see_answer").delete()
@@ -805,16 +806,26 @@ def get_offering_id(request):
     print request.POST
 
     sub_id = request.POST.getlist('sub_id')[0]
+    see_answer = request.POST.getlist('see_answer')[0]
+    see_answer=see_answer=='true'
     bank_id = Post.objects.filter(key="bank_id")[0].value
 
     req_assess = AssessmentRequests()
+    print "See Answer"
+    print see_answer
+    data={"reviewOptions" : {
+        "whetherCorrect" : {
+                "duringAttempt" : see_answer
+        }
+    }}
+    data = json.dumps(data)
 
     '''
     Create new offering
     url: assessment/bank/assessements/<sub_id>/assessmentsoffered/
     '''
 
-    eq4 = req_assess.post(req_assess.url + bank_id + '/assessments/' + sub_id + '/assessmentsoffered/')
+    eq4 = req_assess.post(req_assess.url + bank_id + '/assessments/' + sub_id + '/assessmentsoffered/', data)
     if 'id' in eq4:
         print "offering id"
         print eq4['id']
