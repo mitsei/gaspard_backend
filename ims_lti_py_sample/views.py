@@ -159,10 +159,14 @@ def student(request):
             print "Got Taken Id"
             print taken_id
 
-            review_whether_correct = False
+            '''
+            This is the attribute that controls whether the answers should be visible to the student or not
+            '''
+            review_whether_correct=resp['reviewWhetherCorrect']=='true'
+            # review_whether_correct = False
             grade='none'
             Post.objects.filter(key="see_answer").delete()
-            p = Post(key="see_answer", value=review_whether_correct).save()
+            Post(key="see_answer", value=review_whether_correct).save()
 
             questions = getQuestions(bank_id, taken_id)
             if review_whether_correct:
@@ -233,7 +237,7 @@ def student_home(request):
                                                                'seeAnswer': review_whether_correct}))
 
     except KeyError, e:
-        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': e}))
 
 @csrf_exempt
 def submit_grade(request):
@@ -254,7 +258,7 @@ def submit_grade(request):
         return HttpResponse(json.dumps(ans), content_type='application/json')
 
     except KeyError, e:
-        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': e}))
 
 '''
 Get questions for this taken
@@ -286,7 +290,7 @@ def getQuestions(bank_id, taken_id):
         resp2 = student_req.get(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/questions/" + a['id']
                                 + '/status/')
         resp2 = resp2.json()
-        # print resp2
+        print resp2
         # print resp2['responded']
         if resp2['responded'] == True:
             if resp2['correct'] == True:
@@ -353,7 +357,7 @@ def display_question(request):
 
         questions = getQuestions(bank_id, taken_id)
         if 'detail' in questions:
-                return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+                return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': questions['detail']}))
 
         question_id = params['question_id']
 
@@ -446,7 +450,7 @@ def display_question(request):
 
 
     except KeyError, e:
-        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))  # # Testin unity web player
+        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': e}))  # # Testin unity web player
 
 
 def getNextQuestionId(next,questions,question_id):
@@ -487,8 +491,8 @@ def submit_answer(request):
     print "Got answer back"
     resp['see_answer']=params['see_answer']
     print resp
-    if readyToSubmit():
-        resp['overall_grade'] = submitGrade(bank_id, taken_id, params)
+    # if params['see_answer']=='True':
+    #     resp['overall_grade'] = submitGrade(bank_id, taken_id, params)
 
 
     return HttpResponse(json.dumps(resp), content_type='application/json')
@@ -544,8 +548,8 @@ def submit_multi_answer(request):
     request_post = params["lis_outcome_service_url"]
     print request_post
 
-    if readyToSubmit():
-        submitGrade(bank_id, taken_id, params)
+    # if params['see_answers'] == 'True':
+    #     submitGrade(bank_id, taken_id, params)
 
     return HttpResponse(json.dumps(resp2), content_type='application/json')
 
@@ -1144,13 +1148,27 @@ def getOverallGrade(bank_id, taken_id):
 def submitGrade(bank_id, taken_id, params):
 
     grade=getOverallGrade(bank_id,taken_id)
+    # print grade
     consumer_key = settings.CONSUMER_KEY
     secret = settings.LTI_SECRET
-    print consumer_key
-    print secret
     tool = DjangoToolProvider(consumer_key, secret, params)
     post_result = tool.post_replace_result(grade)
     print post_result.is_success()
+    if params['see_answer'] == 'False':
+        student_req = AssessmentRequests('taaccct_student')
+
+        '''
+        Finish this assessment
+        assessment/banks/<bank_id>/assessmentstaken/<taken_id>/finish/
+
+        '''
+        print "Finish Assessment"
+        print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/finish/"
+        resp1 = student_req.post(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/finish/")
+        # resp1 = resp1.json()
+        print resp1
+
+    return grade
 
 
 def readyToSubmit():

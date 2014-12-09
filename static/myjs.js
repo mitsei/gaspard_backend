@@ -12,7 +12,10 @@ $(document).ready(function () {
             url:'submit_grade',
             type:'POST',
             success: function(response){
-                console.log(response);
+//                console.log(response);
+                $("#assess-finished-msg").html('Thank you for taking the assessment!');
+                $('.quest-item').unbind();
+                $('#btn-submit-grade').unbind();
 
             }
         });

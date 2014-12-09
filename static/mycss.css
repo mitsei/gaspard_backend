@@ -24,6 +24,13 @@ body{
 .popover{
     color:#4D8496;
 }
+#assess-finished-msg{
+    padding:20px 0;
+    font-size: 25px;
+     /*color:#4D8496;*/
+
+
+}
 
 
 
