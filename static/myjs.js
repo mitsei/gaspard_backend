@@ -264,6 +264,16 @@ $(document).ready(function () {
         }
     });
 
+     $("#btn-show-offering-option").click(function () {
+         var sub_id = findSelectedAssess();
+
+         //check if any selected
+         if (selectedAssessment != null) {
+             $('#see-answer').attr('checked', true);
+             $('#modal-get-offering').modal('show');
+
+         }
+     });
 
     $("#btn-get-offering").click(function () {
         var sub_id = findSelectedAssess();
@@ -272,12 +282,15 @@ $(document).ready(function () {
         if (selectedAssessment != null) {
 
 
+            var seeAnswer= $('#see-answer').prop('checked');
+            console.log("See Answer: "+ seeAnswer);
+
             console.log(sub_id);
             if (sub_id != null) {
                 $.ajax({
                     url: 'get_offering_id',
                     type: 'POST',
-                    data: {'sub_id': sub_id},
+                    data: {'sub_id': sub_id, 'see_answer': seeAnswer},
                     success: function (response) {
                         console.log(response);
                         if (response['data']) {
@@ -290,7 +303,7 @@ $(document).ready(function () {
 
 //                            str = "offering_id=" + response['data'][0] + '/n' + "bank_id=" + response[1];
 //                            $('#btn-copy-offering').attr('value', str).focus();
-
+                             $('#modal-get-offering').modal('hide');
                             $('#modal-offering-id').modal('show');
 //                            selectText('display-bank-id');
                         } else if (response['detail']) {
