@@ -24,6 +24,7 @@ $(document).ready(function () {
             }
         });
     });
+
 //    $('help').popover();
 //    $('#help').addClass('shown');
     $('#help-bank').popover('hide');
@@ -150,6 +151,8 @@ $(document).ready(function () {
                     }
                 });
             }
+            $('#assess-name-reorder').html('');
+
         }
 
 //    $(".submit-answer").click(function () {
@@ -637,13 +640,14 @@ function requestItems(obj) {
                 console.log("Number of items: " + response.length);
 
 
-                removeHeader('assess-items-name');
+//                removeHeader('assess-items-name');
                 $('#assess-items').html('');
                 console.log($(obj).find('div').text().trim());
-                $('#assess-box-droppable').prepend('<div class="mylist-header " id="assess-items-name">' +
-                    '<div class="mylist-item-text">' + getName(obj) + "</div>" +
-                    '<button class="manage-assess-btn btn" id="btn-reorder-items" onclick="showModalReorderItems()">' +
-                    '<span class="glyphicon glyphicon-sort" ></span></button></div>');
+//                $('#assess-box-droppable').prepend('<div class="mylist-header " id="assess-items-name">' +
+//                    '<div class="mylist-item-text">' + getName(obj) + "</div>" +
+//                    '<button class="manage-assess-btn btn" id="btn-reorder-items" onclick="showModalReorderItems()">' +
+//                    '<span class="glyphicon glyphicon-sort" ></span></button></div>');
+                $('#assess-items-name').html(getName(obj));
 
 
                 if (response.length > 0) { //if there are items in assessment
@@ -708,7 +712,7 @@ function showModalReorderItems() {
             if ('detail' in response) {
             }else{ //if successful response is a list of items
                 var str = "";
-                removeHeader('assess-name-reorder');
+//                removeHeader('assess-name-reorder');
                 if (response.length > 0) { //if there are items in assessment
                     $.each(response, function (key, value) {
 
@@ -716,12 +720,14 @@ function showModalReorderItems() {
                         console.log(value['id']);
                     });
                 }
-                $('#reorder-items-div').prepend('<p class="mylist-header" id="assess-name-reorder" value="' + getName(selectedAssessment) + '">' +
-                        getName(selectedAssessment) + '<span class="glyphicon glyphicon-edit" style="float:right;"></span>' + '</p>');
+//                $('#reorder-items-div').prepend('<p class="mylist-header" id="assess-name-reorder" value="' + getName(selectedAssessment) + '">' +
+//                        getName(selectedAssessment) + '<span class="glyphicon glyphicon-edit" style="float:right;"></span>' + '</p>');
+                $('#assess-name-reorder').html(getName(selectedAssessment)+'<span class="glyphicon glyphicon-edit" style="float:right;"></span>').attr('value', getName(selectedAssessment));
                 $('#reorder-items').addClass('mylist').html(str);
                 $("#reorder-items").sortable();
-                $("#assess-name-reorder").click(function () {
-                        clickAssessmentName($(this));
+//
+                $("#assess-name-reorder").unbind().click(function () {
+                    clickAssessmentName();
                 });
                 $("#modal-reorder-items").modal('show');
             }
@@ -761,19 +767,26 @@ function createNewAssessment() {
     }
 
 }
-
-function clickAssessmentName(obj) {
-    console.log($(obj));
-    var inputElement;
+/**
+ * This function is called when in the reorder modal you click on the header
+ * This allows you to change the name of the assessment
+ * @param obj
+ */
+function clickAssessmentName() {
+//    console.log($(obj));
+    var inputElement=document.getElementById("inpt-change-assess-name");
 
     /*
      if input is active
      want to save the input
      */
-    if ($(obj).has('input').length) {
-        inputElement = document.getElementById("inpt-change-assess-name");
-        console.log(inputElement.value);
-        var assessName = $(obj).attr('value');
+
+//    if ($('#assess-name-reorder').has('input').length) { // has returns a list of objects
+    if(inputElement!= null){
+        console.log('Has input element');
+//        inputElement = document.getElementById("inpt-change-assess-name");
+        console.log(inputElement);
+        var assessName = $('#assess-name-reorder').attr('value');
         var newName = inputElement.value;
 
         if (newName != null) {
@@ -782,8 +795,8 @@ function clickAssessmentName(obj) {
                 assessName = newName;
             }
         }
-        $(obj).html('');
-        $(obj).append(assessName).attr('value', assessName);
+//        $('#assess-name-reorder').html('');
+        $('#assess-name-reorder').html(assessName).attr('value', assessName);
 
     } else {
         /*
@@ -791,17 +804,17 @@ function clickAssessmentName(obj) {
          display old name as a placeholder
          */
 
-        $(obj).html('');
-        console.log($(obj).attr('value'));
-        $(obj).append('<input type="text" id="inpt-change-assess-name">');
+//        $('#assess-name-reorder').html('');
+        console.log($('#assess-name-reorder').attr('value'));
+        $('#assess-name-reorder').html('<input type="text" id="inpt-change-assess-name">');
         inputElement = document.getElementById("inpt-change-assess-name");
-        inputElement.setAttribute('placeholder', $(obj).attr('value'));
+        inputElement.setAttribute('placeholder', $('#assess-name-reorder').attr('value'));
         $('#inpt-change-assess-name').click(function () {
             return false;
         });
 
     }
-    $(obj).append('<span class="glyphicon glyphicon-edit" style="float:right;"></span>');
+    $('#assess-name-reorder').append('<span class="glyphicon glyphicon-edit" style="float:right;"></span>');
 
 
 }
@@ -809,7 +822,8 @@ function clickAssessmentName(obj) {
 function removeHeader(idName) {
     var header = document.getElementById(idName);
     if (header != null) {
-        header.remove();
+       // header.remove();
+        header.removeChild(header.children[0]);
     }
 }
 
