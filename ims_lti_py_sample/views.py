@@ -1163,7 +1163,10 @@ def submitGrade(bank_id, taken_id, params):
     consumer_key = settings.CONSUMER_KEY
     secret = settings.LTI_SECRET
     tool = DjangoToolProvider(consumer_key, secret, params)
-    post_result = tool.post_replace_result(grade)
+    try:
+        post_result = tool.post_replace_result(grade)
+    except Exception, e:
+        return render_to_response("ims_lti_py_sample/error.html", RequestContext({'error':' Could not report grades to the consumer'}))
     print post_result.is_success()
     if params['see_answer'] == 'False':
         student_req = AssessmentRequests('taaccct_student')
@@ -1176,7 +1179,7 @@ def submitGrade(bank_id, taken_id, params):
         print "Finish Assessment"
         print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/finish/"
         resp1 = student_req.post(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/finish/")
-        # resp1 = resp1.json()
+        #resp1 = resp1.json()
         print resp1
 
     return grade
