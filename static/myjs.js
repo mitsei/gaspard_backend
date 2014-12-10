@@ -7,6 +7,10 @@ var wait=false;
 
 $(document).ready(function () {
     $('#btn-submit-grade').click(function(){
+        $('#modal-warn-submit-grade').modal('show');
+
+    });
+    $('#btn-finish-assessment').click(function(){
         console.log("Submit Grade");
         $.ajax({
             url:'submit_grade',
@@ -923,6 +927,36 @@ function getProblem(obj) {
         }
     });
 }
+function printResponse(response){
+                var reportDiv = document.getElementById("report-answer");
+                var answer='';
+//                console.log("See answer "+ response['see_answer']);
+                if('detail' in response){
+                    answer="Could not submit answer!"
+                }
+
+                else if(response['see_answer']=='True') {
+
+                    if (response['correct'] === true) {
+
+                        answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
+//                        $(reportDiv).css("color","green");
+                        reportDiv.style.color = "green";
+
+                    } else {
+                        answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + "Incorrect!";
+                        reportDiv.style.color = "red";
+
+//                        $(reportDiv).css("color","red");
+                    }
+
+                }else{
+
+                    answer="Saved!";
+                }
+                reportDiv.innerHTML = answer;
+//                $('#report-answer').html(answer);
+            }
 
 
 

@@ -696,7 +696,7 @@ overflow-wrap:break-word  ;
     background-image : url(css_ui/SummaryPage/image6.png);
 	background-repeat : repeat;
 	opacity : 1;
-	filter: alpha(opacity=5) progid:DXImageTransform.Microsoft.Alpha(opacity=5) ;
+	filter: alpha(opacity=5) progid:DXImageTransform.Microsoft.Alpha(opacity=5);
 }
 .instructor-main-bgr{
     background : -moz-linear-gradient(50% 0% -90deg,rgba(125, 159, 173, 1) 0%,rgba(255, 255, 255, 1) 100%);

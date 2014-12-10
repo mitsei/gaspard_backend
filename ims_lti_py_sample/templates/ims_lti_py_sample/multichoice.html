@@ -39,20 +39,20 @@ var selectedLayout=null;
                     type: "POST",
                     data: {"answer": answer},
                     success: function (response) {
-                        console.log(response);
-                        var reportDiv = document.getElementById("report-answer");
-                        if (response['correct'] === true) {
-
-                            answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
-                            reportDiv.style.color = "green";
-
-                        } else {
-                            answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + " Wrong!";
-                            reportDiv.style.color = "red";
-
-                        }
-                        reportDiv.innerHTML = answer;
-//                        printResponse();
+//                        console.log(response);
+//                        var reportDiv = document.getElementById("report-answer");
+//                        if (response['correct'] === true) {
+//
+//                            answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
+//                            reportDiv.style.color = "green";
+//
+//                        } else {
+//                            answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + " Wrong!";
+//                            reportDiv.style.color = "red";
+//
+//                        }
+//                        reportDiv.innerHTML = answer;
+                        printResponse(response);
 
                     }
                 });

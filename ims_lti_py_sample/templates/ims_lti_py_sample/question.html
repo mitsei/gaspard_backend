@@ -33,6 +33,7 @@
                 getProblem($(this));
             }
         });
+//        $('#report-answer').html();
         $('#prob-quest-header').click(function(){
                    $('.dropdown-menu').css('width', $("#prob-quest-row").width());
 
@@ -194,26 +195,26 @@
 		}
             function printResponseOld(response){
                 var answer='';
-                   // console.log("Got here");
+
                     console.log(response['correct']=== true );
                     if(response['correct']=== true ){
                         answer='<span class="glyphicon glyphicon-ok" style="top:5px" ></span>'+ " Correct!";
                         $('#report-answer').css("color","green");
                     }else{
-                        answer='<span class="glyphicon glyphicon-remove" style="top:5px;"></span>'+" Wrong!";
+                        answer='<span class="glyphicon glyphicon-remove" style="top:5px;"></span>'+" Incorrect!";
                         $('#report-answer').css("color","red");
                     }
                     $('#report-answer').html(answer);
 
             }
-            function printResponse(response){
+            function printResponseJS(response){
                 var reportDiv = document.getElementById("report-answer");
                 var answer='';
                 if('detail' in response){
                     answer="Could not submit answer!"
                 }
                 else if(response['see_answer']=='True') {
-
+                   // console.log('')
 
                     if (response['correct'] === true) {
 
@@ -222,7 +223,7 @@
                         reportDiv.style.color = "green";
 
                     } else {
-                        answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + " Wrong!";
+                        answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + "Incorrect!";
                         reportDiv.style.color = "red";
 
 //                        $(reportDiv).css("color","red");
@@ -234,6 +235,7 @@
                 }
                 reportDiv.innerHTML = answer;
             }
+
 </script>
 
 <div class="row main-problem-bgr" >
@@ -265,12 +267,22 @@
                                     {% for a in questions %}
                                     <a href="#" class="mylist-item quest-item"
                                         id="{{a.id}}"> <!--name="{{a.text.text}}"-->
-                                        {%if a.responded == 'Correct'%}
-                                            <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green"></span>
-                                        {%elif a.responded == 'Incorrect'%}
-                                            <span class="glyphicon glyphicon-remove-circle quest-status" style="color: indianred" ></span>
-                                        {%else %}
-                                            <span class="glyphicon glyphicon-remove-circle quest-status" style="color: transparent"></span>
+                                        {%if seeAnswer%}
+                                            {%if a.responded == 'Correct'%}
+                                                <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green"></span>
+                                            {%elif a.responded == 'Incorrect'%}
+                                                <span class="glyphicon glyphicon-remove-circle quest-status" style="color: indianred" ></span>
+                                            {%else %}
+                                                <span class="glyphicon glyphicon-remove-circle quest-status" style="color: transparent"></span>
+                                            {%endif%}
+                                        {%else%}
+                                            {%if a.responded == 'Correct'%}
+                                                <span class="glyphicon glyphicon-saved quest-status" style="color:#4D8496;"></span>
+                                            {%elif a.responded == 'Incorrect'%}
+                                                <span class="glyphicon glyphicon-saved quest-status" style="color:#4D8496;" ></span>
+                                            {%else %}
+                                                <span class="glyphicon glyphicon-remove-circle quest-status" style="color: transparent"></span>
+                                            {%endif%}
                                         {%endif%}
 
                                         {{a.displayName.text}}</a>
@@ -289,6 +301,8 @@
                         {% load staticfiles %}
                         <a href="/lti/student_home"><img class="" style="margin:10px;" src="{% static 'css_ui/GUI_Matching/image.png' %}">
                             </a>
+                        <!--<div id=report-answer style=""></div>-->
+                        <!--<button class="btn  btn-lg submit-answer" id="submit-match-answer" type="button">Submit</button>-->
                     </div>
 
                 </div>
