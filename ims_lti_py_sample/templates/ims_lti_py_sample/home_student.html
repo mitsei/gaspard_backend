@@ -1,0 +1,187 @@
+{% extends "ims_lti_py_sample/base_student.html" %}
+
+
+{% block content %}
+
+
+<div class="row" style="height:75px">
+    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="border:0px solid darkolivegreen">
+        <!--{% load staticfiles %}-->
+        <a href="/lti/student_home">
+            <button class="btn btn-white-background home-btn" type="button">
+                <span class="glyphicon glyphicon-home"></span>
+            </button>
+        </a>
+
+        </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding-top:30px;border:0px solid darkolivegreen">
+        {%if welcome%}
+            {%if userName == 'none' %}
+            <h2 class="welcome">Welcome!</h2>
+            {%else%}
+
+            <h2 class="welcome">Welcome, {{userName}}!</h2>
+            {%endif%}
+        {%endif%}
+
+
+
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding-top:15px;border:0px solid darkolivegreen">
+        <nav>
+            <ul class="numbering">
+                <!--<li><a href="#"><span class="glyphicon glyphicon-chevron-left" id="{{prev_quest_id}}"></span></a></li>-->
+                <li><a href="#"><span aria-hidden="true" class="next-badge" id="{{prev_quest_id}}">&laquo;</span><span
+                        class="sr-only">Previous</span></a></li>
+                {%for a in questions%}
+
+                {%if a.number == 0 %}
+                <li><a href="#" style="padding:0 5px">&hellip;</a></li>
+                {%else %}
+                <li><a href="#" id="{{a.id}}" class="question-link">{{a.number}}</a></li>
+                {%endif%}
+
+                {%endfor%}
+                <li><a href="#"><span aria-hidden="true" id="{{next_quest_id}}" class="next-badge">&raquo;</span><span
+                        class="sr-only">Next</span></a></li>
+            </ul>
+        </nav>
+        </div>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-top:25px;border:0px solid darkolivegreen">
+        <!--<div class="upload-grade">-->
+
+    </div>
+
+
+</div>
+
+
+<div class="row" style="border:0px green solid;margin-top: 40px; ">
+    <!--<div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="border:1px solid darkolivegreen">-->
+
+    <!--</div>-->
+
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="padding-top: 5px; border:0px solid #ffff00">
+         <div class="display-grade">
+            {%if grade == 'none' %}
+
+            {% else %}
+            Overall Grade: {{grade}}%
+            {%endif%}
+
+
+
+        </div>
+
+
+    </div>
+    <div class="col-lg-5 col-md-4 col-sm-4 col-xs-4" style="padding-top:30px; border:0px solid darkolivegreen">
+
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 " id="submit-btn-div" style="border:0px solid darkolivegreen">
+
+        {%if answered_all_questions%}
+            <div>
+            <button class="btn btn-submit-grade btn-white-background"  id="btn-submit-grade" style="border:0px solid yellow">
+        {%else%}
+                <div id="btn-submit-disabled" style="border:0px solid yellow" data-toggle="tooltip" data-placement="top" title="Answer all questions to unable the button">
+            <button class="btn btn-submit-grade btn-white-background"   disabled>
+        {%endif%}
+
+        <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+            <a href="#">
+                    {%if grade == 'none' %}
+                    Submit answers, go back to {{consumer}}
+                    {%else %}
+                    Go back to {{consumer}}
+                    {%endif%}
+                </a>
+            </button>
+                                    </div>
+
+
+    </div>
+</div>
+
+
+<div class="row" style="min-height: 700px;margin-top: 20px">
+    <div class="col-lg-1 col-md-3 col-sm-3 col-xs-3">
+
+    </div>
+    <div class="col-lg-5 col-md-3 col-sm-3 col-xs-3" style="border:0px orangered solid">
+        <div class="row" style="">
+
+            <ul style="padding:0px">
+                <li class="questions-list-item" style="border-bottom: 0px solid #4D8496">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="border-bottom: 1px solid #4D8496">
+                     <span class="glyphicon glyphicon-unchecked quest-status" style="color: transparent"></span>
+                    Questions
+                     </div>
+                    <div class="col-lg-4 col-md-6 col-sm-6 col-xs-6" style="border-bottom:1px #4D8496 solid">
+                        Status
+                     </div>
+                </li>
+
+
+
+                {%for a in questions%}
+                <li class="questions-list-item">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="border:0px orangered solid">
+                        {%if seeAnswer %}
+                        {%if a.responded == 'Correct'%}
+                        <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green">Correct</span>
+                        {%elif a.responded == 'Incorrect'%}
+                        <span class="glyphicon glyphicon-remove-circle quest-status"
+                              style="color: indianred">Incorrect</span>
+                        {%else %}
+                        <span class="glyphicon glyphicon-remove-circle quest-status" style="color: #4D8496"></span>
+                        {%endif%}
+                        {%else %}
+                        {%if a.responded == 'Correct'%}
+                        <span class="glyphicon glyphicon-check quest-status" style="color:#4D8496;"></span>
+                        {%elif a.responded == 'Incorrect'%}
+                        <span class="glyphicon glyphicon-check quest-status" style="color:#4D8496;"></span>
+                        {%else %}
+                        <span class="glyphicon glyphicon-unchecked quest-status" style="color: #4D8496"></span>
+                        {%endif%}
+
+                        {%endif%}
+                        <a href="" class="question-link" id="{{a.id}}">
+                            Question #{{a.number}}
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="border:0px orangered solid">
+                        {%if seeAnswer %}
+                        {%if a.responded == 'Correct'%}
+                        Correct
+                        {%elif a.responded == 'Incorrect'%}
+                        Incorrect
+                        {%else %}
+                        <span class="glyphicon glyphicon-remove-circle quest-status" style="color: #4D8496"></span>
+                        {%endif%}
+                        {%else %}
+                        {%if a.responded == 'Correct'%}
+                        Saved
+                        <!--<span class="glyphicon glyphicon-check quest-status" style="color:#4D8496;"></span>-->
+                        {%elif a.responded == 'Incorrect'%}
+                        <!--<span class="glyphicon glyphicon-check quest-status" style="color:#4D8496;" ></span>-->
+                        Saved
+                        {%else %}
+                        Not answered
+                        <!--<span class="glyphicon glyphicon-unchecked quest-status" style="color: #4D8496"></span>-->
+                        {%endif%}
+
+                        {%endif%}
+                    </div>
+                </li>
+                {%endfor%}
+            </ul>
+
+        </div>
+    </div>
+</div>
+
+
+
+        {%endblock%}

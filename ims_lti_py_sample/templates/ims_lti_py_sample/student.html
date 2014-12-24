@@ -4,6 +4,10 @@
         Assessment Name
 {%endblock%}
 
+        <!--This file is no longer used-->
+<!--this is the old student home page-->
+
+
 {% block content %}
 <div class="row main-page-bgr">
     <div class="main-page-img">
@@ -18,16 +22,28 @@
          {%endif%}
          <div class="display-grade">
              {%if grade == 'none' %}
-             Submit Answers
+
              {% else %}
              Overall Grade: {{grade}}%
              {%endif%}
         </div>
          <div class="upload-grade">
-            <button class="btn" id="btn-submit-grade"> <span class="glyphicon glyphicon-cloud-upload"></span></button>
+            {%if answered_all_questions%}
+                <button class="btn" id="btn-submit-grade">
+            {%else%}
+                 <button class="btn" id="btn-submit-grade" disabled>
+            {%endif%}
 
+                <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                <a href="#">
+                {%if grade == 'none' %}
+                    Submit answers, go back to {{consumer}}
+                {%else %}
+                    Go back to {{consumer}}
+                {%endif%}
+                </a>
+            </button>
          </div>
-
     </div>
 
     <script>

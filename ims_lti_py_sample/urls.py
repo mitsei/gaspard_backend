@@ -34,6 +34,7 @@ urlpatterns = patterns('',
                            name='SubmitAnswer'),
                        url(r'^student_home$', 'ims_lti_py_sample.views.student_home', name='Home'),
                        url(r'^submit_grade$', 'ims_lti_py_sample.views.submit_grade', name='SubmitGrade'),
+                       url(r'^update_questions_menu$', 'ims_lti_py_sample.views.update_questions_menu', name='UpdateMenu'),
 
 
                        #for testing

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bootstrap 101 Template</title>
+    <title>Ortho3D Assessment</title>
 
     <!-- Bootstrap -->
 
@@ -43,10 +43,11 @@
         }
 
         .com_college {
-            min-width: 50%;
+            /*min-width: 40%;*/
             margin-left: auto;
             margin-right: auto;
-            top: 20%;
+            top: 25%;
+            width:70%;
         }
     </style>
 </head>
@@ -268,11 +269,12 @@
 
     <div class="row header-height header-border">
         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="height: 100%;">
-            <img class="com_college header-img" style="" src="{% static 'css_ui/SummaryPage/image8.png' %}"></div>
+            <img class="com_college header-img" style="" src="{% static 'massc-logo.png' %}"></div>
         <div class="col-lg-7 col-md-7 col-sm-7 col-xs-7 main-header" style="padding:15px;"><h1 style="vertical-align: 50%" class="header-text">
             {%block title%}Assessments{% endblock %}</h1></div>
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 main-header">
-            <img class="mit-imag  header-img" style="" src="{% static 'css_ui/SummaryPage/image7.png' %}">
+            <img class="mit-imag  header-img" style="" src="{% static 'MIT-logo-lightgray-white-large.png' %}">
+            <!--{% static 'css_ui/SummaryPage/image7.png' %}-->
         </div>
 
     </div>

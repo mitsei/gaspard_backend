@@ -1,8 +1,11 @@
-{% extends "ims_lti_py_sample/base.html" %}
+{% extends "ims_lti_py_sample/base_student.html" %}
 
 {%block title%}
         Assessment Name
 {%endblock%}
+
+
+
 
 {% block content %}
         {% load staticfiles %}
@@ -13,64 +16,116 @@
 
 <script>
     $(document).ready(function () {
-        $('.prob-quest-header').click(function () {
-            var width = document.getElementById('prob-quest-row').offsetWidth;
-            console.log(width);
-            $('.quest-item').css('width', width);
+
+        $('#get-next-few-questions').click(function () {
+                        console.log('next');
+
+            nextFewQuestions(true);
         });
-        $('.quest-item').click(function(){
-            console.log("Clicked on question");
-//            $('.prob-quest-header').html($(this).text());
-            console.log("Changed header text");
-            //goto a different question
-            getProblem($(this));
+        $('#get-prev-few-questions').click(function () {
+           console.log('prev');
+
+            nextFewQuestions(false);
         });
-        $('.next-badge').click(function(){
-            console.log('Clicked next question');
-            if($(this).attr('id') =='home'){
-                window.location.href = 'student_home';
-            }else{
-                getProblem($(this));
+         $('.next-badge').click(function () {
+            nextBadgeClick(this);
+            return false;
+
+        });
+         function nextFewQuestions(next_bool){
+            console.log("Get more questions");
+//            console.log("{{questions}}");
+             var last_number='0';
+             if(next_bool){
+                 last_number = $('.question-link').last().html();
+             }else{
+                 last_number = $('.question-link').first().html();
+
+             }
+
+
+              console.log(last_number);
+            $.ajax({
+                url: "update_questions_menu",
+                type: "POST",
+                data: {last_number: last_number, next: next_bool, questions: '{{questions}}'},
+                success: function (response) {
+                    console.log("Got the answer back");
+                    console.log(response[0]);
+                    updateMenu(response);
+                }
+            });
+
+        }
+        function updateMenu(questions) {
+            var str = '';
+            str += '<li style="margin-left: 0"><a href="#"><span aria-hidden="true" class="next-badge" id="{{prev_quest_id}}">&laquo;</span><span class="sr-only">Previous</span></a></li>';
+            for (var i in questions) {
+//                console.log(i);
+                console.log(questions[i].number);
+                console.log("question_number variable: ");
+                console.log("{{question_number}}");
+                if (questions[i].number == '{{question_number}}')
+                    str += '<li><a href="#" id="'+questions[i].id+'" class="number-of-cur-quest">' + questions[i].number + '</a></li>';
+                else if (questions[i].number == -1) {
+                    str += '<li><a  href="#" id="get-prev-few-questions">&hellip;</a></li>';
+                }else if (questions[i].number == 0) {
+                    str += '<li><a href="#" id="get-next-few-questions">&hellip;</a></li>';
+
+                }else {
+                    str += '<li><a href="#"  id="'+questions[i].id+'" class="question-link">' + questions[i].number + '</a></li>';
+                }
             }
-        });
-//        $('#report-answer').html();
-        $('#prob-quest-header').click(function(){
-                   $('.dropdown-menu').css('width', $("#prob-quest-row").width());
+            str += '<li style="margin-right: 0"><a href="#" id="{{next_quest_id}}" class="next-badge"><span aria-hidden="true" >&raquo;</span><span class="sr-only">Next</span></a></li>';
+            $('#questions-menu-ul').addClass("add-side-margin");
+            $('#questions-menu-ul').html(str);
 
-        });
+            $('#get-next-few-questions').click(function () {
+                                        console.log('next');
 
+                nextFewQuestions(true);
+                return false;
+            });
+//            $('#get-prev-few-questions').click(function () {
+//                nextFewQuestions(false);
+//            });
+            $('#get-prev-few-questions').click(function () {
+                console.log('prev');
+
+                nextFewQuestions(false);
+            });
+            $('.next-badge').click(function () {
+                nextBadgeClick(this);
+                return false;
+            });
+             $('.question-link').click(function(){
+                getProblem(this);
+                return false;
+            });
+
+        }
+
+        function nextBadgeClick(obj){
+             console.log('Clicked next question');
+            if ($(obj).attr('id') == 'home') {
+                window.location.href = 'student_home';
+            } else {
+                getProblem(obj);
+            }
+        }
     });
 </script>
-        <script type="text/javascript">
- $(document).ready(function () {
-//        $("#submit-match-answer").click(function () {
-//
-//            u.getUnity().SendMessage("Question", "RequestRespone", "");
-//            console.log("send response");
-//        });
-
-//        $("#submit-multi-answer").click(function(){
-//            var choice_id=$(this).attr('');
-//            $.ajax({
-//                url:"submit_multi_answer",
-//                type:'POST',
-//                data:choice_id,
-//                success: function(){
-
-//                }
-//            });
-//        });
-    });
- console.log("Print type");
+<script type="text/javascript">
+    console.log("Print type");
     console.log("{{question_type}}");
 
-    if("{{question_type}}".toLowerCase().indexOf("choose-viewset") >= 0){
-        w=512;
-        h=512;
+    if ("{{question_type}}".toLowerCase().indexOf("choose-viewset") >= 0) {
+        w = 512;
+        h = 512;
         console.log("this is a Choose viewset");
-    }else{
-        var w=1024;
-        var h=700;
+    } else {
+        var w = 1024;
+        var h = 700;
     }
     var config = {
         width: w,
@@ -92,227 +147,157 @@
         u.observeProgress(function (progress) {
             switch (progress.pluginStatus) {
                 case "broken":
-							$brokenScreen.find("a").click(function (e) {
-								e.stopPropagation();
-								e.preventDefault();
-								u.installPlugin();
-								return false;
-							});
-							$brokenScreen.show();
-						break;
-						case "missing":
-							$missingScreen.find("a").click(function (e) {
-								e.stopPropagation();
-								e.preventDefault();
-								u.installPlugin();
-								return false;
-							});
-							$missingScreen.show();
-						break;
-						case "installed":
-							$missingScreen.remove();
-						break;
-						case "first":
-                                SaySomethingToUnity();
-						break;
-					}
-				});
-                console.log("Calling initPlugin");
-//          $.when(u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}")).then(function(){
-//                    SaySomethingToUnity();
-//                });
-//        u.observeProgress(function(progress){
-//            console.log("Inside observe Progress");
-//            console.log(progress);
-//            console.log(progress['pluginStatus']);
-//            if(progress['pluginStatus']=='first'){
-//                SaySomethingToUnity();
-//
-//            }
-//        });
-            u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}");
+                    $brokenScreen.find("a").click(function (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        u.installPlugin();
+                        return false;
+                    });
+                    $brokenScreen.show();
+                    break;
+                case "missing":
+                    $missingScreen.find("a").click(function (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        u.installPlugin();
+                        return false;
+                    });
+                    $missingScreen.show();
+                    break;
+                case "installed":
+                    $missingScreen.remove();
+                    break;
+                case "first":
+                    SaySomethingToUnity();
+                    break;
+            }
+        });
+        console.log("Calling initPlugin");
+        u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}");
 
 
 
-
-                console.log("Done")
-			});
-			function SaySomethingToUnity()
-			{   console.log("Sending message");
+        console.log("Done")
+    });
+    function SaySomethingToUnity() {
+        console.log("Sending message");
 
 //
-                if("{{question_type}}".toLowerCase().indexOf("define-ortho-faces")>=0){
-                    console.log("Define ortho faces");
-                    u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "false");
-                    u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "true");
+        if ("{{question_type}}".toLowerCase().indexOf("define-ortho-faces") >= 0) {
+            console.log("Define ortho faces");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "false");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "true");
 
-                }else if("{{question_type}}".toLowerCase().indexOf("match-ortho-faces")>=0){
-                    console.log("Match ortho faces");
-                    u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "true");
-                    u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "true");
-
-
-                }else if("{{question_type}}".toLowerCase().indexOf("choose-viewset")>=0){
-                    console.log("Choose-viewset");
-                    u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "false");
-                    u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "false");
-                    console.log("sent message")
-
-                }
-			    u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}{{question_name}}.unity3d");
+        } else if ("{{question_type}}".toLowerCase().indexOf("match-ortho-faces") >= 0) {
+            console.log("Match ortho faces");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "true");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "true");
 
 
+        } else if ("{{question_type}}".toLowerCase().indexOf("choose-viewset") >= 0) {
+            console.log("Choose-viewset");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "false");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "false");
+            console.log("sent message")
 
-			    u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");
-			}
+        }
+        u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}{{question_name}}.unity3d");
 
- /**
-  * This method is called by unity object in DEFINE and MATCH ortho faces
-  * @param arg
-  * @constructor
-  *
-  */
-        function UnityPrint(str){
+
+        u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");
+        // Want to enable the submit button only after the Unity object is ready
+        // Is there a way to know if a bundle is loaded
+
+    }
+
+    /**
+     * This method is called by unity object in DEFINE and MATCH ortho faces
+     * @param arg
+     * @constructor
+     *
+     */
+    function UnityPrint(str) {
         console.log(str);
- }
-        function ReceiveResponse( arg )
-		{
+    }
+    /* This method is called by unity objects with the answer provided
+     *
+     * */
+    function ReceiveResponse(arg) {
 
-            $.ajax({
-                url:"submit_answer",
-                type:"POST",
-                data: {answer: arg},
-                success: function(response){
-                    console.log("Got the answer back");
-                    console.log(response);
-                    printResponse(response);
-
-//                    console.log("Print variable: ");
-//                    console.log('{{question_name}}');
-
-                }
-            });
-		}
-            function printResponseOld(response){
-                var answer='';
-
-                    console.log(response['correct']=== true );
-                    if(response['correct']=== true ){
-                        answer='<span class="glyphicon glyphicon-ok" style="top:5px" ></span>'+ " Correct!";
-                        $('#report-answer').css("color","green");
-                    }else{
-                        answer='<span class="glyphicon glyphicon-remove" style="top:5px;"></span>'+" Incorrect!";
-                        $('#report-answer').css("color","red");
-                    }
-                    $('#report-answer').html(answer);
-
+        $.ajax({
+            url: "submit_answer",
+            type: "POST",
+            data: {answer: arg},
+            success: function (response) {
+                console.log("Got the answer back");
+                console.log(response);
+                printResponse(response);
             }
-            function printResponseJS(response){
-                var reportDiv = document.getElementById("report-answer");
-                var answer='';
-                if('detail' in response){
-                    answer="Could not submit answer!"
-                }
-                else if(response['see_answer']=='True') {
-                   // console.log('')
-
-                    if (response['correct'] === true) {
-
-                        answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
-//                        $(reportDiv).css("color","green");
-                        reportDiv.style.color = "green";
-
-                    } else {
-                        answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + "Incorrect!";
-                        reportDiv.style.color = "red";
-
-//                        $(reportDiv).css("color","red");
-                    }
-
-                }else{
-
-                    answer="Saved!";
-                }
-                reportDiv.innerHTML = answer;
-            }
-
+        });
+    }
 </script>
 
-<div class="row main-problem-bgr" >
-    <!--<div class="col-lg-1"></div>-->
-    <div class="col-lg-12 col-quest-background " style="margin-top: -20px">
-        <div class="display-question">
-            <div class="row" style="border:0px peachpuff solid; margin:0">
 
+<div class="row" style="border:0px blue solid;">
+    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="border:0px solid darkolivegreen">
+        <!--{% load staticfiles %}-->
 
+        <button class="btn btn-white-background home-btn" type="button"><a href="/lti/student_home">
+            <span class="glyphicon glyphicon-home"></span></a>
+        </button>
+    </div>
 
-                <div class="col-lg-12 col-md-12" style="border:0px solid darkolivegreen">
-                    <!--Next and prev question             position: absolute; top:3%; right:1%;-->
-                    <div class="row" style="border:0px blue solid; margin:15px 0;">
-                        <div class="next-question">
-                        <span class="glyphicon glyphicon-chevron-left next-badge" id="{{prev_quest_id}}"></span>
-                        <span class="glyphicon glyphicon-chevron-right next-badge" id="{{next_quest_id}}"></span>
-                        </div>
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding-top: 20px; border:0px solid darkolivegreen">
+        <div><p style="color:grey;font-size: 17px">{{question}}</p></div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 " style="border:0px solid lawngreen">
+        <nav style="border:0px solid red">
+            <ul class="numbering" id="questions-menu-ul">
+                <li><a href="#"><span aria-hidden="true" class="next-badge" id="{{prev_quest_id}}">&laquo;</span><span
+                        class="sr-only">Previous</span></a></li>
+                {%for a in small_list%}
 
-                        <div class="question-col col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                            <div class="dropdown" id="prob-quest-row">
-                                <a data-toggle="dropdown" href="#" >
-                                    <p class="mylist-header" id="prob-quest-header" style="padding-right: 40px;">{{question_name}}
-                                        <span class="glyphicon glyphicon-chevron-down"
-                                            style="position:absolute;right:10px; margin-top:15px;">
-                                        </span>
-                                    </p>
-                                </a>
-                                <div class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                    {% for a in questions %}
-                                    <a href="#" class="mylist-item quest-item"
-                                        id="{{a.id}}"> <!--name="{{a.text.text}}"-->
-                                        {%if seeAnswer%}
-                                            {%if a.responded == 'Correct'%}
-                                                <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green"></span>
-                                            {%elif a.responded == 'Incorrect'%}
-                                                <span class="glyphicon glyphicon-remove-circle quest-status" style="color: indianred" ></span>
-                                            {%else %}
-                                                <span class="glyphicon glyphicon-remove-circle quest-status" style="color: transparent"></span>
-                                            {%endif%}
-                                        {%else%}
-                                            {%if a.responded == 'Correct'%}
-                                                <span class="glyphicon glyphicon-saved quest-status" style="color:#4D8496;"></span>
-                                            {%elif a.responded == 'Incorrect'%}
-                                                <span class="glyphicon glyphicon-saved quest-status" style="color:#4D8496;" ></span>
-                                            {%else %}
-                                                <span class="glyphicon glyphicon-remove-circle quest-status" style="color: transparent"></span>
-                                            {%endif%}
-                                        {%endif%}
+                    {%if a.number == question_number %}
+                    <li><a href="#" id="{{a.id}}" class="number-of-cur-quest">{{a.number}}</a></li>
+                    {%elif a.number == 0 %}
+                    <li><a href="#" id="get-next-few-questions">&hellip;</a></li>
+                    {%elif a.number == -1 %}
+                    <li><a href="#" id="get-prev-few-questions">&hellip;</a></li>
+                    {%else %}
+                    <li><a href="#" id="{{a.id}}" class="question-link">{{a.number}}</a></li>
+                    {%endif%}
+                {%endfor%}
+                <li><a href="#" id="{{next_quest_id}}" class="next-badge"><span aria-hidden="true" id="{{next_quest_id}}" >&raquo;</span><span
+                        class="sr-only">Next</span></a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 " id="submit-btn-div" style="border:0px solid darkolivegreen">
+        <div id=report-answer style=""></div>
+        {%if 'choose-viewset' in question_type%}
+        <button class="btn submit-answer-btn btn-white-background" id="submit-multi-answer" type="button">
+            <a href="#">{%if seeAnswer%} Submit
+                {%else %} Save Answer{%endif%}</a>
 
-                                        {{a.displayName.text}}</a>
-                                    {% endfor %}
-                                </div>
-                            </div> <!--End Dropdown-->
+        </button>
+        {%else %}
+        <button class="btn   submit-answer-btn btn-white-background" id="submit-match-answer" type="button">
+            <a href="#">{%if seeAnswer%} Submit
+                {%else %} Save Answer{%endif%}</a>
+        </button>
+        {%endif%}
 
-                        </div><!--End of question-col-->
-                    </div>
-
-                    <div class="row">
-                         {%block unity%}
-                         {%endblock%}
-                    </div>
-                    <div class="row" id="bottom-row" style="border:0px blanchedalmond solid">
-                        {% load staticfiles %}
-                        <a href="/lti/student_home"><img class="" style="margin:10px;" src="{% static 'css_ui/GUI_Matching/image.png' %}">
-                            </a>
-                        <!--<div id=report-answer style=""></div>-->
-                        <!--<button class="btn  btn-lg submit-answer" id="submit-match-answer" type="button">Submit</button>-->
-                    </div>
-
-                </div>
-            </div>
-        </div>
-        <!--<button class="btn  btn-lg submit-answer" id="submit-answer" type="button">Submit</button>-->
-        <!--<div id="report-answer">-->
-
-        <!--</div>-->
-        <!--<div class="col-lg-1"></div>-->
     </div>
 </div>
+
+<div class="row">
+    {%block unity%}
+    {%endblock%}
+</div>
+<div class="row" id="bottom-row" style="border:0px blanchedalmond solid">
+
+</div>
+
+
+
 {%endblock%}
