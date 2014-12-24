@@ -12,10 +12,10 @@
             <img class="img-home" src="{% static 'css_ui/SummaryPage/image.png' %}">
 
             {%if user_name == 'none' %}
-         <h2 class="welcome">Welcome!</h2>
+         <h2 class="welcome-instructor">Welcome!</h2>
          {%else%}
 
-         <h2 class="welcome">Welcome, {{user_name}}!</h2>
+         <h2 class="welcome-instructor">Welcome, {{user_name}}!</h2>
          {%endif%}
         </div>
         <div class="row">
@@ -36,7 +36,7 @@
             </div>
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"></div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"><p class="whitetext">Choose problems from the Bank to
-            create new assessment, click +
+            create new assessment, click plus button
              <span class="glyphicon glyphicon-question-sign" style="" id="help-bank" data-container="body"
                               data-toggle="popover" data-placement="top" data-content="Bank items are sorted by types. Click on the type name to view
                                the bank items of that type. To create a new assessment select bank items and click on +. To add items to an existing assessment
@@ -54,11 +54,11 @@
             <!--Assessments-->
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-list">
                 <div class="mylist-header">Assessments
-                    <button class=" manage-assess-btn btn" id="btn-new-assess">
+                    <button class=" manage-assess-btn btn btn-dark-background" id="btn-new-assess">
                         <span class="glyphicon glyphicon-plus" style="float:right"></span></button>
-                    <button class="manage-assess-btn btn " id="btn-del-assess">
+                    <button class="manage-assess-btn btn btn-dark-background" id="btn-del-assess">
                         <span class="glyphicon glyphicon-minus" style="float:right"></span></button>
-                    <button class="manage-assess-btn btn " id="btn-show-offering-option">
+                    <button class="manage-assess-btn btn btn-dark-background" id="btn-show-offering-option">
                         <span class="glyphicon glyphicon-share" style="float:right;"></span></button>
                 </div>
                 <div class="mylist" id="assess-list">
@@ -77,7 +77,7 @@
 
                     <div class="mylist-header " >
                         <div class="mylist-item-text" id="assess-items-name"></div>
-                        <button class="manage-assess-btn btn" id="btn-reorder-items" onclick="showModalReorderItems()">
+                        <button class="manage-assess-btn btn btn-dark-background" id="btn-reorder-items" onclick="showModalReorderItems()">
                             <span class="glyphicon glyphicon-sort" ></span></button>
                     </div>
                     <div id="assess-items">

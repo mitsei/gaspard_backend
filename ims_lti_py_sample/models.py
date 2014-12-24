@@ -8,21 +8,25 @@ class Post(models.Model):
     def __unicode__(self):
         return self.key
 
+class Parameters(models.Model):
+    value=models.CharField(max_length=20)
+    key=models.CharField(max_length=20, primary_key=True)
 
-class Headers(models.Model):
-    key = models.CharField(max_length=20)
-    value = models.CharField(max_length=100)
 
-    def __unicode__(self):
-        return self.key
-
-class Bank(models.Model):
-    key=models.CharField(max_length=20)
-    value= models.CharField(max_length=100)
-
-class Questions(models.Model):
-   # key = models.CharField(max_length=20)
-    value = models.CharField(max_length=10000)
-
-    def __unicode__(self):
-        return self.value
+# class Headers(models.Model):
+#     key = models.CharField(max_length=20)
+#     value = models.CharField(max_length=100)
+#
+#     def __unicode__(self):
+#         return self.key
+#
+# class Bank(models.Model):
+#     key=models.CharField(max_length=20)
+#     value= models.CharField(max_length=100)
+#
+# class Questions(models.Model):
+#    # key = models.CharField(max_length=20)
+#     value = models.CharField(max_length=10000)
+#
+#     def __unicode__(self):
+#         return self.value

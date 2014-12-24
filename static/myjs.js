@@ -6,6 +6,11 @@ var selectedBankItems = [];
 var wait=false;
 
 $(document).ready(function () {
+
+    $('.question-link').click(function(){
+            getProblem($(this));
+            return false;
+        });
     $('#btn-submit-grade').click(function(){
         $('#modal-warn-submit-grade').modal('show');
 
@@ -17,11 +22,15 @@ $(document).ready(function () {
             type:'POST',
             success: function(response){
 //                console.log(response);
-                $("#assess-finished-msg").html('Thank you for taking the assessment!');
+//                $("#assess-finished-msg").html('Thank you for taking the assessment!');
                 $('.quest-item').unbind();
                 $('#btn-submit-grade').unbind();
 
+                 document.location.href = response['return_url'];
+
             }
+        }).done(function(){
+
         });
     });
 
@@ -29,6 +38,7 @@ $(document).ready(function () {
 //    $('#help').addClass('shown');
     $('#help-bank').popover('hide');
     $('#help-assessment').popover('hide');
+    $('#btn-submit-disabled').tooltip('hide');
 //    $('#help').click(function(){
 //        if($('#help').hasClass('shown')){
 //            $('#help').removeClass('shown');
@@ -42,22 +52,15 @@ $(document).ready(function () {
     $('#help').on('show.bs.popover', function () {
         console.log("show");
 });
-    $('#submit-grade-text').hide();
-
-    $('.upload-grade').mouseenter(function(){
-        if($('#submit-grade-text').is(":visible")){ return;}
-        $('#submit-grade-text').show();
-    });
-    $('.upload-grade').mouseleave(function(){
-         $('#submit-grade-text').hide();
-    });
 
 
-    $('.instruction').click(function(){
-        console.log("clicked on instruction");
-    });
-    $('.instruction').trigger("click");
-    $('#UnityPlayer').click();
+
+
+//    $('.instruction').click(function(){
+//        console.log("clicked on instruction");
+//    });
+//    $('.instruction').trigger("click");
+//    $('#UnityPlayer').click();
 
 //    $('#unityPlayer').focus();
 //    $('#unityPlayer').focus(function(){
@@ -155,14 +158,9 @@ $(document).ready(function () {
 
         }
 
-//    $(".submit-answer").click(function () {
-//        u.getUnity().SendMessage("Question", "RequestRespone", "");
-//    });
     $('#btn-home').click(function () {
 
     });
-
-
 
     /* Handle the selection of the assessment */
     $('.assess-item').click(function () {
@@ -171,14 +169,11 @@ $(document).ready(function () {
             wait=true;
             console.log('waiting');
             clickAssessment($(this));
-
         }
-
         return false;
     });
 
     /* Delete an assessment */
-
     $('#btn-del-assess').click(function () {
         if (selectedAssessment != null) {
             var sub_id = selectedAssessment.attr('id');
@@ -193,7 +188,7 @@ $(document).ready(function () {
                     response= JSON.parse(response);
                     console.log('success' in response);
                     if(response['success']) {
-                           $("#modal-delete-assess-report .modal-body").html("Assessment successfully deleted!");
+                          $("#modal-delete-assess-report .modal-body").html("Assessment successfully deleted!");
                         $("#modal-delete-assess-report").modal('show');
                     }else{
                          $("#modal-delete-assess-report .modal-body").html("This assessment has AssessmentTakens" +
@@ -241,14 +236,9 @@ $(document).ready(function () {
 
     $("#btn-new-assess").click(function () {
         unselectThisAssessment();
-//          if (selectedBankItems.length > 0) {
         $("#assess-name").val('');
         $('#assess-name').focus();
         $('#modal-create-assessment').modal('show');
-//          }else{
-//              //show modal : Please select bank items to make an assessment
-//              $('#modal-select-bank-items').modal('show');
-//          }
 
     });
 
@@ -947,9 +937,7 @@ function printResponse(response){
 //                console.log("See answer "+ response['see_answer']);
                 if('detail' in response){
                     answer="Could not submit answer!"
-                }
-
-                else if(response['see_answer']=='True') {
+                }else if(response['see_answer']=='True') {
 
                     if (response['correct'] === true) {
 
@@ -963,7 +951,6 @@ function printResponse(response){
 
 //                        $(reportDiv).css("color","red");
                     }
-
                 }else{
 
                     answer="Saved!";

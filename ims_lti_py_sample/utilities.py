@@ -13,7 +13,8 @@ from http_signature.requests_auth import HTTPSignatureAuth
 import json
 #from django.utils.http import unquote
 from copy import deepcopy
-from models import Post
+from models import Post, Parameters
+
 
 
 class AssessmentRequests(object):

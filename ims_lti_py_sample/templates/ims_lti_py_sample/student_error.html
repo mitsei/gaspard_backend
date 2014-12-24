@@ -1,0 +1,97 @@
+{% extends "ims_lti_py_sample/base.html" %}
+
+{%block title%}
+        Assessment Name
+{%endblock%}
+
+{% block content %}
+<div class="row main-page-bgr">
+    <div class="main-page-img">
+     <div class="welcome-row" style="position:relative;">
+         {% load staticfiles %}
+         <img class="img-home" src="{% static 'css_ui/SummaryPage/image.png' %}">
+          {%if userName == 'none' %}
+         <h2 class="welcome">Welcome!</h2>
+         {%else%}
+
+         <h2 class="welcome">Welcome, {{userName}}!</h2>
+         {%endif%}
+         <div class="display-grade">
+
+        </div>
+         <div class="upload-grade">
+
+                 <button class="btn" id="btn-submit-grade">
+
+                <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                <a href="#">
+
+                    Go back to {{consumer}}
+
+                </a>
+            </button>
+
+
+
+         </div>
+
+    </div>
+
+    <script>
+       $(document).ready(function(){
+            $('.quest-item').click(
+                function(){
+                    console.log("got clicked");
+                    getProblem($(this));
+                    return false;
+                }
+        );
+
+       });
+    </script>
+        <div class="row" style="  border:0px solid #ffff00">
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+        </div>
+
+        <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+
+
+
+
+
+        </div>
+        <div class="col-lg-2"></div>
+    </div>
+    <div class="row" style="min-height:500px; padding-bottom: 2%">
+        <!--<div class="col-lg-1"></div>-->
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
+        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+           <h2>
+               {%if location%}
+               {{location}}
+               {%endif%}</h2>
+            <h2>
+               Error: {{error}}
+           </h2>
+        </div>
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+        <div class="col-lg-4 col-md-3 col-sm-3 col-xs-3" id="assess-finished-msg"></div>
+        <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+    </div>
+
+
+    <div class="row" style="min-height:200px; padding-bottom: 2%">
+        <div class="col-lg-6"></div>
+        <div class="col-lg-4" >
+        </div>
+
+        <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
+    </div>
+        </div>
+</div>
+{% endblock %}
