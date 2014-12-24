@@ -82,15 +82,11 @@
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 " id="submit-btn-div" style="border:0px solid darkolivegreen">
 
         {%if answered_all_questions%}
-            <div>
-            <button class="btn btn-submit-grade btn-white-background"  id="btn-submit-grade" style="border:0px solid yellow">
-        {%else%}
-                <div id="btn-submit-disabled" style="border:0px solid yellow" data-toggle="tooltip" data-placement="top" title="Answer all questions to unable the button">
-            <button class="btn btn-submit-grade btn-white-background"   disabled>
-        {%endif%}
-
-        <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
-            <a href="#">
+        <div>
+            <button class="btn btn-submit-grade btn-white-background" id="btn-submit-grade"
+                    style="border:0px solid yellow">
+                <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                <a href="#">
                     {%if grade == 'none' %}
                     Submit answers, go back to {{consumer}}
                     {%else %}
@@ -98,11 +94,36 @@
                     {%endif%}
                 </a>
             </button>
-                                    </div>
+        </div>
+        {%else%}
+
+        {%if grade == 'none' %}
+            <div id="btn-submit-disabled" style="border:0px solid yellow" data-toggle="tooltip" data-placement="top"
+                    title="Answer all questions to unable the button">
+            <button class="btn btn-submit-grade btn-white-background" disabled>
+                <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                <a href="#">
+                    Submit answers, go back to {{consumer}}
+                </a>
+            </button>
+        {%else %}
+            <div id="btn-submit-disabled" style="border:0px solid yellow" data-toggle="tooltip" data-placement="top"
+                 title="Answer all questions to unable the button">
+
+                <button class="btn btn-submit-grade btn-white-background" style="margin-left: 40px" disabled>
+                    <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                    <a href="#">
+                        Go back to {{consumer}}
+                    </a>
+                </button>
+                {%endif%}
+
+            </div>
+            {%endif%}
 
 
+        </div>
     </div>
-</div>
 
 
 <div class="row" style="min-height: 700px;margin-top: 20px">
@@ -135,7 +156,7 @@
                         <span class="glyphicon glyphicon-remove-circle quest-status"
                               style="color: indianred">Incorrect</span>
                         {%else %}
-                        <span class="glyphicon glyphicon-remove-circle quest-status" style="color: #4D8496"></span>
+                        <span class="glyphicon glyphicon-unchecked quest-status" style="color: #4D8496"></span>
                         {%endif%}
                         {%else %}
                         {%if a.responded == 'Correct'%}
@@ -158,7 +179,8 @@
                         {%elif a.responded == 'Incorrect'%}
                         Incorrect
                         {%else %}
-                        <span class="glyphicon glyphicon-remove-circle quest-status" style="color: #4D8496"></span>
+                        Not answered
+                        <!--<span class="glyphicon glyphicon-remove-circle quest-status" style="color: #4D8496"></span>-->
                         {%endif%}
                         {%else %}
                         {%if a.responded == 'Correct'%}
