@@ -256,13 +256,13 @@ def student(request):
                                                                    'consumer':params['tool_consumer_info_product_family_code'],
                                                                    'answered_all_questions': answered_all_questions,
                                                                    'welcome': True,
-                                                                   # 'return_url':params['launch_presentation_return_url'],
-                                          'seeAnswer': review_whether_correct}))
+                                                                    # 'return_url':params['launch_presentation_return_url'],
+                                                                    'seeAnswer': review_whether_correct}))
 
         else:
             detail= resp['detail']
             print resp['detail']
-            return render_to_response(("ims_lti_py_sample/student_error.html"),
+            return render_to_response("ims_lti_py_sample/student_error.html",
                                       RequestContext(request, {'userName': name,
                                                                'consumer':params['tool_consumer_info_product_family_code'],
                                                                'error': detail,
@@ -272,7 +272,13 @@ def student(request):
         return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e,
                                                                                               'params': params}))
     except Exception, e:
-        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request, {'error': e}))
+        # return render_to_response("ims_lti_py_sample/error.html", RequestContext(request, {'error': e}))
+        return render_to_response("ims_lti_py_sample/student_error.html",
+                                  RequestContext(request, {
+                                      'consumer': params['tool_consumer_info_product_family_code'],
+                                      'error': e,
+                                      'location': "Inside Student"
+                                  }))
 
         # raise Http404
 
@@ -482,7 +488,14 @@ def display_question(request):
 
         questions = getQuestions(bank_id, taken_id)
         if 'detail' in questions:
-                return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': questions['detail']}))
+                # return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': questions['detail']}))
+
+                return render_to_response(("ims_lti_py_sample/student_error.html"),
+                                      RequestContext(request, {
+                                                               'consumer': params['tool_consumer_info_product_family_code'],
+                                                               'error': questions['detail'],
+                                                               'location': "Getting questions"
+                                                               }))
 
 
         '''
@@ -545,11 +558,11 @@ def display_question(request):
                 print "add 789..."
                 sm_list.append({'number': 0})
 
-
+            questions = sm_list
             print "Question number " + str(question_number)
             for a in sm_list:
                 print a['number']
-            questions = sm_list
+
 
 
 
@@ -572,6 +585,9 @@ def display_question(request):
         '''
         Writing the manip file
         '''
+        if 'detail' in resp2.json():
+            print 'has detail'
+        print resp2.json()
         manip = resp2.json()['files']['manip']
         decoded = base64.b64decode(manip)
         text_file = open(static_folder+"Gaspard/" + q_name + ".unity3d", "w")
@@ -599,8 +615,9 @@ def display_question(request):
 
             return render_to_response("ims_lti_py_sample/unity.html", RequestContext(request,
                                                      {'question_name': q_name, 'question': question,
-                                                      'questions': questions, 'question_number': question_number,
-                                                      'small_list': sm_list,
+
+                                                      'question_number': question_number,
+                                                      'small_list': questions,
                                                       'question_type': question_type,
                                                       'next_quest_id': next_quest_id,
                                                       'prev_quest_id': prev_quest_id,
@@ -877,14 +894,14 @@ def instructor(request):
             for a in assessments:
                 print a['displayName']['text']  # Assessment name
 
-                '''
-                Get a list of items in a bank
-                assessment/banks/<bank_id>/items/
-                '''
+            '''
+            Get a list of items in a bank
+            assessment/banks/<bank_id>/items/
+            '''
             eq3 = req_assess.get(req_assess.url + bank_id + "/items/")
             print "Status code getting items:  " + str(eq3.status_code)
             items = eq3.json()['data']['results']
-            count= eq3.json()['data']['count']
+            count = eq3.json()['data']['count']
             print "Number of items: " + str(count)
             items_type1 = []
             items_type2 = []

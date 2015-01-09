@@ -6,12 +6,23 @@ var selectedBankItems = [];
 var wait=false;
 
 $(document).ready(function () {
+//    if ( window.location !== window.parent.location ) {
+//            console.log("In iframe");
+//        } else {
+//            console.log('Not in iframe');
+//        }
 
     $('.question-link').click(function(){
             getProblem($(this));
             return false;
         });
     $('#btn-submit-grade').click(function(){
+
+        if ( window.location !== window.parent.location ) {
+            console.log("In iframe");
+        } else {
+            console.log('Not in iframe');
+        }
         $('#modal-warn-submit-grade').modal('show');
 
     });
@@ -34,21 +45,15 @@ $(document).ready(function () {
         });
     });
 
-//    $('help').popover();
-//    $('#help').addClass('shown');
     $('#help-bank').popover('hide');
     $('#help-assessment').popover('hide');
-    $('#btn-submit-disabled').tooltip('hide');
-//    $('#help').click(function(){
-//        if($('#help').hasClass('shown')){
-//            $('#help').removeClass('shown');
-////            $('#help').popover('hide');
-//        }else {
-//            $('#help').addClass('shown');
-////            $('#help').popover('show');
-//        }
-//        //$('#help').popover('toggle');
-//    });
+    $('#btn-submit-disabled-div').tooltip('hide');
+    /* instructor view*/
+    $('#btn-new-assess').tooltip('hide');
+    $('#btn-del-assess').tooltip('hide');
+    $('#btn-show-offering-option').tooltip('hide');
+    $('#btn-reorder-items').tooltip('hide');
+//
     $('#help').on('show.bs.popover', function () {
         console.log("show");
 });
@@ -510,6 +515,32 @@ function findSelectedAssess() {
      * or could just check if selectedAssessment is null or not
      */
 }
+function findAssessmentWithName(name) {
+//    var el = document.getElementById('assess-list');
+//    var children = el.childNodes;
+    var children= $('#assess-list').children();
+    console.log(children);
+    var obj = null;
+
+    var i;
+    for (i = 0; i < children.length; i++) {
+        console.log("Print text");
+        console.log($(children[i]).find('div').html().trim());
+
+        if ($(children[i]).find('div').html().trim().indexOf(name)>-1) {
+            console.log("This assessment has name "+ name );
+            obj=children[i];
+
+//            sub_id = children[i].getAttribute('id');
+        }
+    }
+    console.log(obj);
+    console.log('Exiting findAssessmentWithName');
+    return obj;
+
+
+}
+
 function hasclass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
@@ -610,6 +641,7 @@ function clickAssessment(obj) {
  */
 function requestItems(obj) {
     console.log("Request Items");
+    console.log(obj);
     var sub_id = $(obj).attr('id');
     console.log("sub_id " + sub_id);
     console.log(obj);
@@ -712,7 +744,7 @@ function showModalReorderItems() {
                 }
 //                $('#reorder-items-div').prepend('<p class="mylist-header" id="assess-name-reorder" value="' + getName(selectedAssessment) + '">' +
 //                        getName(selectedAssessment) + '<span class="glyphicon glyphicon-edit" style="float:right;"></span>' + '</p>');
-                $('#assess-name-reorder').html(getName(selectedAssessment)+'<span class="glyphicon glyphicon-edit" style="float:right;"></span>').attr('value', getName(selectedAssessment));
+                $('#assess-name-reorder').html(getName(selectedAssessment)+' <button class="btn btn-dark-background rename-btn"><span class="glyphicon glyphicon-edit"></span></button>').attr('value', getName(selectedAssessment));
                 $('#reorder-items').addClass('mylist').html(str);
                 $("#reorder-items").sortable();
 //
@@ -743,14 +775,24 @@ function createNewAssessment() {
             data: {'selected': selectedBankItems, 'name': name},
             success: function (response) {
                 console.log(response);
-                updateAssessmentList();
+
+                $.when(updateAssessmentList()).done(function(){
+//                    var obj=findAssessmentWithName(name);
+//                    selectedAssessment=obj;
+//                    selectAssessment(obj);
+//                    requestItems(obj);
+                    clickAssessment(findAssessmentWithName(name));
+
+                });
                 unselectAllBankItems();
+
+                /* want to select the newly created assessment*/
+
+                /* find the object with the new assessment name*/
+
             }
         });
 
-//            } else {
-//                console.log('No bank items are selected');
-//            }
     } else {
         console.log("the name is empty");
         //$("#modal-create-assessment").modal('show');
@@ -787,6 +829,8 @@ function clickAssessmentName() {
         }
 //        $('#assess-name-reorder').html('');
         $('#assess-name-reorder').html(assessName).attr('value', assessName);
+            $('#assess-name-reorder').append('<button class="btn btn-dark-background rename-btn"><span class="glyphicon glyphicon-edit"></span></button>');
+
 
     } else {
         /*
@@ -802,9 +846,9 @@ function clickAssessmentName() {
         $('#inpt-change-assess-name').click(function () {
             return false;
         });
+        $('#assess-name-reorder').append('<button class="btn btn-dark-background rename-btn"><span class="glyphicon glyphicon-edit"></span></button>');
 
     }
-    $('#assess-name-reorder').append('<span class="glyphicon glyphicon-edit" style="float:right;"></span>');
 
 
 }
@@ -883,11 +927,13 @@ function removeAssessItems() {
 //    }
 
 }
+
 function updateAssessmentList() {
     var text = "";
     $.ajax({
         url: 'update_assess',
         type: 'GET',
+        async: false,
         success: function (response) {
             console.log(response);
             var data = response;
@@ -897,6 +943,7 @@ function updateAssessmentList() {
 
             });
             console.log(text);
+            console.log("printing the assessment list");
             $('#assess-list').html(text);
             selectedAssessment = null;
             $('.assess-item').click(function () {
@@ -906,6 +953,7 @@ function updateAssessmentList() {
 
         }
     });
+    console.log('Exiting updateAssessmentList');
 
 
 }
@@ -920,11 +968,9 @@ function getProblem(obj) {
     $.ajax({
         url: 'get_question',
         type: 'POST',
-//                $(obj).attr('value'),$(obj).attr('name'), $(obj).text(),
         data: {data: [  $(obj).attr('id')]},//send the file.manip
         success: function (data) {
             console.log(data);
-            //window.location.href = response.redirect;
             if (data['redirect']) {
                 window.location = data['redirectURL'];
             }
@@ -934,29 +980,24 @@ function getProblem(obj) {
 function printResponse(response){
                 var reportDiv = document.getElementById("report-answer");
                 var answer='';
-//                console.log("See answer "+ response['see_answer']);
+
+                console.log("See answer "+ response['see_answer']);
                 if('detail' in response){
                     answer="Could not submit answer!"
-                }else if(response['see_answer']=='True') {
+                }else if(response['see_answer']==true) {
 
                     if (response['correct'] === true) {
-
-                        answer = '<span class="glyphicon glyphicon-ok" style="top:5px" ></span>' + " Correct!";
-//                        $(reportDiv).css("color","green");
+                        answer = '<span class="glyphicon glyphicon-ok badge-answer" style="" ></span>' + " Correct!";
                         reportDiv.style.color = "green";
-
                     } else {
-                        answer = '<span class="glyphicon glyphicon-remove" style="top:5px;"></span>' + "Incorrect!";
+                        answer = '<span class="glyphicon glyphicon-remove badge-answer" style=""></span>' + "Incorrect!";
                         reportDiv.style.color = "red";
-
-//                        $(reportDiv).css("color","red");
                     }
                 }else{
 
                     answer="Saved!";
                 }
                 reportDiv.innerHTML = answer;
-//                $('#report-answer').html(answer);
             }
 
 

@@ -235,6 +235,31 @@
             }
         });
     }
+    function bundleIsReady(){
+        console.log("Bundle is ready");
+        console.log("{{seeAnswer}}");
+        //print the  submit button
+        var elemId='submit-match-answer', btnText='Save Answer';
+        if ( '{{question_type}}'.indexOf('choose-viewset')>=0){
+            elemId="submit-multi-answer";
+        }
+        if('{{seeAnswer}}'.indexOf('True')>=0){
+            btnText="Submit Answer";
+
+        }
+        var str= '<a href="#" id="'+elemId+'"><button class="btn btn-white-background" type="button">'+
+            ''+btnText+'</button></a>';
+        $("#submit-btn-div").append(str);
+        $('#submit-multi-answer').click(function () {
+            submitMultiAnswer();
+        });
+         $("#submit-match-answer").click(function () {
+
+                u.getUnity().SendMessage("Question", "RequestRespone", "");
+                console.log("send response");
+            });
+
+    }
 </script>
 
 
@@ -242,15 +267,15 @@
     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="border:0px solid darkolivegreen">
         <!--{% load staticfiles %}-->
 
-        <button class="btn btn-white-background home-btn" type="button"><a href="/lti/student_home">
+        <button class="btn btn-white-background home-btn" style="font-size: 25px" type="button"><a href="/lti/student_home">
             <span class="glyphicon glyphicon-home"></span></a>
         </button>
     </div>
 
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding-top: 20px; border:0px solid darkolivegreen">
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding-top: 30px; border:0px solid darkolivegreen">
         <div><p style="color:grey;font-size: 17px">{{question}}</p></div>
     </div>
-    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4 " style="border:0px solid lawngreen">
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 " style="padding-right:0;border:0px solid lawngreen">
         <nav style="border:0px solid red">
             <ul class="numbering" id="questions-menu-ul">
                 <li><a href="#"><span aria-hidden="true" class="next-badge" id="{{prev_quest_id}}">&laquo;</span><span
@@ -272,20 +297,11 @@
             </ul>
         </nav>
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 " id="submit-btn-div" style="border:0px solid darkolivegreen">
+    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="padding-top:23px;border:0px solid darkolivegreen">
         <div id=report-answer style=""></div>
-        {%if 'choose-viewset' in question_type%}
-        <button class="btn submit-answer-btn btn-white-background" id="submit-multi-answer" type="button">
-            <a href="#">{%if seeAnswer%} Submit
-                {%else %} Save Answer{%endif%}</a>
 
-        </button>
-        {%else %}
-        <button class="btn   submit-answer-btn btn-white-background" id="submit-match-answer" type="button">
-            <a href="#">{%if seeAnswer%} Submit
-                {%else %} Save Answer{%endif%}</a>
-        </button>
-        {%endif%}
+    </div>
+    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 btn-submit-padding" id="submit-btn-div" style="border:0px solid darkolivegreen">
 
     </div>
 </div>

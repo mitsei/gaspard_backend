@@ -24,11 +24,14 @@
                 <p class="whitetext">
                 Choose an assessment, drag and drop items into selected assessment
                     <!--<button type="button" class="btn" id="help" data-container="body" data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">-->
-                        <span class="glyphicon glyphicon-question-sign" style="" id="help-assessment" data-container="body"
+                    <a href="#" tabindex='0' id="help-assessment" data-container="body"
+                       data-trigger="focus"
                               data-toggle="popover" data-placement="top" data-content="Click + to create new assessment.
                               Select the newly created assessment and drag items from the bank into the area under the assessment name.
-                               To offer the selected assessment click the export button and copy parameters."
+                               To offer the selected assessment click the export button and copy parameters.">
+                    <span class="glyphicon glyphicon-question-sign"
                         ></span>
+                        <!--</a>-->
                     <!--</button>-->
 
 
@@ -37,9 +40,9 @@
             <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"></div>
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"><p class="whitetext">Choose problems from the Bank to
             create new assessment, click plus button
-             <span class="glyphicon glyphicon-question-sign" style="" id="help-bank" data-container="body"
+             <span class="glyphicon glyphicon-question-sign" id="help-bank" data-container="body"
                               data-toggle="popover" data-placement="top" data-content="Bank items are sorted by types. Click on the type name to view
-                               the bank items of that type. To create a new assessment select bank items and click on +. To add items to an existing assessment
+                               the bank items of that type. To create a new assessment select bank items and click on + button. To add items to an existing assessment
                                select the assessment and drag items from the bank into the designated area. To remove items drag items from the assessment into
                                 the 'bank items' area">
 
@@ -49,21 +52,35 @@
         </div>
 
         <div class="row">
+            <!--This row has absolutely positioned div which positions the buttons in the "assessment header"-->
+            <div style="" class="wrapper-div-for-btns">
+            <button class="manage-assess-btn btn btn-dark-background" id="btn-new-assess"
+                            data-toggle="tooltip" data-placement="top" title="Create new assessment">
+                        <span class="glyphicon glyphicon-plus" style="float:right"></span>
+            </button>
+                    <button class="manage-assess-btn btn btn-dark-background" id="btn-del-assess"
+                            data-toggle="tooltip" data-placement="top" title="Delete assessment">
+                        <span class="glyphicon glyphicon-minus" style="float:right"></span></button>
+                    <button class="manage-assess-btn btn btn-dark-background" id="btn-show-offering-option"
+                            data-toggle="tooltip" data-placement="top" title="Create offering for selected assessment">
+                        <span class="glyphicon glyphicon-share" style="float:right;"></span></button>
+                </div>
+</div>
+        <div class="row">
 
             <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
             <!--Assessments-->
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-list">
                 <div class="mylist-header">Assessments
-                    <button class=" manage-assess-btn btn btn-dark-background" id="btn-new-assess">
-                        <span class="glyphicon glyphicon-plus" style="float:right"></span></button>
-                    <button class="manage-assess-btn btn btn-dark-background" id="btn-del-assess">
-                        <span class="glyphicon glyphicon-minus" style="float:right"></span></button>
-                    <button class="manage-assess-btn btn btn-dark-background" id="btn-show-offering-option">
-                        <span class="glyphicon glyphicon-share" style="float:right;"></span></button>
+
                 </div>
-                <div class="mylist" id="assess-list">
+
+                <!--<div style="width:150px;height:150px;line-height:3em;overflow:scroll;padding:5px;background-color:#FCFADD;color:#714D03;scrollbar-base-color:#DEBB07;">-->
+<!--</div>-->
+
+                <div class="mylist" style="overflow:scroll;max-height:400px;" id="assess-list">
                     {% for a in assessments %}
-                    <a href="#" class="mylist-item assess-item" id="{{a.id}}" value="{{a.display.name}}">
+                    <a href="#" class="mylist-item assess-item" id="{{a.id}}">
                         <div class="mylist-item-text">
                             {{a.displayName.text}}
                         </div>
@@ -77,7 +94,8 @@
 
                     <div class="mylist-header " >
                         <div class="mylist-item-text" id="assess-items-name"></div>
-                        <button class="manage-assess-btn btn btn-dark-background" id="btn-reorder-items" onclick="showModalReorderItems()">
+                        <button class="manage-assess-btn btn btn-dark-background" data-toggle="tooltip" data-placement="top" title="Rename/reorder"
+                                id="btn-reorder-items" onclick="showModalReorderItems()">
                             <span class="glyphicon glyphicon-sort" ></span></button>
                     </div>
                     <div id="assess-items">
@@ -104,7 +122,7 @@
                             </div>
                         </div>
                         <div id="collapseOne" class="  panel-collapse collapse">
-                            <div class="panel-body " style="">
+                            <div class="panel-body" style="">
                                 <!-- Items-->
                                 <div class="mylist-bank-items">
                                     {% for a in items_type1 %}
