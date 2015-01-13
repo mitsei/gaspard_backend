@@ -974,7 +974,10 @@ def instructor(request):
             print "No bank Ortho 3D found"
 
     except KeyError, e:
-        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+        # return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+        return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e,
+                                                                                              # 'type': "KeyError",
+                                                                                              'params': params}))
 
 
 @csrf_exempt
@@ -1141,8 +1144,14 @@ def get_offering_id(request):
     unique_id=request.session.get('unique_id')
 
     sub_id = request.POST.getlist('sub_id')[0]
-    see_answer = request.POST.getlist('see_answer')[0]
-    see_answer = see_answer == 'true'
+    seeAnswer = request.POST.getlist('seeAnswer')[0]
+    print "See answer "
+    print type(seeAnswer)
+    seeAnswer = seeAnswer == 'true'
+
+    maxAttempts=request.POST.getlist('maxAttempts')[0]
+    print "maxAttempts "
+    print type(maxAttempts)
 
     '''old'''
     bank_id = Post.objects.filter(key="bank_id")[0].value
@@ -1152,12 +1161,20 @@ def get_offering_id(request):
 
     req_assess = AssessmentRequests()
     print "See Answer"
-    print see_answer
-    data={"reviewOptions" : {
+    print seeAnswer
+    data={"reviewOptions": {
         "whetherCorrect" : {
-                "duringAttempt" : see_answer
-        }
-    }}
+                "duringAttempt": seeAnswer
+            }
+    },
+          # "maxAttempts": maxAttempts
+
+    }
+    if maxAttempts != '':
+        data['maxAttempts'] = int(maxAttempts)
+
+    print data
+
     data = json.dumps(data)
 
     '''

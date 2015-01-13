@@ -130,7 +130,7 @@
     var config = {
         width: w,
         height: h,
-        params: { enableDebugging: "0", logoimage: "{{gaspard}}" }
+        params: { enableDebugging: "0"} //, logoimage: "{{gaspard}}" }
     };
     var u = new UnityObject2(config);
     console.log(u);
@@ -266,10 +266,11 @@
 <div class="row" style="border:0px blue solid;">
     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="border:0px solid darkolivegreen">
         <!--{% load staticfiles %}-->
-
-        <button class="btn btn-white-background home-btn" style="font-size: 25px" type="button"><a href="/lti/student_home">
-            <span class="glyphicon glyphicon-home"></span></a>
+        <a href="/lti/student_home">
+        <button class="btn btn-white-background home-btn" style="font-size: 25px" type="button">
+            <span class="glyphicon glyphicon-home"></span>
         </button>
+            </a>
     </div>
 
     <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding-top: 30px; border:0px solid darkolivegreen">
