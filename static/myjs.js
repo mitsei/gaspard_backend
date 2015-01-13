@@ -11,11 +11,7 @@ $(document).ready(function () {
 //        } else {
 //            console.log('Not in iframe');
 //        }
-//    $('body').ajaxStart(function() {
-//        $(this).css({'cursor':'wait'})
-//    }).ajaxStop(function() {
-//        $(this).css({'cursor':'default'})
-//    });
+
 
     $('.question-link').click(function(){
             getProblem($(this));
@@ -51,6 +47,12 @@ $(document).ready(function () {
     });
 
     $('#help-bank').popover('hide');
+    $('#help-bank').click(function(){
+        return false;
+    });
+    $('#help-assessment').click(function(){
+        return false;
+    });
     $('#help-assessment').popover('hide');
     $('#btn-submit-disabled-div').tooltip('hide');
     /* instructor view*/
@@ -187,8 +189,7 @@ $(document).ready(function () {
     $('#btn-del-assess').click(function () {
         if (selectedAssessment != null) {
             var sub_id = selectedAssessment.attr('id');
-            unselectThisAssessment();
-//             $("#modal-delete-assess-report .modal-body").html('');
+            unselectSelectedAssessment();
 
             $.ajax({
                 url: 'del_assess',
@@ -245,16 +246,16 @@ $(document).ready(function () {
 
 
     $("#btn-new-assess").click(function () {
-        unselectThisAssessment();
+        unselectSelectedAssessment();
         $("#assess-name").val('');
         $('#assess-name').focus();
+        $('#warning').html('');
         $('#modal-create-assessment').modal('show');
 
     });
 
     /**
      * "Create" button inside the modal
-     *  check if entered name is not empty
      */
 
     $('#btn-create').click(function () {
@@ -743,8 +744,10 @@ function createNewAssessment() {
     console.log("Name of the new assessment");
     console.log(name);
 
+         /*  check if entered name is not empty*/
 
     if (name.length > 0) {
+        startWaiting();
         $.ajax({
             url: "create_assessment",
             type: 'POST',
@@ -764,10 +767,14 @@ function createNewAssessment() {
 
 
             }
+        }).done(function(){
+            stopWaiting();
+            $('#modal-create-assessment').modal('hide')
         });
 
     } else {
         console.log("the name is empty");
+        $("#warning").html("Assessment name cannot be empty.");
         //$("#modal-create-assessment").modal('show');
     }
 
