@@ -155,6 +155,9 @@
                 <p>Would you like the students to view their answers?</p>
                 <input type="checkbox" id="see-answer" checked> See Answers
 
+                <p>Set maximum number of attempts (default is infinite number of attempts)</p>
+                <input type="number" id="max-attempts" min="1" step="1">
+
 
             </div>
             <div class="modal-footer">
@@ -227,8 +230,6 @@
                 <h4 class="modal-title">Delete Assessment</h4>
             </div>
             <div class="modal-body">
-
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -250,14 +251,10 @@
             </div>
             <div class="modal-body" >
                 <p>Are you sure you would like to submit your answers?</p>
-
-
             </div>
             <div class="modal-footer">
-
                 <button type="button" class="btn" data-dismiss="modal" id="btn-finish-assessment">Finish</button>
                 <button type="button" class="btn" data-dismiss="modal" >Cancel</button>
-
             </div>
         </div>
         <!-- /.modal-content -->
@@ -275,9 +272,7 @@
             {%block title%}Assessments{% endblock %}</h1></div>
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 main-header">
             <img class="mit-imag  header-img" style="" src="{% static 'MIT-logo-lightgray-white-large.png' %}">
-            <!--{% static 'css_ui/SummaryPage/image7.png' %}-->
         </div>
-
     </div>
 
     {% block content %}{% endblock %}
