@@ -301,7 +301,7 @@ a.assess-item-placeholder, a.assess-item-placeholder:hover{
 color:white;
 }
 
-.mylist-item-div{
+.mylist-item-div, .mylist-item-div-clone{
     background-color: #fff;
     /*width:auto;*/
      background-image: -webkit-linear-gradient(top, white,  #F0F4F6);
