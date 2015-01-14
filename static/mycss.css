@@ -180,7 +180,7 @@ removing items from the assessment
 */
 #inpt-change-assess-name{
     width:80%;
-    background-color:  #B8CED5;
+    background-color: #89adb9;
 }
 ::-webkit-input-placeholder { /* WebKit browsers */
     color:    floralwhite;
@@ -301,7 +301,7 @@ a.assess-item-placeholder, a.assess-item-placeholder:hover{
 color:white;
 }
 
-.mylist-item-div, .mylist-item-div-clone{
+.mylist-item-div,.mylist-item-div-clone, .mylist-item-div-clone:hover{
     background-color: #fff;
     /*width:auto;*/
      background-image: -webkit-linear-gradient(top, white,  #F0F4F6);
@@ -326,7 +326,7 @@ color:white;
 
 }
 .assess-item.selected{
-     background:#F0F4F6;
+     background:#DBE6EA;
 
 }
 

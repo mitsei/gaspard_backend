@@ -13,6 +13,18 @@ $(document).ready(function () {
 //        }
 
 
+    $("#see-answer").change(function(){
+        console.log('changed');
+        if($(this).prop('checked')){
+            $('#max-attempts').prop("disabled", true).val('');
+            $('#max-attempts-option-text').css('color', "#A9A9A9");
+
+        }else{
+            $('#max-attempts').prop("disabled", false);
+            $('#max-attempts-option-text').css('color', "black");
+        }
+    });
+
     $('.question-link').click(function(){
             getProblem($(this));
             return false;
@@ -33,8 +45,6 @@ $(document).ready(function () {
             url:'submit_grade',
             type:'POST',
             success: function(response){
-//                console.log(response);
-//                $("#assess-finished-msg").html('Thank you for taking the assessment!');
                 $('.quest-item').unbind();
                 $('#btn-submit-grade').unbind();
 
@@ -66,20 +76,6 @@ $(document).ready(function () {
 });
 
 
-
-
-//    $('.instruction').click(function(){
-//        console.log("clicked on instruction");
-//    });
-//    $('.instruction').trigger("click");
-//    $('#UnityPlayer').click();
-
-//    $('#unityPlayer').focus();
-//    $('#unityPlayer').focus(function(){
-//        console.log("focused");
-//        $(this).css('border',"1px solid red");
-//    });
-
     $(".panel-title").click(function () {
 
         var id = $(this).attr('id');
@@ -105,6 +101,10 @@ $(document).ready(function () {
         return false;
     });
 
+
+    /**
+     * This is button in "modal-reorder-items"
+     */
     $('#btn-submit-new-order').click(function () {
         /*Want to check if there are any items in the assessment*/
 
@@ -118,10 +118,8 @@ $(document).ready(function () {
                 type: 'POST',
                 data: {sub_id: sub_id, 'items': idsArray},
                 success: function (response) {
-                    console.log(response);
-                    //requestItems(selectedAssessment);
+//                    console.log(response);
                 }
-
             }).done(function () {
                 changeAssessmentName(sub_id);
 
@@ -130,56 +128,50 @@ $(document).ready(function () {
             changeAssessmentName(sub_id);
         }
     });
-        function changeAssessmentName(sub_id){
-            var oldName = selectedAssessment.text();
-            var newName;
-            var finalName = selectedAssessment.text();
-            if ($('#assess-name-reorder').has('input').length) {
-                //var inputElement = document.getElementById("change-assess-name");
-                //console.log(inputElement.value);
-                newName = document.getElementById("inpt-change-assess-name").value;
-            } else {
-                newName = $(document.getElementById('assess-name-reorder')).attr('value');
-            }
-            if (newName != null) {
-                newName = newName.trim();
-                if (newName.length > 0) {
-                    finalName = newName;
-                }
-            }
-            if (finalName != oldName) {
-                $(selectedAssessment).find('div').text(finalName);
-                $.ajax({
-                    url: 'rename_assessment',
-                    type: 'POST',
-                    data: {sub_id: sub_id, 'name': newName},
-                    success: function (response) {
-                        console.log(response);
-                        // requestItems(selectedAssessment);
-                    },
-                    statusCode: {
-                        200: function () {
-                            selectAssessment(selectedAssessment);
-                            requestItems(selectedAssessment);
-
-                        }
-                    }
-                });
-            }
-            $('#assess-name-reorder').html('');
-
+    function changeAssessmentName(sub_id) {
+        var oldName = selectedAssessment.text();
+        var newName;
+        var finalName = selectedAssessment.text();
+        if ($('#assess-name-reorder').has('input').length) {
+            newName = document.getElementById("inpt-change-assess-name").value;
+        } else {
+            newName = $(document.getElementById('assess-name-reorder')).attr('value');
         }
+        if (newName != null) {
+            newName = newName.trim();
+            if (newName.length > 0) {
+                finalName = newName;
+            }
+        }
+        if (finalName != oldName) {
+            $(selectedAssessment).find('div').text(finalName);
+            $.ajax({
+                url: 'rename_assessment',
+                type: 'POST',
+                data: {sub_id: sub_id, 'name': newName},
+                success: function (response) {
+                    console.log(response);
+                    // requestItems(selectedAssessment);
+                },
+                statusCode: {
+                    200: function () {
+//                        selectAssessment(selectedAssessment);
+//                        requestItems(selectedAssessment);
 
-    $('#btn-home').click(function () {
+                    }
+                }
+            }).done(function(){
+                requestItems(selectedAssessment);
+            });
+        }
+        $('#assess-name-reorder').html('');
 
-    });
+    }
 
     /* Handle the selection of the assessment */
     $('.assess-item').click(function () {
         console.log("before wait");
-        if(wait==false){
-//            wait=true;
-//            console.log('waiting');
+        if (wait == false) {
             clickAssessment($(this));
         }
         return false;
@@ -273,11 +265,11 @@ $(document).ready(function () {
     });
 
      $("#btn-show-offering-option").click(function () {
-         var sub_id = findSelectedAssessId();
-
          //check if any selected
          if (selectedAssessment != null) {
              $('#see-answer').attr('checked', true);
+             $('#max-attempts').prop("disabled", true).val('');
+             $('#max-attempts-option-text').css('color', "#A9A9A9");
              $('#modal-get-offering').modal('show');
 
          }
@@ -817,13 +809,13 @@ function clickAssessmentName() {
          Want to add input element
          display old name as a placeholder
          */
-
-//        $('#assess-name-reorder').html('');
         console.log($('#assess-name-reorder').attr('value'));
         $('#assess-name-reorder').html('<input type="text" id="inpt-change-assess-name">');
         inputElement = document.getElementById("inpt-change-assess-name");
         inputElement.setAttribute('placeholder', $('#assess-name-reorder').attr('value'));
+        inputElement.focus();
         $('#inpt-change-assess-name').click(function () {
+
             return false;
         });
         $('#assess-name-reorder').append('<button class="btn btn-dark-background rename-btn"><span class="glyphicon glyphicon-edit"></span></button>');
