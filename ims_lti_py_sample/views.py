@@ -12,6 +12,8 @@ from django.http import Http404
 from django.views.decorators.csrf import csrf_exempt
 import oauth2
 
+import math
+
 from .utilities import *
 import base64
 import ast
@@ -770,18 +772,6 @@ def instructor(request):
                 found = True
 
                 bank_id = a['id']
-                '''
-                old version
-                '''
-                # Post.objects.filter(key="bank_id").delete()
-                # p = Post(key="bank_id", value=bank_id)
-                # p.save()
-                # '''
-                # new
-                # '''
-                # # print type(params)
-                #
-                # # print bank_id
 
         if found:
             '''
@@ -934,9 +924,10 @@ Returns a list of numbers that corresponds to pages to be displayed in the pages
 '''
 
 def getPagesList(total_count, page_num):
-    page_num=int(page_num)
+    page_num = int(page_num)
 
-    number_of_pages = total_count//10+1
+    number_of_pages = int(math.ceil(total_count/float(10)))
+
     print "Number of pages: " + str(number_of_pages)
     start_page = 1
     pages = []
