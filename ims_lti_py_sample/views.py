@@ -43,9 +43,7 @@ def index(request):
         print "PARAMS"
 
         flush()
-        #print request.POST
-        #print request.POST['user_id']
-        #print request.user
+
     session = request.session
     session.clear()
     try:
@@ -74,18 +72,10 @@ def index(request):
         request_dict[r] = request.POST[r]
     session['LTI_POST'] = pickle.dumps(request_dict)
 
-    '''
-    Saving parameters into Post model
-    '''
+    ''' Reading parameters    '''
     params = {}
-    Post.objects.all().delete()
     for k in request.POST:
         params[k] = request.POST[k]
-        p = Post(key=k, value=request.POST[k])
-        p.save()
-        # print str(k)+"   "+str(request.POST[k])
-        #print k
-
     '''
     Make sure there is 'tool_consumer_instance_guid' in POST
     '''
@@ -128,28 +118,8 @@ def student(request):
     unique_id = request.session.get('unique_id')
 
     try:
-        '''old'''
-        for g in Post.objects.all():
-            params[g.key] = g.value
-        '''new'''
         user_obj=Parameters.objects.filter(key=unique_id)[0]
         params = ast.literal_eval(user_obj.value)
-
-        ###############
-        # Remove this when done with Post
-        ##############
-        if 'tool_consumer_instance_guid' not in params:
-            print 'tool_consumer_instance_guid not in params'
-            # params['tool_consumer_instance_guid'] = get_client_ip(request)
-
-            '''old'''
-            p = Post(key='tool_consumer_instance_guid', value=params['tool_consumer_instance_guid'])
-            p.save()
-            '''new
-            will save params later
-            '''
-
-
 
         student_req = AssessmentRequests('taaccct_student')
 
@@ -182,14 +152,6 @@ def student(request):
         if 'id' in resp:
             taken_id = resp['id']
 
-            '''old'''
-            Post.objects.filter(key="taken_id").delete()
-            p = Post(key="taken_id", value=taken_id)
-            p.save()
-            '''new'''
-            params['taken_id']=taken_id
-
-
             print "Got Taken Id"
             print taken_id
             print resp['reviewWhetherCorrect']
@@ -198,14 +160,7 @@ def student(request):
             This is the attribute that controls whether the answers should be visible to the student or not
             '''
             review_whether_correct= resp['reviewWhetherCorrect']
-            # review_whether_correct = False
-            grade='none'
-            '''old'''
-            Post.objects.filter(key="see_answer").delete()
-            Post(key="see_answer", value=review_whether_correct).save()
-            '''new'''
-            params['see_answer']=review_whether_correct
-
+            grade = 'none'
 
             questions = getQuestions(bank_id, taken_id)
             if review_whether_correct:
@@ -215,9 +170,9 @@ def student(request):
             '''
             Want to check if the student answered all questions
             '''
-            answered_all_questions=answeredAllQuestions(questions)
+            answered_all_questions = answeredAllQuestions(questions)
 
-            #Want to get name of the assessment, but there is not name in the details
+            #Want to get name of the assessment, but there is no name in the details
             '''
             Get details of an assessment taken
             url: assessment/banks/<bank_id>/assessmentstaken/<taken_id>/
@@ -231,23 +186,19 @@ def student(request):
             '''
             Saving a smaller list for calculating the question menu faster
             '''
-            sm_questions=[]
-            for i,a in enumerate(questions):
+            sm_questions = []
+            for i, a in enumerate(questions):
                 sm_questions.append({
                     'number': a['number'],
                     'id': a['id'],
                     'responded': a['responded']
                 })
 
-            params['sm_questions'] = sm_questions
-
             '''
             Need to save params before leaving
             '''
-
-            print user_obj.value
-            user_obj.value = params
-            user_obj.save()
+            save_to_params(unique_id, {'taken_id': taken_id, 'see_answer': review_whether_correct,
+                                       'sm_questions': sm_questions})
 
             if 'detail' in questions:
                 return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error':'Could not get questions'}))
@@ -256,14 +207,14 @@ def student(request):
                                                                    'consumer':params['tool_consumer_info_product_family_code'],
                                                                    'answered_all_questions': answered_all_questions,
                                                                    'welcome': True,
-                                                                    # 'return_url':params['launch_presentation_return_url'],
-                                                                    'seeAnswer': review_whether_correct}))
+                                                                'seeAnswer': review_whether_correct}))
 
         else:
-            detail= resp['detail']
+            detail = resp['detail']
             print resp['detail']
             return render_to_response("ims_lti_py_sample/student_error.html",
                                       RequestContext(request, {'userName': name,
+                                                               'return_url': params['launch_presentation_return_url'],
                                                                'consumer':params['tool_consumer_info_product_family_code'],
                                                                'error': detail,
                                                                'location': "Getting AssessmentTaken"
@@ -272,7 +223,6 @@ def student(request):
         return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e,
                                                                                               'params': params}))
     except Exception, e:
-        # return render_to_response("ims_lti_py_sample/error.html", RequestContext(request, {'error': e}))
         return render_to_response("ims_lti_py_sample/student_error.html",
                                   RequestContext(request, {
                                       'consumer': params['tool_consumer_info_product_family_code'],
@@ -293,16 +243,8 @@ def student_home(request):
         request questions for this assessment
         '''
         unique_id= request.session.get('unique_id')
-        '''old'''
-        params = {}
-        for g in Post.objects.all():
-            params[g.key] = g.value
-        ''' new'''
 
-        # user_obj=Parameters.objects.filter(key=unique_id)[0]
-        # params = ast.literal_eval(user_obj.value)
         params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
-
 
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
@@ -317,11 +259,6 @@ def student_home(request):
             name = params["lis_person_name_given"]
 
         questions = getQuestions(bank_id, taken_id)
-
-
-        # print user_obj.value
-        # user_obj.value = params
-        # user_obj.save()
 
         answered_all_questions = answeredAllQuestions(questions)
 
@@ -358,12 +295,7 @@ def submit_grade(request):
         get bank id and offering id
         request questions for this assessment
         '''
-        params = {}
-        for g in Post.objects.all():
-            params[g.key] = g.value
-        '''new'''
         params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
-
 
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
@@ -410,7 +342,6 @@ def getQuestions(bank_id, taken_id):
                                 + '/status/')
         resp2 = resp2.json()
         print resp2
-        # print resp2['responded']
         if resp2['responded'] == True:
             if resp2['correct'] == True:
                 a['responded'] = 'Correct'
@@ -439,25 +370,8 @@ def get_question(request):
 
     print question_id
 
-
-
-    #make sure there isn't one in the database already
-    '''old'''
-    Post.objects.filter(key="question_id").delete()
-    '''new'''
-    user_obj=Parameters.objects.filter(key=unique_id)[0]
-    params = ast.literal_eval(user_obj.value)
-
-
-    '''old'''
-    Post(key="question_id", value=question_id).save()
-    '''new'''
-    params['question_id']=question_id
-
     '''Save params'''
-    # print user_obj.value
-    user_obj.value = params
-    user_obj.save()
+    save_to_params(unique_id, {'question_id': question_id})
 
 
     question = {'success': True, 'redirect': True, 'redirectURL': "display_question"}  #d_question  display_question
@@ -466,17 +380,11 @@ def get_question(request):
 
 @csrf_exempt
 def display_question(request):
+    print "Display question"
 
     unique_id = request.session.get('unique_id')
 
     try:
-        print "Display question"
-        # print request
-        params = {}
-        for g in Post.objects.all():
-            params[g.key] = g.value
-
-        '''new'''
         params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
 
 
@@ -744,9 +652,9 @@ def submit_answer(request):
     answer = request.POST.getlist('answer')[0]
     print answer
 
-    params = {}
-    for g in Post.objects.all():
-        params[g.key] = g.value
+    # params = {}
+    # for g in Post.objects.all():
+    #     params[g.key] = g.value
 
     params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
 
@@ -776,9 +684,9 @@ def submit_multi_answer(request):
     answer = request.POST.getlist('answer')[0]
     print answer
 
-    params = {}
-    for g in Post.objects.all():
-        params[g.key] = g.value
+    # params = {}
+    # for g in Post.objects.all():
+    #     params[g.key] = g.value
 
     params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
 
@@ -832,7 +740,6 @@ def submit_multi_answer(request):
 @csrf_exempt
 def instructor(request):
     print "Instructor View"
-    # print key
     print request.session.get('unique_id')
 
 
@@ -840,13 +747,11 @@ def instructor(request):
         #getting the unique identifier of the user
         unique_id = request.session.get('unique_id')
         #getting parameters for the user
-        params={}
+        # params={}
 
         params = Parameters.objects.filter(key=unique_id).values()[0]['value']
-        params= ast.literal_eval(params)
-        # params = params.json()
+        params = ast.literal_eval(params)
         print type(params)
-        print params['user_id']
 
         req_assess = AssessmentRequests()
         '''
@@ -868,15 +773,15 @@ def instructor(request):
                 '''
                 old version
                 '''
-                Post.objects.filter(key="bank_id").delete()
-                p = Post(key="bank_id", value=bank_id)
-                p.save()
-                '''
-                new
-                '''
-                # print type(params)
-                params['bank_id']=bank_id
-                # print bank_id
+                # Post.objects.filter(key="bank_id").delete()
+                # p = Post(key="bank_id", value=bank_id)
+                # p.save()
+                # '''
+                # new
+                # '''
+                # # print type(params)
+                #
+                # # print bank_id
 
         if found:
             '''
@@ -888,17 +793,38 @@ def instructor(request):
 
             eq2 = req_assess.get(req_assess.url + bank_id + "/assessments/")
 
+            '''
+            Assessment Pagination
+            '''
+            total_count = eq2.json()['data']['count']
+
+            print "Total count of assessments"
+            print total_count
+            pages = getPagesList(total_count, 1)
+
+            # number_of_pages = total_count//10+1
+            # print "Number of pages"
+            # print number_of_pages
+            # pages = []
+            # for i in range(1, min(number_of_pages, 5)+1):
+            #     pages.append(i)
+            #
+            # pages.append(0) # this is for >>
+            #
+            # print pages
+
+
             assessments = eq2.json()['data']['results']
             print "Number of assessments: " + str(len(assessments))
 
-            for a in assessments:
-                print a['displayName']['text']  # Assessment name
+            # for a in assessments:
+            #     print a['displayName']['text']  # Assessment name
 
             '''
             Get a list of items in a bank
             assessment/banks/<bank_id>/items/
             '''
-            eq3 = req_assess.get(req_assess.url + bank_id + "/items/")
+            eq3 = req_assess.get(req_assess.url + bank_id + "/items/?page=all")
             print "Status code getting items:  " + str(eq3.status_code)
             items = eq3.json()['data']['results']
             count = eq3.json()['data']['count']
@@ -909,10 +835,10 @@ def instructor(request):
             items_type4 = []
 
             for a in items:
-                print a['displayName']['text']
-                print "    "
-                print a['question']['genusTypeId']
-                print a['question']['recordTypeIds'][0]
+                # print a['displayName']['text']
+                # print "    "
+                # print a['question']['genusTypeId']
+                # print a['question']['recordTypeIds'][0]
                 if "match-ortho-faces" in a['question']['genusTypeId']:
                     '''
                         question%3Amatch-ortho-faces%40ODL.MIT.EDU
@@ -939,11 +865,11 @@ def instructor(request):
             '''
             old version
             '''
-            print Post.objects.filter(key='lis_person_name_given').count()
-            if Post.objects.filter(key='lis_person_name_given').count() > 0:
-                name = Post.objects.filter(key='lis_person_name_given')[0].value
-                print name
-                name = name.replace("-", "")
+            # print Post.objects.filter(key='lis_person_name_given').count()
+            # if Post.objects.filter(key='lis_person_name_given').count() > 0:
+            #     name = Post.objects.filter(key='lis_person_name_given')[0].value
+            #     print name
+            #     name = name.replace("-", "")
 
             '''
             new version
@@ -952,22 +878,22 @@ def instructor(request):
                 name = name.replace("-", "")
                 print name
 
+
+
             '''
             save updated parameters
             '''
-            # Parameters(key=unique_id,value=params).save()
-            user_obj=Parameters.objects.filter(key=unique_id)[0]
-            print "User Params"
-            print user_obj
-            user_obj.value = params
-            user_obj.save()
 
-            # request.COOKIES['unique_id'] = unique_id
+
+            save_to_params(unique_id, {'bank_id': bank_id, 'page_num': 1})
+
 
             return render_to_response("ims_lti_py_sample/instructor.html",
                                       RequestContext(request,
                                                      {'user_name': name,
-                                                      'assessments': assessments, 'items': items,
+                                                      'assessments': assessments,
+                                                      'pages': pages, 'page_num': 1,
+                                                      'items': items,
                                                       'items_type1': items_type1, 'items_type2': items_type2,
                                                       'items_type3': items_type3, 'items_type4': items_type4}))
         else:
@@ -978,6 +904,60 @@ def instructor(request):
         return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e,
                                                                                               # 'type': "KeyError",
                                                                                               'params': params}))
+
+
+'''
+Save requested page number
+'''
+
+def save_to_params(unique_id, dic):
+    print "Save New Assessment Page"
+
+
+    user_obj = Parameters.objects.filter(key=unique_id)[0]
+    params = ast.literal_eval(user_obj.value)
+
+    for key in dic:
+        params[key] = dic[key]
+
+    print params
+
+    user_obj.value = params
+    user_obj.save()
+
+
+
+'''
+Compute total number of pages
+Construct a short list (of 5) pages
+Returns a list of numbers that corresponds to pages to be displayed in the pages menu
+'''
+
+def getPagesList(total_count, page_num):
+    page_num=int(page_num)
+
+    number_of_pages = total_count//10+1
+    print "Number of pages: " + str(number_of_pages)
+    start_page = 1
+    pages = []
+    '''computing the first page in the list'''
+    if page_num > 2:
+        start_page = page_num-2
+    '''at most 5 iterations'''
+    for i in range(start_page, min(number_of_pages,start_page+5)+1):
+        pages.append(i)
+    '''number of prev page'''
+    if page_num > 1:
+        pages.insert(0, page_num-1)
+    else:
+        pages.insert(0, number_of_pages)
+    '''number of next page'''
+    pages.append((page_num%number_of_pages)+1)
+
+    print pages
+
+    return pages
+
 
 
 @csrf_exempt
@@ -994,9 +974,6 @@ def create_assessment(request):
         req_assess = AssessmentRequests()
         items_ids = request.POST.getlist('selected[]')
 
-        # print "Selected bank items"
-        # print items_ids
-        # print request.POST.getlist('name')
         name = request.POST.getlist('name')[0]
         print "Name of new assessment"
         print name
@@ -1004,7 +981,7 @@ def create_assessment(request):
         data = json.dumps(data)
 
         '''old'''
-        bank_id = Post.objects.filter(key="bank_id")[0].value
+        # bank_id = Post.objects.filter(key="bank_id")[0].value
         '''new'''
         bank_id=ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
@@ -1047,7 +1024,7 @@ def delete_assessment(request):
         req_assess = AssessmentRequests()
 
         '''old'''
-        bank_id = Post.objects.filter(key="bank_id")[0].value
+        # bank_id = Post.objects.filter(key="bank_id")[0].value
         '''new'''
         bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
@@ -1154,7 +1131,7 @@ def get_offering_id(request):
     print type(maxAttempts)
 
     '''old'''
-    bank_id = Post.objects.filter(key="bank_id")[0].value
+    # bank_id = Post.objects.filter(key="bank_id")[0].value
     '''new'''
     bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
@@ -1203,7 +1180,7 @@ def rename_assessment(request):
         req_assess = AssessmentRequests()
 
         '''old'''
-        bank_id = Post.objects.filter(key="bank_id")[0].value
+        # bank_id = Post.objects.filter(key="bank_id")[0].value
         '''new'''
         bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
@@ -1242,7 +1219,8 @@ def get_items(request):
 
         req_assess = AssessmentRequests()
         '''old'''
-        bank_id = Post.objects.filter(key="bank_id")[0].value
+        # bank_id = Post.objects.filter(key="bank_id")[0].value
+
         '''new'''
         bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
         '''
@@ -1264,9 +1242,9 @@ def get_items(request):
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
 
-'''
+'''''''''''''''''''''
 Add item to assessment
-'''
+'''''''''''''''''''''
 
 
 @csrf_exempt
@@ -1279,7 +1257,7 @@ def add_item(request):
     question_id = request.POST.getlist('question_id')[0]
 
     '''old'''
-    bank_id = Post.objects.filter(key="bank_id")[0].value
+    # bank_id = Post.objects.filter(key="bank_id")[0].value
     '''new'''
     bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
@@ -1305,8 +1283,6 @@ def add_item(request):
 '''
 Remove one item from the assessment
 '''
-
-
 @csrf_exempt
 def remove_item(request):
     print 'Remove Item from Assessment'
@@ -1315,7 +1291,7 @@ def remove_item(request):
     sub_id = request.POST.getlist('sub_id')[0]
     question_id = request.POST.getlist('question_id')[0]
 
-    bank_id = Post.objects.filter(key="bank_id")[0].value
+    # bank_id = Post.objects.filter(key="bank_id")[0].value
     bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
 
@@ -1359,12 +1335,9 @@ def reorder_items(request):
     print request.POST
     unique_id=request.session.get("unique_id")
 
-    bank_id = Post.objects.filter(key="bank_id")[0].value
     bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
     items_ids = request.POST.getlist('items[]')
-    # print "Items to be added"
-    #print items_ids
 
     sub_id = request.POST.getlist('sub_id')[0]
     print "<sub_id>"
@@ -1372,30 +1345,51 @@ def reorder_items(request):
 
     data = {"itemIds": items_ids}
 
-    #  deleteOfferings(bank_id,sub_id) #returns true, can put in if statement
     resp = replaceAllItems(bank_id, sub_id, data)
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
-'''
+'''''''''''''''''''''''''''
 Update list of assessments
-'''''''''''''''''''''
 
 
+'''''''''''''''''''''''''''
 @csrf_exempt
 def update_assessments(request):
     print "Update assessments"
-    print request.GET
-    unique_id=request.session.get("unique_id")
+    # print request.GET
+
+    unique_id = request.session.get("unique_id")
+    '''the requested page number'''
+    page_num = int(request.GET.getlist('page_num')[0])
+    print page_num
+    print type(page_num)
+    if page_num > 0:
+        save_to_params(unique_id, {'page_num': page_num})
 
     req_assess = AssessmentRequests()
-    bank_id = Post.objects.filter(key="bank_id")[0].value
-    bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
+    params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
+    bank_id = params['bank_id']
+    page_num = params['page_num']
+    print type(page_num)
 
-    eq2 = req_assess.get(req_assess.url + bank_id + "/assessments/")
+
+    print req_assess.url + bank_id + "/assessments/?page="+str(page_num)+"/"
+    eq2 = req_assess.get(req_assess.url + bank_id + "/assessments/?page="+str(page_num)+"")
     assessments = eq2.json()['data']['results']
-    # print assessments
-    return HttpResponse(json.dumps(assessments), content_type='application/json')
+
+    print "number assess "+ str(len(assessments))
+
+    for a in assessments:
+        print a['displayName']['text']
+
+    total_count = eq2.json()['data']['count']
+    print "total count " + str(total_count)
+    pages = getPagesList(total_count, page_num)
+
+    return HttpResponse(json.dumps({'assessments': assessments,
+                                    'pages': pages,
+                                    'page_num': page_num}), content_type='application/json')
 
 
 '''''''''''''''''''''''''''''
@@ -1557,30 +1551,22 @@ def submitGradeToConsumer(bank_id, taken_id, params):
     # print type(params['see_answer'])
 
 def finishAssessment(bank_id, taken_id):
+    print "Finish Assessment"
+
     student_req = AssessmentRequests('taaccct_student')
 
     '''
     Finish this assessment
-    assessment/banks/<bank_id>/assessmentstaken/<taken_id>/finish/
-
+    url: assessment/banks/<bank_id>/assessmentstaken/<taken_id>/finish/
     '''
-    print "Finish Assessment"
     print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/finish/"
     resp1 = student_req.post(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/finish/")
-    # resp1 = resp1.json()
     print resp1
 
 def answeredAllQuestions(questions):
-    # all_answered=True
     for a in questions:
-        # print "Type: "
-        # print type(a['responded'])
         if 'None' in a['responded']:
             return False
 
     return True
-
-def readyToSubmit():
-    return True
-
 

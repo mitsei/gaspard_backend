@@ -8,33 +8,11 @@
 <div class="row main-page-bgr">
     <div class="main-page-img">
      <div class="welcome-row" style="position:relative;">
-         {% load staticfiles %}
-         <img class="img-home" src="{% static 'css_ui/SummaryPage/image.png' %}">
-          <!--{%if userName == 'none' %}-->
-         <!--<h2 class="welcome" style="color:white">Welcome!</h2>-->
-         <!--{%else%}-->
-
-         <!--<h2 class="welcome" style="color:white">Welcome, {{userName}}!</h2>-->
-         <!--{%endif%}-->
-         <div class="display-grade">
-
-        </div>
-         <div class="upload-grade">
-
-                 <!--<button class="btn btn-white-background" id="">-->
-
-                <!--<span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>-->
-                <!--<a href="#">-->
-
-                    <!--Go back to {{consumer}}-->
-
-                <!--</a>-->
-            <!--</button>-->
-
-
-
-         </div>
-
+         <a href="{{return_url}}">
+            <button class="btn btn-white-background home-btn" style="font-size: 25px" type="button">
+                <span class="glyphicon glyphicon-home"></span>
+            </button>
+        </a>
     </div>
 
     <script>
@@ -49,7 +27,7 @@
 
        });
     </script>
-        <div class="row" style="  border:0px solid #ffff00">
+        <div class="row" style="border:0px solid #ffff00">
         <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2"></div>
         <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
         </div>
