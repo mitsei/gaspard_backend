@@ -280,6 +280,7 @@ $(document).ready(function () {
 
                         } else if (response['detail']) {
                             console.log(response);
+                            $('#modal-get-offering').modal('hide');
                             $('#help-title').html("Create offering");
                             $('#detail-div').html(response['detail']);
                             $('#help-text').html("Drag items from the bank into selected assessment area.");
