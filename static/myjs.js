@@ -108,15 +108,16 @@ $(document).ready(function () {
         console.log(idsArray);
 
         if(idsArray.length>1) {
+            startWaiting();
             $.ajax({
                 url: 'reorder_items',
                 type: 'POST',
                 data: {sub_id: sub_id, 'items': idsArray},
                 success: function (response) {
-//                    console.log(response);
                 }
             }).done(function () {
                 changeAssessmentName(sub_id);
+                stopWaiting()
 
             });
         }else{
@@ -140,6 +141,7 @@ $(document).ready(function () {
         }
         if (finalName != oldName) {
             $(selectedAssessment).find('div').text(finalName);
+            startWaiting();
             $.ajax({
                 url: 'rename_assessment',
                 type: 'POST',
@@ -150,6 +152,7 @@ $(document).ready(function () {
 
             }).done(function(){
                 requestItems(selectedAssessment);
+                stopWaiting();
             });
         }else{
             requestItems(selectedAssessment);
@@ -563,7 +566,7 @@ function requestItems(obj) {
                     $('.item-in-assess').draggable("option", "revert", 'invalid');
                     $('.item-in-assess').draggable("option", "helper", "clone");
                     $('.item-in-assess').on("dragstart", function (event, ui) {
-                        ui.helper.addClass("mylist-item-div-clone").width(document.getElementById("assess-box-droppable").offsetWidth).css('z-index',200);
+                        ui.helper.removeClass("mylist-item-div").addClass("mylist-item-div-clone").width(document.getElementById("assess-box-droppable").offsetWidth).css('z-index',200);
 
                     });
                 } else {
@@ -750,8 +753,8 @@ function selectAssessment(obj) {
     $('.bank-item').draggable("option", "helper", "clone");
     $('.bank-item').on("dragstart", function (event, ui) {
         if (!$('.bank-item').hasClass("ui-draggable-disabled")) {
-            ui.helper.addClass("mylist-item-div-clone");
-            ui.helper.width($("#bank-items-name").width()).css('z-index', 200);
+            ui.helper.removeClass("mylist-item-div").addClass("mylist-item-div-clone");
+            ui.helper.width(document.getElementById("bank-box-droppable").offsetWidth).css('z-index', 200);
         }
     });
 }
