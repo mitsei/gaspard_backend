@@ -17,6 +17,7 @@ depending on the size of the window
     .wrapper-div-for-btns {
         left:200px;
         min-width:238px;
+        /*min-width: 300px;*/
     }
 
 }
@@ -214,6 +215,78 @@ removing items from the assessment
 
 
 }
+#assess-page-menu{
+    background-color:white;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    /*border-top-left-radius: 0;*/
+
+    z-index: 100;
+    /*margin-top:-3px;*/
+    border-bottom:1px solid #4D8496;
+    border-left:1px solid #4D8496;
+    border-right:1px solid #4D8496;
+    border-top: 1px solid #4D8496;
+
+}
+.assess-page-li{
+    display: inline-block;
+    /*border: 1px solid yellow;*/
+
+    border-radius: 3px;
+    color: white;
+
+
+}
+.assess-page-menu-ul{
+    text-align: center;
+    background: #4D8496;
+    padding:5px 0 5px 0;
+
+    /*padding-left: 0;*/
+    margin-bottom: 0;
+    /*border:1px solid transparent;*/
+
+}
+
+/*applied to a*/
+.assess-page{
+    padding: 0 7px;
+    margin: 5px 2px 5px 2px;
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    border-radius: 3px;
+    /*box-shadow: 3px 3px 2px ;*/
+}
+.assess-page:hover{
+    color:white;
+    text-decoration: none;
+ }
+.assess-page:focus{
+    color:white;
+    text-decoration: none;
+
+}
+
+.assess-page-a{
+    /*background-color: #679EB0;*/
+    background-color: #4D8496;
+    /*border:1px #B8CED5 solid;*/
+     border: 1px solid transparent;
+     /*box-shadow: 3px 3px 2px darkgrey;*/
+
+}
+.assess-page-a:hover{
+    border-radius: 3px;
+    border: 1px solid ghostwhite;
+    box-shadow: 3px 3px 2px black;
+}
+.cur-assess-page-a, .cur-assess-page-a:hover, .cur-assess-page-a:focus{
+    text-decoration: underline;
+
+}
+
 h4{
     text-align: center;
     float:left;
@@ -441,6 +514,7 @@ h1,h2 {
 }
 .quest-status{
     padding-right: 15px;
+    font-size: 17px;
 }
 .home-btn{
     margin-top:17px;
@@ -467,7 +541,8 @@ h1,h2 {
 
 }
 li.questions-list-item{
-    font-size: 17px;
+    -webkit-font-smoothing: antialiased;
+    font-size: 20px;
     color : #4D8496;
     padding: 20px 0;
 

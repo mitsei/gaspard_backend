@@ -6,11 +6,6 @@ var selectedBankItems = [];
 var wait=false;
 
 $(document).ready(function () {
-//    if ( window.location !== window.parent.location ) {
-//            console.log("In iframe");
-//        } else {
-//            console.log('Not in iframe');
-//        }
 
 
     $("#see-answer").change(function(){
@@ -151,18 +146,14 @@ $(document).ready(function () {
                 data: {sub_id: sub_id, 'name': newName},
                 success: function (response) {
                     console.log(response);
-                    // requestItems(selectedAssessment);
-                },
-                statusCode: {
-                    200: function () {
-//                        selectAssessment(selectedAssessment);
-//                        requestItems(selectedAssessment);
-
-                    }
                 }
+
             }).done(function(){
                 requestItems(selectedAssessment);
             });
+        }else{
+            requestItems(selectedAssessment);
+
         }
         $('#assess-name-reorder').html('');
 
@@ -179,7 +170,7 @@ $(document).ready(function () {
 
     /* Delete an assessment */
     $('#btn-del-assess').click(function () {
-        if (selectedAssessment != null) {
+        if (selectedAssessment != null && wait==false) {
             var sub_id = selectedAssessment.attr('id');
             unselectSelectedAssessment();
 
@@ -199,25 +190,7 @@ $(document).ready(function () {
                         $("#modal-delete-assess-report").modal('show');
                     }
 
-                    updateAssessmentList();
-
-                },
-                error: function (response) {
-                    console.log(response);
-                },
-                statusCode: {
-                    200: function () {
-
-
-                    },
-                    406: function () {
-
-//
-                    },
-                    500: function () {
-
-
-                    }
+                    updateAssessmentList(0);//0 stands for no page change
 
                 }
             });
@@ -240,7 +213,7 @@ $(document).ready(function () {
     $("#btn-new-assess").click(function () {
         unselectSelectedAssessment();
         $("#assess-name").val('');
-        $('#assess-name').focus();
+        document.getElementById("assess-name").focus();
         $('#warning').html('');
         $('#modal-create-assessment').modal('show');
 
@@ -277,11 +250,7 @@ $(document).ready(function () {
 
     $("#btn-get-offering").click(function () {
         var sub_id = findSelectedAssessId();
-
-        //check if any selected
         if (selectedAssessment != null) {
-
-
             var seeAnswer= $('#see-answer').prop('checked');
             console.log("See Answer: "+ seeAnswer);
 
@@ -315,14 +284,6 @@ $(document).ready(function () {
                         }
 
 
-                    },
-                    statusCodes: {
-                        200: function () {
-                        },
-                        500: function (response) {
-                            console.log(response);
-
-                        }
                     }
                 });
             }
@@ -330,31 +291,7 @@ $(document).ready(function () {
             $('#help-title').html("Create offering for selected assessment");
             $('#help-text').html("No assessment is selected.");
             $('#modal-display-detail').modal('show');
-
         }
-
-    });
-    function selectText(element) {
-        var doc = document;
-        var text = doc.getElementById(element);
-
-        if (doc.body.createTextRange) { // ms
-            var range = doc.body.createTextRange();
-            range.moveToElementText(text);
-            range.select();
-        } else if (window.getSelection) { // moz, opera, webkit
-            var selection = window.getSelection();
-            var range = doc.createRange();
-            range.selectNodeContents(text);
-            selection.removeAllRanges();
-            selection.addRange(range);
-        }
-    }
-
-    $('#btn-copy-offering').click(function () {
-        var copied = $(this).attr('value');
-        console.log(copied);
-        // window.clipboardData.setData("Text", copied);
     });
 
     /**
@@ -497,29 +434,14 @@ function isInAssessItems(name) {
  */
 
 function findSelectedAssessId() {
-//    var el = document.getElementById('assess-list');
-//    var children = el.childNodes;
-    var sub_id = null;
-//
-//    var i;
-//    for (i = 0; i < children.length; i++) {
-//        console.log(children[i].classList);
-//
-//        if (hasclass(children[i], 'selected')) {
-//            console.log("has class selected");
-//
-//            sub_id = children[i].getAttribute('id');
-//        }
-//    }
-    if (selectedAssessment!=null){
-        sub_id=$(selectedAssessment).attr("id");
-    }
-    return sub_id;
 
-    /**
-     * or could just check if selectedAssessment is null or not
-     */
+    if (selectedAssessment!=null){
+        return $(selectedAssessment).attr("id");
+    }
+    return null;
 }
+
+
 function findAssessmentWithName(name) {
     var children= $('#assess-list').children();
     console.log(children);
@@ -563,7 +485,6 @@ function clickBankItem(obj) {
 }
 function unselectAllBankItems() {
     $(".bank-item").each(function (i, obj) {
-        console.log("unselecting bank item");
         if ($(obj).hasClass('selected-bank-item')) {
             $(obj).removeClass('selected-bank-item');
         }
@@ -581,43 +502,20 @@ function unselectAllBankItems() {
 function clickAssessment(obj) {
     console.log("clicked again");
 
-
-    /*if this assess already selected*/
-    if ($(obj).hasClass('selected')) {
-        console.log("this object is already selected");
-        unselectSelectedAssessment();
-        //now no assessment is selected
-        $('.bank-item').draggable('disable');
-    } else {
-        /*if not yet selected*/
-        if (isAnySelected()) {
-            console.log("Need to unselect one first");
+    if (obj!=null) {
+        /*if this assess already selected*/
+        if ($(obj).hasClass('selected')) {
             unselectSelectedAssessment();
-            $('.bank-item').draggable('disable');
-        }
 
-        selectAssessment(obj);//adds class and appends the #select-badge
-        requestItems(obj);
-        unselectAllBankItems();
-
-
-        //Do we want to disable dragging when assessment not selected?
-        if ($('.bank-item').hasClass("ui-draggable")) {
-            $('.bank-item').draggable('enable');
-        } else {
-            $('.bank-item').draggable();
-        }
-
-        $('.bank-item').draggable("option", "revert", 'invalid');
-        $('.bank-item').draggable("option", "helper", "clone");
-        $('.bank-item').on("dragstart", function (event, ui) {
-            if (!$('.bank-item').hasClass("ui-draggable-disabled")) {
-                ui.helper.addClass("mylist-item-div-clone");
-                ui.helper.width($("#bank-items-name").width()).css('z-index',200);
-
+        }else {
+            if (isAnySelected()) {
+                unselectSelectedAssessment();
             }
+            selectAssessment(obj);//adds class and appends the #select-badge
+            requestItems(obj);
+            unselectAllBankItems();
 
-        });
+        }
     }
     console.log("Exiting clickAssessment")
 }
@@ -655,7 +553,7 @@ function requestItems(obj) {
                         str += buildListItem(value['displayName']['text'], value['id']);
                         console.log(value['id']);
                     });
-                    $('#assess-items').addClass('mylist').html(str);
+                    $('#assess-items').html(str);
 
                     $('.item-in-assess').click(function () {
                         return false;
@@ -671,6 +569,7 @@ function requestItems(obj) {
                 } else {
 
                 }
+                $('#assess-items').addClass('mylist');
                 $("#assess-items").append('<div class="mylist-item-div"><a href="#" class="assess-item-placeholder">-Drop items here-</a></div>');
 
                 if ($("#assess-box-droppable").is(":hidden")) {
@@ -745,19 +644,14 @@ function createNewAssessment() {
             type: 'POST',
             data: {'selected': selectedBankItems, 'name': name},
             success: function (response) {
-                console.log(response);
-
                 /* want to select the newly created assessment*/
                 /* find the object with the new assessment name*/
 
-                $.when(updateAssessmentList()).done(function(){
+                $.when(updateAssessmentList(1)).done(function(){
                     clickAssessment(findAssessmentWithName(name));
 
                 });
                 unselectAllBankItems();
-
-
-
             }
         }).done(function(){
             stopWaiting();
@@ -767,7 +661,6 @@ function createNewAssessment() {
     } else {
         console.log("the name is empty");
         $("#warning").html("Assessment name cannot be empty.");
-        //$("#modal-create-assessment").modal('show');
     }
 
 }
@@ -777,7 +670,6 @@ function createNewAssessment() {
  * @param obj
  */
 function clickAssessmentName() {
-//    console.log($(obj));
     var inputElement=document.getElementById("inpt-change-assess-name");
 
     /*
@@ -785,10 +677,8 @@ function clickAssessmentName() {
      want to save the input
      */
 
-//    if ($('#assess-name-reorder').has('input').length) { // has returns a list of objects
     if(inputElement!= null){
         console.log('Has input element');
-//        inputElement = document.getElementById("inpt-change-assess-name");
         console.log(inputElement);
         var assessName = $('#assess-name-reorder').attr('value');
         var newName = inputElement.value;
@@ -799,9 +689,8 @@ function clickAssessmentName() {
                 assessName = newName;
             }
         }
-//        $('#assess-name-reorder').html('');
         $('#assess-name-reorder').html(assessName).attr('value', assessName);
-            $('#assess-name-reorder').append('<button class="btn btn-dark-background rename-btn"><span class="glyphicon glyphicon-edit"></span></button>');
+        $('#assess-name-reorder').append('<button class="btn btn-dark-background rename-btn"><span class="glyphicon glyphicon-edit"></span></button>');
 
 
     } else {
@@ -850,6 +739,21 @@ function selectAssessment(obj) {
     selectedAssessment = obj;
     $(obj).addClass('selected').append('<span class="glyphicon glyphicon-chevron-right" id="select-badge" style="position:absolute; right:10px;top:25%;"></span>');
 
+    /*  Enable dragging of bank items  */
+    if ($('.bank-item').hasClass("ui-draggable")) {
+        $('.bank-item').draggable('enable');
+    } else {
+        $('.bank-item').draggable();
+    }
+
+    $('.bank-item').draggable("option", "revert", 'invalid');
+    $('.bank-item').draggable("option", "helper", "clone");
+    $('.bank-item').on("dragstart", function (event, ui) {
+        if (!$('.bank-item').hasClass("ui-draggable-disabled")) {
+            ui.helper.addClass("mylist-item-div-clone");
+            ui.helper.width($("#bank-items-name").width()).css('z-index', 200);
+        }
+    });
 }
 /*
  Check if any assessment is selected
@@ -874,6 +778,7 @@ function unselectSelectedAssessment() {
         $(selectedAssessment).removeClass('selected');
         $(selectedAssessment).children('#select-badge').remove();
         selectedAssessment = null;
+        $('.bank-item').draggable('disable');
     }
     hideAssessItems();
 
@@ -906,37 +811,48 @@ function stopWaiting() {
     $("#bank-box-droppable").removeClass("progress-cursor");
 }
 
-
-function updateAssessmentList() {
+/**
+ * Request new assessment list for the given page number
+ * Response has attributes: 'assessments', 'pages', 'page_num'
+ * @param page_num
+ */
+function updateAssessmentList(page_num) {
     var text = "";
+//    startWaiting();
+    console.log(page_num);
     $.ajax({
         url: 'update_assess',
         type: 'GET',
+        data: {'page_num' : page_num},
         async: false,
         success: function (response) {
             console.log(response);
-            var data = response;
-            $.each(response, function (key, value) {
+            var assessments = response['assessments'];
+            var pages=response['pages'];
+            var page_num=response['page_num'];
+
+            $.each(assessments, function (key, value) {
                 console.log(value['displayName']['text']);
                 text += '<a href="#" class="mylist-item assess-item" id="' + value['id'] + '"><div class="mylist-item-text">' + value['displayName']['text'] + '</div></a>';
 
             });
-            console.log(text);
-            console.log("printing the assessment list");
             $('#assess-list').html(text);
             selectedAssessment = null;
             $('.assess-item').click(function () {
-                console.log("before wait");
-                if(wait==false){
-                    wait=true;
-                    console.log('waiting');
+                if (wait == false) {
                     clickAssessment($(this));
                 }
-//                clickAssessment($(this));
                 return false;
             });
+            addAssessPageMenu(pages,page_num);
+
 
         }
+    }).done(function(){
+
+        console.log("Done updating assess list");
+//        stopWaiting();
+
     });
     console.log('Exiting updateAssessmentList');
 
@@ -984,6 +900,41 @@ function printResponse(response){
                 }
                 reportDiv.innerHTML = answer;
             }
+
+function addAssessPageMenu(pages, page_num){
+    console.log("adding page menu");
+    var str='<ul class="assess-page-menu-ul">';
+    str+='<li class="assess-page-li"><a href="#" class="assess-page assess-page-a" name="'+pages[0]+'">&laquo;</li>';
+
+
+    for(var i=1; i<pages.length-1; i++){
+        if(pages[i]==page_num){
+            str+='<li class="assess-page-li"><a href="#" class="assess-page cur-assess-page-a" name="'+pages[i]+'">'+pages[i]+'</a></li>';
+        }else{
+            str+='<li class="assess-page-li"><a href="#" class="assess-page assess-page-a" name="'+pages[i]+'">'+pages[i]+'</a></li>';
+        }
+    }
+    str+='<li class="assess-page-li"><a href="#" class="assess-page assess-page-a" name="'+pages[pages.length-1]+'">&raquo;</a></li>';
+
+    str+="</ul>";
+
+    $("#assess-page-menu").html(str);
+    $(".cur-assess-page-a").click(function(){
+        return false;
+    });
+
+    $(".assess-page-a").click(function() {
+        var page_num = $(this).attr('name');
+        if (wait == false) {
+            unselectSelectedAssessment();
+            unselectAllBankItems();
+            updateAssessmentList(page_num);
+        }
+        return false;
+
+    });
+
+}
 
 
 

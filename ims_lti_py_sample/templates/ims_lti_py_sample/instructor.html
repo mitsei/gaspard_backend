@@ -3,7 +3,21 @@
 
 {% block content %}
 
+<script type="text/javascript">
 
+    $(document).ready(function(){
+        console.log("Pages");
+        console.log("{{pages}}");
+        console.log("page_num");
+        console.log("{{page_num}}");
+
+        var pages=JSON.parse("{{pages}}");
+        var page_num=parseInt("{{page_num}}");
+
+        addAssessPageMenu(pages,page_num);
+    });
+
+</script>
 <div class="row instructor-main-bgr" style="padding-bottom:0">
     <!--<div class="instructor-main-bgr">-->
     <div class="main-page-img" style="padding-bottom:200px">
@@ -78,10 +92,9 @@
 
                 </div>
 
-                <!--<div style="width:150px;height:150px;line-height:3em;overflow:scroll;padding:5px;background-color:#FCFADD;color:#714D03;scrollbar-base-color:#DEBB07;">-->
-<!--</div>-->
 
-                <div class="mylist" style="overflow-y:scroll;max-height:400px;" id="assess-list">
+                <div class="mylist"  id="assess-list">
+
                     {% for a in assessments %}
                     <a href="#" class="mylist-item assess-item" id="{{a.id}}">
                         <div class="mylist-item-text">
@@ -89,7 +102,13 @@
                         </div>
                     </a>
                     {% endfor %}
+
                 </div>
+                <div id="assess-page-menu">
+
+
+                </div>
+
             </div>
             <!--Items in the assessment-->
             <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
