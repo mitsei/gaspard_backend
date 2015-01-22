@@ -850,33 +850,15 @@ def instructor(request):
                 else:
                     items_type4.append(a)
             name = 'none'
-            print "counting number of keys"
 
-            '''
-            old version
-            '''
-            # print Post.objects.filter(key='lis_person_name_given').count()
-            # if Post.objects.filter(key='lis_person_name_given').count() > 0:
-            #     name = Post.objects.filter(key='lis_person_name_given')[0].value
-            #     print name
-            #     name = name.replace("-", "")
-
-            '''
-            new version
-            '''
-            if params['lis_person_name_given']:
+            if 'lis_person_name_given' in params:
                 name = name.replace("-", "")
                 print name
-
-
 
             '''
             save updated parameters
             '''
-
-
             save_to_params(unique_id, {'bank_id': bank_id, 'page_num': 1})
-
 
             return render_to_response("ims_lti_py_sample/instructor.html",
                                       RequestContext(request,
