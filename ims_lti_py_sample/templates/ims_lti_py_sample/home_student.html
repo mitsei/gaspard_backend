@@ -50,49 +50,45 @@
         {%if answered_all_questions%}
         <div>
             <a href="#">
-            <button class="btn btn-white-background" id="btn-submit-grade"
-                    style="border:0px solid yellow">
+            <button class="btn btn-white-background" id="btn-submit-grade">
                 <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
-
                     {%if grade == 'none' %}
                     Submit answers
-                    {%else %}
+                    {%elif consumer == 'none%}
+                    Go back
+
+                    {%else%}
                     Go back to {{consumer}}
                     {%endif%}
 
             </button>
-                 </a>
+            </a>
         </div>
         {%else%}
 
-        {%if grade == 'none' %}
-        <div id="btn-submit-disabled-div"
-             style="border:0px solid yellow; border-top-color: #4D8496;" data-toggle="tooltip" data-placement="bottom"
-             title="You must attempt all questions before submitting answers">
-            <a href="#" id="btn-submit-disabled">
-                <button class="btn btn-white-background" disabled>
-                    <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
-
-                    Submit answers
-
-                </button>
-            </a>
-            {%else %}
-            <div id="btn-submit-disabled-div" style="border:0px solid yellow;" data-toggle="tooltip"
-                 data-placement="bottom"
+            {%if grade == 'none' %}
+            <div id="btn-submit-disabled-div"
+                 style="border:0px solid yellow; border-top-color: #4D8496;" data-toggle="tooltip" data-placement="bottom"
                  title="You must attempt all questions before submitting answers">
                 <a href="#" id="btn-submit-disabled">
-                    <button class="btn btn-white-background" style="" disabled>
+                    <button class="btn btn-white-background" disabled>
                         <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
 
-                        Go back to {{consumer}}
+                        Submit answers
 
                     </button>
                 </a>
-                {%endif%}
-
-            </div>
-            {%endif%}
+            {%else %}
+                <div>
+                <a href="#">
+                <button class="btn btn-white-background" id="btn-return-back">
+                    <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                        Go back to {{consumer}}
+                </button>
+                </a>
+                </div>
+             {%endif%}
+        {%endif%}
 
 
         </div>
