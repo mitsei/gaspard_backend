@@ -280,7 +280,7 @@ def student_home(request):
                 return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
         return render_to_response("ims_lti_py_sample/home_student.html",
-                                      RequestContext(request, {'userName': name, 'questions': questions,'grade':grade,
+                                      RequestContext(request, {'userName': name, 'questions': questions, 'grade': grade,
                                                                'consumer': tool_consumer,
                                                                'answered_all_questions': answered_all_questions,
                                                                'seeAnswer': review_whether_correct}))
@@ -311,7 +311,11 @@ def submit_grade(request):
         return HttpResponse(json.dumps({'return_url': return_url}), content_type='application/json')
 
     except KeyError, e:
-        return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': e}))
+        return render_to_response("ims_lti_py_sample/student_error.html",
+                                  RequestContext(request, {
+                                      'error': e,
+                                      'location': "Submit Grade"
+                                  }))
 
 '''
 Get questions for this taken
@@ -404,7 +408,6 @@ def display_question(request):
 
                 return render_to_response(("ims_lti_py_sample/student_error.html"),
                                       RequestContext(request, {
-                                                               'consumer': params['tool_consumer_info_product_family_code'],
                                                                'error': questions['detail'],
                                                                'location': "Getting questions"
                                                                }))
