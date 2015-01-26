@@ -277,7 +277,11 @@ def student_home(request):
         print answered_all_questions
 
         if 'detail' in questions:
-                return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
+                return render_to_response("ims_lti_py_sample/student_error.html",
+                                  RequestContext(request, {
+                                      'error': questions['detail'],
+                                      'location': "Requesting questions"
+                                  }))
 
         return render_to_response("ims_lti_py_sample/home_student.html",
                                       RequestContext(request, {'userName': name, 'questions': questions, 'grade': grade,
@@ -287,6 +291,12 @@ def student_home(request):
 
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': e}))
+    except Exception, e:
+        return render_to_response("ims_lti_py_sample/student_error.html",
+                                  RequestContext(request, {
+                                      'error': e,
+                                      'location': "Student Home"
+                                  }))
 
 @csrf_exempt
 def submit_grade(request):
@@ -310,7 +320,7 @@ def submit_grade(request):
 
         return HttpResponse(json.dumps({'return_url': return_url}), content_type='application/json')
 
-    except KeyError, e:
+    except Exception, e:
         return render_to_response("ims_lti_py_sample/student_error.html",
                                   RequestContext(request, {
                                       'error': e,
@@ -361,29 +371,35 @@ def getQuestions(bank_id, taken_id, unique_id):
 
 @csrf_exempt
 def get_question(request):
-    # try:
-    print "Get Question"
-    unique_id = request.session.get('unique_id')
-    # print request.POST
-    '''
-    Data -> [ text.text, innerText, id], e.g [ question, question_name, question_id]
-    '''
-    data = request.POST.getlist('data[]')
-    #print data
+    try:
+        print "Get Question"
+        unique_id = request.session.get('unique_id')
+        # print request.POST
+        '''
+        Data -> [ text.text, innerText, id], e.g [ question, question_name, question_id]
+        '''
+        data = request.POST.getlist('data[]')
+        #print data
 
-    print "Size of data " + str(len(data))
-    print "selected question"
+        print "Size of data " + str(len(data))
+        print "selected question"
 
-    question_id = data[0]
+        question_id = data[0]
 
-    print question_id
+        print question_id
 
-    '''Save params'''
-    save_to_params(unique_id, {'question_id': question_id})
+        '''Save params'''
+        save_to_params(unique_id, {'question_id': question_id})
 
 
-    question = {'success': True, 'redirect': True, 'redirectURL': "display_question"}  #d_question  display_question
-    return HttpResponse(json.dumps(question), content_type='application/json')
+        question = {'success': True, 'redirect': True, 'redirectURL': "display_question"}
+        return HttpResponse(json.dumps(question), content_type='application/json')
+    except Exception, e:
+        return render_to_response("ims_lti_py_sample/student_error.html",
+                                  RequestContext(request, {
+                                      'error': e,
+                                      'location': "Submit Grade"
+                                  }))
 
 
 @csrf_exempt
@@ -573,6 +589,12 @@ def display_question(request):
 
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': e}))  # # Testin unity web player
+    except Exception, e:
+        return render_to_response("ims_lti_py_sample/student_error.html",
+                                  RequestContext(request, {
+                                      'error': e,
+                                      'location': "Instructor"
+                                  }))
 
 
 def getNextQuestionId(next,questions,question_id):
