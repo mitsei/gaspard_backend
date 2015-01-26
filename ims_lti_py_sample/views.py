@@ -123,7 +123,7 @@ def student(request):
         user_obj=Parameters.objects.filter(key=unique_id)[0]
         params = ast.literal_eval(user_obj.value)
 
-        student_req = AssessmentRequests('taaccct_student')
+        student_req = AssessmentRequests(unique_id, 'taaccct_student')
 
         '''
         get bank id and offering id
@@ -167,9 +167,9 @@ def student(request):
             if 'tool_consumer_info_product_family_code' in params:
                 tool_consumer = params['tool_consumer_info_product_family_code']
 
-            questions = getQuestions(bank_id, taken_id)
+            questions = getQuestions(bank_id, taken_id,unique_id)
             if review_whether_correct:
-                grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
+                grade = int(getOverallGrade(bank_id,taken_id, unique_id)*1000)/float(10)
 
 
             '''
@@ -266,12 +266,12 @@ def student_home(request):
         if 'lis_person_name_given' in params:
             name = params["lis_person_name_given"]
 
-        questions = getQuestions(bank_id, taken_id)
+        questions = getQuestions(bank_id, taken_id, unique_id)
 
         answered_all_questions = answeredAllQuestions(questions)
 
         if review_whether_correct:
-            grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
+            grade = int(getOverallGrade(bank_id,taken_id, unique_id)*1000)/float(10)
 
         print "all questions: "
         print answered_all_questions
@@ -304,9 +304,9 @@ def submit_grade(request):
         taken_id = params['taken_id']
         return_url = params['launch_presentation_return_url']
 
-        submitGradeToConsumer(bank_id, taken_id, params)
+        submitGradeToConsumer(bank_id, taken_id, params, unique_id)
         if not params['see_answer']:
-            finishAssessment(bank_id,taken_id)
+            finishAssessment(bank_id,taken_id, unique_id)
 
         return HttpResponse(json.dumps({'return_url': return_url}), content_type='application/json')
 
@@ -321,10 +321,10 @@ def submit_grade(request):
 Get questions for this taken
 add status to each question
 '''
-def getQuestions(bank_id, taken_id):
+def getQuestions(bank_id, taken_id, unique_id):
     print "Get Questions"
 
-    student_req = AssessmentRequests('taaccct_student')
+    student_req = AssessmentRequests(unique_id, 'taaccct_student')
 
     '''
     Get questions from this assessment
@@ -400,9 +400,9 @@ def display_question(request):
         taken_id = params['taken_id']
         question_id = params['question_id']
         review_whether_correct = params['see_answer']
-        student_req = AssessmentRequests('taaccct_student')
+        student_req = AssessmentRequests(unique_id,'taaccct_student')
 
-        questions = getQuestions(bank_id, taken_id)
+        questions = getQuestions(bank_id, taken_id, unique_id)
         if 'detail' in questions:
                 # return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': questions['detail']}))
 
@@ -604,11 +604,8 @@ def update_questions_menu(request):
     print last_num
     params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
 
-    # questions = getQuestions(params['custom_bank_id'],params['taken_id'])
     questions = params['sm_questions']
     print type(questions)
-    # questions = ast.literal_eval(questions)
-    # print type(questions)
 
     length =len(questions)
     sm_list =[]
@@ -656,31 +653,31 @@ def submit_answer(request):
 
     unique_id = request.session.get('unique_id')
 
-    answer = request.POST.getlist('answer')[0]
-    print answer
+    try:
 
-    # params = {}
-    # for g in Post.objects.all():
-    #     params[g.key] = g.value
+        answer = request.POST.getlist('answer')[0]
+        print answer
 
-    params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
+        params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
 
-    bank_id = params['custom_bank_id']
-    taken_id = params['taken_id']
-    question_id = params['question_id']
+        bank_id = params['custom_bank_id']
+        taken_id = params['taken_id']
+        question_id = params['question_id']
 
-    student_req = AssessmentRequests('taaccct_student')
-    resp = student_req.post(
-        student_req.url + bank_id + '/assessmentstaken/' + taken_id + '/questions/' + question_id + '/submit/',
-        json.dumps(answer))
-    print "Got answer back"
-    resp['see_answer']=params['see_answer']
-    print resp
-    # if params['see_answer']=='True':
-    #     resp['overall_grade'] = submitGrade(bank_id, taken_id, params)
+        student_req = AssessmentRequests( unique_id,'taaccct_student')
+        resp = student_req.post(
+            student_req.url + bank_id + '/assessmentstaken/' + taken_id + '/questions/' + question_id + '/submit/',
+            json.dumps(answer))
+        print "Got answer back"
+        resp['see_answer'] = params['see_answer']
+        print resp
 
-
-    return HttpResponse(json.dumps(resp), content_type='application/json')
+        return HttpResponse(json.dumps(resp), content_type='application/json')
+    except Exception, e:
+        return render_to_response("ims_lti_py_sample/student_error.html", RequestContext(request, {
+            'error': e,
+            'location': "Submit Answer"
+        }))
 
 
 @csrf_exempt
@@ -688,55 +685,54 @@ def submit_multi_answer(request):
     print "Submit multi choice answer"
     unique_id = request.session.get('unique_id')
 
-    answer = request.POST.getlist('answer')[0]
-    print answer
+    try:
+        answer = request.POST.getlist('answer')[0]
+        print answer
 
-    params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
+        params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
 
-    bank_id = params['custom_bank_id']
-    taken_id = params['taken_id']
-    question_id = params['question_id']
+        bank_id = params['custom_bank_id']
+        taken_id = params['taken_id']
+        question_id = params['question_id']
 
-    student_req = AssessmentRequests('taaccct_student')
+        student_req = AssessmentRequests(unique_id, 'taaccct_student')
 
-    '''
-    Get information about the question
-    url: assessment/bank/<bank_id>/assessmentstaken/<taken_id>/questions/<question_id>/
-    type: 'GET'
-    '''
-    print student_req.url + bank_id + '/assessmentstaken/' + taken_id + '/questions/' + question_id + '/'
-    resp1 = student_req.get(
-        student_req.url + bank_id + '/assessmentstaken/' + taken_id + '/questions/' + question_id + '/')
-    '''
-    Find the id of the chosen answer
-    '''
-    print resp1.json()['choices'][int(answer)]['name']
+        '''
+        Get information about the question
+        url: assessment/bank/<bank_id>/assessmentstaken/<taken_id>/questions/<question_id>/
+        type: 'GET'
+        '''
+        print student_req.url + bank_id + '/assessmentstaken/' + taken_id + '/questions/' + question_id + '/'
+        resp1 = student_req.get(
+            student_req.url + bank_id + '/assessmentstaken/' + taken_id + '/questions/' + question_id + '/')
+        '''
+        Find the id of the chosen answer
+        '''
+        print resp1.json()['choices'][int(answer)]['name']
 
-    choice_id = resp1.json()['choices'][int(answer)]['id']
-    print choice_id
-    answer = {"choiceIds": [choice_id]}
+        choice_id = resp1.json()['choices'][int(answer)]['id']
+        print choice_id
+        answer = {"choiceIds": [choice_id]}
 
-    '''
-    Submit answer to Multi Choice question
-    url: assessment/bank/<bank_id>/assessmentstaken/<taken_id>/questions/<question_id>/submit/
-    type: POST
-    data: {"choiceIds": [<choices_id>,...]
-    '''
-    resp2 = student_req.post(
-        student_req.url + bank_id + '/assessmentstaken/' + taken_id + '/questions/' + question_id + '/submit/',
-        json.dumps(answer))
-    print "Got answer back"
-    print resp2
+        '''
+        Submit answer to Multi Choice question
+        url: assessment/bank/<bank_id>/assessmentstaken/<taken_id>/questions/<question_id>/submit/
+        type: POST
+        data: {"choiceIds": [<choices_id>,...]
+        '''
+        resp2 = student_req.post(
+            student_req.url + bank_id + '/assessmentstaken/' + taken_id + '/questions/' + question_id + '/submit/',
+            json.dumps(answer))
+        print "Got answer back"
+        print resp2
 
-    resp2['see_answer']=params['see_answer']
-
-    request_post = params["lis_outcome_service_url"] #???
-    print request_post
-
-    # if params['see_answers'] == 'True':
-    #     submitGrade(bank_id, taken_id, params)
-
-    return HttpResponse(json.dumps(resp2), content_type='application/json')
+        resp2['see_answer'] = params['see_answer']
+        return HttpResponse(json.dumps(resp2), content_type='application/json')
+    except Exception, e:
+        return render_to_response("ims_lti_py_sample/student_error.html", RequestContext(request, {
+            'error': e,
+            'location': "Submit MultiChoice Question"
+        }))
 
 
 
@@ -756,7 +752,7 @@ def instructor(request):
         params = ast.literal_eval(params)
         print type(params)
 
-        req_assess = AssessmentRequests()
+        req_assess = AssessmentRequests(unique_id)
         '''
         Get list of banks
         url: assessment/banks
@@ -945,7 +941,7 @@ def create_assessment(request):
     # print request.POST
     try:
 
-        req_assess = AssessmentRequests()
+        req_assess = AssessmentRequests(unique_id)
         items_ids = request.POST.getlist('selected[]')
 
         name = request.POST.getlist('name')[0]
@@ -995,11 +991,8 @@ def delete_assessment(request):
 
     try:
 
-        req_assess = AssessmentRequests()
+        req_assess = AssessmentRequests(unique_id)
 
-        '''old'''
-        # bank_id = Post.objects.filter(key="bank_id")[0].value
-        '''new'''
         bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
         sub_id = request.GET.getlist('sub_id')[0]
@@ -1095,32 +1088,25 @@ def get_offering_id(request):
     unique_id=request.session.get('unique_id')
 
     sub_id = request.POST.getlist('sub_id')[0]
-    seeAnswer = request.POST.getlist('seeAnswer')[0]
-    print "See answer "
-    print type(seeAnswer)
+    seeAnswer = request.POST.getlist('seeAnswer')[0]  # this is a string
     seeAnswer = seeAnswer == 'true'
 
     maxAttempts=request.POST.getlist('maxAttempts')[0]
     print "maxAttempts "
     print type(maxAttempts)
 
-    '''old'''
-    # bank_id = Post.objects.filter(key="bank_id")[0].value
-    '''new'''
     bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
-
-    req_assess = AssessmentRequests()
+    req_assess = AssessmentRequests(unique_id)
     print "See Answer"
     print seeAnswer
-    data={"reviewOptions": {
-        "whetherCorrect" : {
-                "duringAttempt": seeAnswer
+    data = {
+        "reviewOptions": {
+            "whetherCorrect": {
+            "duringAttempt": seeAnswer
             }
-    },
-          # "maxAttempts": maxAttempts
-
-    }
+        },
+        }
     if maxAttempts != '':
         data['maxAttempts'] = int(maxAttempts)
 
@@ -1151,11 +1137,8 @@ def rename_assessment(request):
 
     try:
 
-        req_assess = AssessmentRequests()
+        req_assess = AssessmentRequests(unique_id)
 
-        '''old'''
-        # bank_id = Post.objects.filter(key="bank_id")[0].value
-        '''new'''
         bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
         sub_id = request.POST.getlist('sub_id')[0]
@@ -1191,10 +1174,7 @@ def get_items(request):
 
     try:
 
-        req_assess = AssessmentRequests()
-        '''old'''
-        # bank_id = Post.objects.filter(key="bank_id")[0].value
-
+        req_assess = AssessmentRequests(unique_id)
         '''new'''
         bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
         '''
@@ -1230,9 +1210,6 @@ def add_item(request):
     sub_id = request.POST.getlist('sub_id')[0]
     question_id = request.POST.getlist('question_id')[0]
 
-    '''old'''
-    # bank_id = Post.objects.filter(key="bank_id")[0].value
-    '''new'''
     bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
 
 
@@ -1242,7 +1219,7 @@ def add_item(request):
 
     data = {"itemIds": [question_id]}
 
-    req_assess = AssessmentRequests()
+    req_assess = AssessmentRequests(unique_id)
     '''
     Adding item to assessment
     url: assessment/bank/<bank_id>/assessments/<sub_id>/items/
@@ -1265,15 +1242,12 @@ def remove_item(request):
     sub_id = request.POST.getlist('sub_id')[0]
     question_id = request.POST.getlist('question_id')[0]
 
-    # bank_id = Post.objects.filter(key="bank_id")[0].value
     bank_id = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)['bank_id']
-
-
 
     print sub_id
     print question_id
 
-    req_assess = AssessmentRequests()
+    req_assess = AssessmentRequests(unique_id)
 
     '''
     Delete item form assessment
@@ -1283,7 +1257,6 @@ def remove_item(request):
     resp = req_assess.delete(req_assess.url + bank_id + "/assessments/" + sub_id + "/items/" + question_id + "/", )
 
     print resp
-    # print resp.json()
     return HttpResponse(resp)
 
 
@@ -1319,7 +1292,7 @@ def reorder_items(request):
 
     data = {"itemIds": items_ids}
 
-    resp = replaceAllItems(bank_id, sub_id, data)
+    resp = replaceAllItems(bank_id, sub_id, data,unique_id)
     return HttpResponse(json.dumps(resp), content_type='application/json')
 
 
@@ -1341,7 +1314,7 @@ def update_assessments(request):
     if page_num > 0:
         save_to_params(unique_id, {'page_num': page_num})
 
-    req_assess = AssessmentRequests()
+    req_assess = AssessmentRequests(unique_id)
     params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
     bank_id = params['bank_id']
     page_num = params['page_num']
@@ -1373,16 +1346,12 @@ def update_assessments(request):
 Replace old item list with the new one
 Delete each item one by one, add new list of items
 '''
-
-
-def replaceAllItems(bank_id, sub_id, data):
+def replaceAllItems(bank_id, sub_id, data, unique_id):
     print "ReplaceAllItems"
 
-    req_assess = AssessmentRequests()
+    req_assess = AssessmentRequests(unique_id)
 
-    items = getItems(bank_id, sub_id) #returns a list of items
-    # items = items['data']
-    # print "Number of items in this assessment: " + str(len(items))
+    items = getItems(bank_id, sub_id, unique_id) #returns a list of items
     for item in items:
         print item['id']
         question_id = item['id']
@@ -1393,7 +1362,7 @@ def replaceAllItems(bank_id, sub_id, data):
     '''
     Add new list of items only if the assessment is empty
     '''
-    resp1 = getItems(bank_id, sub_id)
+    resp1 = getItems(bank_id, sub_id, unique_id)
     if len(resp1) < 1:
         resp = req_assess.post(req_assess.url + bank_id + "/assessments/" + sub_id + "/items/", json.dumps(data))
         return resp
@@ -1406,96 +1375,16 @@ Get a list of items in this assessment
 '''
 
 
-def getItems(bank_id, sub_id):
+def getItems(bank_id, sub_id, unique_id):
     print "Get Items"
-    req_assess = AssessmentRequests()
+    req_assess = AssessmentRequests(unique_id)
     resp = req_assess.get(req_assess.url + bank_id + "/assessments/" + sub_id + "/items/")
     return resp.json()['data']['results']
 
 
-'''
-Get the list of all offerings
-for each offering find the takens
-    for each taken
-        delete taken
-    delete offering
-'''
 
-#this is not used
-def deleteOfferings(bank_id, sub_id):
-    print "Deleting Offerings"
-
-    req_assess = AssessmentRequests()
-    '''
-    Get list of offerings
-    url: /assessment/<bank_id>/assessments/<sub_id>/assessmentsoffered/
-    '''
-    r1 = req_assess.get(req_assess.url + bank_id + '/assessments/' + sub_id + "/assessmentsoffered/")
-    # print "response assessments offered"
-    # print r1
-    if r1.status_code == 200:
-        data = r1.json()['data']
-
-        if len(data) > 0:
-            '''
-            Want to delete all offerings
-            '''
-            print "number of offerings: " + str(len(data))
-            for offering in data:
-                offering_id = offering['id']
-                print offering['id']
-                '''
-                Get a list of takens for this assessment
-                url: /assessment/<bank_id>/assessmentsoffered/<sub_id>/assessmentstaken/
-                '''
-                r4 = req_assess.get(
-                    req_assess.url + bank_id + '/assessmentsoffered/' + offering_id + "/assessmentstaken/")
-                if r4.status_code == 200:
-                    print "takens"
-                    print r4.json()
-                    takensList = r4.json()['data']
-                    print takensList
-                    if len(takensList) > 0:
-                        for taken in takensList:
-                            print "taken"
-                            print taken
-                            print "delete this taken"
-                            '''
-                            delete assessment takens
-                            url:assessment/<bank_id>/assessmentstaken/<taken_id>/
-                            '''
-                            r3 = req_assess.delete(req_assess.url + bank_id + '/assessmentstaken/' + taken['id'] + '/')
-
-                            print r3
-                    else:
-                        print "no takens for this assessment"
-                else:
-                    print("Error: could not get list of takens")
-                    print(r4)
-
-                    # return HttpResponse(r4)
-                '''
-                Now we can delete this offering
-                '''
-                '''
-                delete an offering
-                url:    assessment/<bank_id>/assessmentsoffered/<offering_id>/
-                '''''
-                r2 = req_assess.delete(req_assess.url + bank_id + '/assessmentsoffered/' + offering_id + "/")
-                print r2
-
-
-        else:
-            print("Offerings list is empty")
-        return True
-
-    else:
-        print("Error getting the offerings")
-        print r1
-        return False
-
-def getOverallGrade(bank_id, taken_id):
-    questions = getQuestions(bank_id, taken_id)
+def getOverallGrade(bank_id, taken_id, unique_id):
+    questions = getQuestions(bank_id, taken_id, unique_id)
     num_questions = len(questions)
     grade=0
     if num_questions > 0:
@@ -1509,9 +1398,9 @@ def getOverallGrade(bank_id, taken_id):
 
     return grade
 
-def submitGradeToConsumer(bank_id, taken_id, params):
+def submitGradeToConsumer(bank_id, taken_id, params,unique_id):
 
-    grade=getOverallGrade(bank_id,taken_id)
+    grade=getOverallGrade(bank_id,taken_id, unique_id)
     print grade
     consumer_key = settings.CONSUMER_KEY
     secret = settings.LTI_SECRET
@@ -1524,10 +1413,10 @@ def submitGradeToConsumer(bank_id, taken_id, params):
     # print "See Answer"
     # print type(params['see_answer'])
 
-def finishAssessment(bank_id, taken_id):
+def finishAssessment(bank_id, taken_id, unique_id):
     print "Finish Assessment"
 
-    student_req = AssessmentRequests('taaccct_student')
+    student_req = AssessmentRequests(unique_id,'taaccct_student')
 
     '''
     Finish this assessment

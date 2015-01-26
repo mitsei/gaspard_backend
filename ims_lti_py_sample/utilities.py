@@ -13,14 +13,15 @@ from http_signature.requests_auth import HTTPSignatureAuth
 import json
 #from django.utils.http import unquote
 from copy import deepcopy
-from models import Post, Parameters
+from models import Parameters
 
+import ast
 
 
 class AssessmentRequests(object):
 
 
-    def __init__(self, username='taaccct_instructor'):
+    def __init__(self,unique_id, username='taaccct_instructor'):
         self._pub_key = settings.PUBLIC_KEY
         self._pri_key = settings.PRIVATE_KEY
         self._assessments_host = settings.ASSESSMENTS_HOST
@@ -50,9 +51,10 @@ class AssessmentRequests(object):
 
             lti_headers = ['request-line', 'accept', 'date', 'host', 'x-api-proxy',
                            'lti-user-id', 'lti-tool-consumer-instance-guid', 'lti-user-role', 'lti-bank']
-            params = {}
-            for g in Post.objects.all():
-                params[g.key] = g.value
+
+            params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
+            # for g in Post.objects.all():
+            #     params[g.key] = g.value
             #print params
             self._headers['LTI-User-ID'] =                     str(params['user_id'])
             self._headers['LTI-Tool-Consumer-Instance-GUID'] = str(params['tool_consumer_instance_guid'])
