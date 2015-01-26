@@ -46,8 +46,12 @@ $(document).ready(function () {
                 $('#btn-submit-grade').unbind();
 
                 if( window.location === window.parent.location) { //it is not in iframe
+                    console.log("Not in iframe");
                     window.close();
                 }else if(response['return_url']== '') { //this is MITx
+                    console.log("Return url is empty");
+                    console.log(window.location);
+                    console.log(window.parent.location);
                     /* no url given, nothing to do yet*/
                 }else{
                     document.location.href = response['return_url'];
