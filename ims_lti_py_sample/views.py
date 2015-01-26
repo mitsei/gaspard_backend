@@ -686,10 +686,6 @@ def submit_multi_answer(request):
     answer = request.POST.getlist('answer')[0]
     print answer
 
-    # params = {}
-    # for g in Post.objects.all():
-    #     params[g.key] = g.value
-
     params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
 
     bank_id = params['custom_bank_id']

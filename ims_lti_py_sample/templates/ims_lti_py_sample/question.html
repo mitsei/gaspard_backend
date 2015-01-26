@@ -250,14 +250,18 @@
         var str= '<a href="#" id="'+elemId+'"><button class="btn btn-white-background" type="button">'+
             ''+btnText+'</button></a>';
         $("#submit-btn-div").append(str);
-        $('#submit-multi-answer').click(function () {
-            submitMultiAnswer();
-        });
-         $("#submit-match-answer").click(function () {
 
-                u.getUnity().SendMessage("Question", "RequestRespone", "");
-                console.log("send response");
-            });
+
+        $('#submit-multi-answer').click(function () {
+            document.getElementById("report-answer").innerHTML='';
+            submitMultiAnswer();
+            return false;
+        });
+        $("#submit-match-answer").click(function () {
+            document.getElementById("report-answer").innerHTML='';
+            u.getUnity().SendMessage("Question", "RequestRespone", "");
+            return false;
+        });
 
     }
 </script>

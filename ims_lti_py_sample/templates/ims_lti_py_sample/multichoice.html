@@ -2,9 +2,6 @@
 
 {%block unity%}
 {% load staticfiles %}
-<!--{%static "Gaspard/Gaspard.logo.png" as gaspard%}-->
-<!--{%static "Gaspard/" as manipFile%}-->
-<!--{%static "Gaspard/Gaspard - Web Buil.unity3d" as gaspardWebBuild%}-->
 
 {% static "MultichoiceLayouts/largeOrthoViewSet0.jpg" as lg_img_layout1%}
 {% static "MultichoiceLayouts/largeOrthoViewSet1.jpg" as lg_img_layout2%}
@@ -18,18 +15,19 @@
 {% static "MultichoiceLayouts/smallOrthoViewSet3.jpg" as sm_img_layout4%}
 
 <script type="text/javascript">
+    /**
+     * Numerical value corresponding to the selected layout
+     **/
     var selectedLayout = null;
+
     $(document).ready(function () {
-
-
         showFourChoices();
-
-
-
     });
+
     function submitMultiAnswer() {
         if (selectedLayout != null) {
-//            var answer = selectedLayout.attr('value');
+            document.getElementById("report-answer").innerHTML='';
+            console.log("Answer is: "+selectedLayout);
             $.ajax({
                 url: "submit_multi_answer",
                 type: "POST",
@@ -48,7 +46,6 @@
 
         var checked='';
         if (selectedLayout != null) {
-//            var selected_value = selectedLayout.attr("value");
             if (selectedLayout== num){
                 checked='checked';
             }
@@ -78,13 +75,17 @@
             /* Want to set or reset the selected layout*/
         });
 
-        $("#left-choice-badge").click(function () {
+        $("#left-choice-badge").click(function (e) {
             console.log(parseInt($(this).attr('value')));
             displayPrevLargeLayout((parseInt($(this).attr('value'))));
+            return false;
+
         });
         $("#right-choice-badge").click(function () {
             displayNextLargeLayout((parseInt($(this).attr('value')) + 1) % 4);
+            return false;
         });
+
 
     }
 
@@ -102,8 +103,6 @@
         showLargeLayout(num);
     }
     function showFourChoices() {
-        var list = "";
-
         var str = "";
         var four_sm_img = ["{{sm_img_layout1}}", "{{sm_img_layout2}}", "{{sm_img_layout3}}", "{{sm_img_layout4}}"];
         for (var i = 0; i < 4; i++) {
@@ -112,7 +111,7 @@
             str += '<div class="col-xs-6 col-md-6 col-sm-6 col-lg-6 choice-col" style="">' +
                     '<a href="#" class="thumbnail multichoice-img-select" value="' + i + '">' +
                     '<input style="position:absolute" class="radio-inline"value="' + i + '" type="radio">' +
-                    '<img class="multichoice-img-small" value="' + i + '" style=""' +
+                    '<img class="multichoice-img-small " value="' + i + '" style=""' +
                     'src="' + four_sm_img[i] + '">' +
                     '<span class="glyphicon glyphicon-zoom-in zoom-in-badge" value="' + i + '"></span>'+
                     '</a>' +
@@ -125,102 +124,110 @@
         /* since the previous layout object is not existent anymore need get the value*/
 
         if (selectedLayout != null) {
-//            var value = selectedLayout.attr("value");
-//            var layouts = document.getElementsByClassName("multichoice-img-select");
-//            console.log( layouts[value]);
-//            var input_radio = $(layouts[value]).find('input')[0];
-//            input_radio.checked = true;
-//            selectedLayout = $(layouts[value]);
-//            $(layouts[value]).css("background", '#DBE6EA');
-
-//              var value = selectedLayout;
-
             var layouts = document.getElementsByClassName("multichoice-img-select");
 
-           $( $(layouts[selectedLayout]).find('input')[0]).prop('checked', true);
+            $( $(layouts[selectedLayout]).find('input')[0]).prop('checked', true);
             $(layouts[selectedLayout]).css("background", '#DBE6EA');
-
-
-
         }
-        $(".multichoice-img-select").click(function () {
-            radioClickNew($(this));
-            return false;
+        $('input').click(function(){
+            console.log("click radio");
+            console.log($(this)[0].checked);
+        });
+//        $("input").unbind();
 
-//
+        $("input").change(function(){
+            console.log("change radio");
+            console.log($(this)[0].checked);
+        });
+
+
+//        $('input[type="radio"]')
+//            // bind a change-event handler using 'on()':
+//                .on('change', function () {
+//                    // re-select the same elements:
+//                    $('input[type="radio"]')
+//                        // set the 'checked' property back to the default (on page-load) state:
+//                            .prop('checked', function () {
+//                                return this.defaultChecked;
+//                            });
+//                });
+        $(".multichoice-img-select").click(function () {
+            imgClickNew($(this));
+            return false;
+        });
+        $("input[type='radio']").click(function(){
+            radioClick($(this));
+//            return false;
+
+        });
+//        $(".thumbnail ").click(function(e){
+////            return false;
+//            e.preventDefault();
+//        });
+        $('input').on('click', function(e){
+             e.stopPropagation();
         });
         $('.zoom-in-badge').click(function(){
             showLargeLayout(parseInt($(this).attr('value')));
             return false;
-
         });
-        function radioClickNew(obj) {
 
-            var layouts = document.getElementsByClassName("multichoice-img-select");
-            var input_radio = obj.find('input')[0];
+    }
+    function radioClick(obj){
 
+        if (selectedLayout === obj.attr('value')) { //Unselect
+
+        }else {
             if (selectedLayout == null) {
-                selectedLayout=obj.attr('value');
-                $(input_radio).prop('checked', true);
-                obj.css("background", '#DBE6EA');
-
-                //select the radio button
-            } else if (selectedLayout === obj.attr('value')) { //Unselect
-
-            } else {//reselect
+            }else{
+                var layouts = document.getElementsByClassName("thumbnail");
                 var old_radio=$(layouts[selectedLayout]).find('input')[0];
                 $(layouts[selectedLayout]).css("background",'white');
                 $(old_radio).attr('checked',false);
-
-                selectedLayout = obj.attr('value');
-                obj.css("background", '#DBE6EA');
-
-                $(input_radio).prop('checked', true);
-                console.log(input_radio);
-
-
             }
-
+            obj.parent().css("background", '#DBE6EA');
+            selectedLayout = obj.attr('value');
         }
-        function checkRadio(obj){
+    }
+
+    function imgClickNew(obj) {
+
+//            var layouts = document.getElementsByClassName("multichoice-img-select");
+        var layouts = document.getElementsByClassName("thumbnail");
+//            var clicked_obj=obj.parent();
+        var clicked_obj = obj;
+        var input_radio = clicked_obj.find('input')[0];
+        console.log($(input_radio).prop('checked'));
+//            console.log(obj);
 
 
+        if (selectedLayout == null) {
+            selectedLayout = obj.attr('value');
+            $(input_radio).prop('checked', true);
+//
+            console.log(obj.parent());
+            clicked_obj.css("background", '#DBE6EA');
+
+            //select the radio button
+        } else if (selectedLayout === obj.attr('value')) { //Unselect
+
+        } else {//reselect
+            var old_radio = $(layouts[selectedLayout]).find('input')[0];
+            $(layouts[selectedLayout]).css("background", 'white');
+            $(old_radio).attr('checked', false);
+
+            selectedLayout = obj.attr('value');
+            clicked_obj.css("background", '#DBE6EA');
+
+            $(input_radio).prop('checked', true);
+            console.log(input_radio);
         }
-
-
-        function radioClick(obj) {
-            if (selectedLayout == null) {
-                console.log("Selected");
-                selectedLayout = obj;
-                obj.prop('checked', true);
-                obj.css("background", 'green');
-                //select the radio button
-            } else if (selectedLayout.attr('value') === obj.attr('value')) { //Unselect
-                console.log("unselected");
-                obj.prop('checked', false);
-                selectedLayout = null;
-
-                //unselect the radio button
-
-            } else {//reselect
-                selectedLayout.prop('checked', false);
-                selectedLayout = obj;
-                selectedLayout.prop('checked', true);
-
-            }
-
-        }
+        console.log($(input_radio).prop('checked'));
     }
 </script>
 
 
 <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style=" border:0px greenyellow solid;">
-    <!--want to set the height of this column to be the height of the row-->
-    <!--<div class="instruction" style="border:1px solid yellow;margin-top:15px;">-->
-        <!--&lt;!&ndash;<div style="display:table;"><h4>Description</h4></div>&ndash;&gt;-->
-
-        <!--<div><p>{{question}} </p></div>-->
-    <!--</div>-->
 
     <div class="unity-content-multichoice" style="border:0px solid indianred; overflow:hidden">
         <!--<div class="unity-content">-->
