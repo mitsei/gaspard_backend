@@ -220,7 +220,7 @@ def student(request):
             return render_to_response("ims_lti_py_sample/student_error.html",
                                       RequestContext(request, {'userName': name,
                                                                'return_url': params['launch_presentation_return_url'],
-                                                               'consumer':params['tool_consumer_info_product_family_code'],
+                                                               # 'consumer':tool_consumer,
                                                                'error': detail,
                                                                'location': "Getting AssessmentTaken"
                                                                }))
@@ -230,7 +230,7 @@ def student(request):
     except Exception, e:
         return render_to_response("ims_lti_py_sample/student_error.html",
                                   RequestContext(request, {
-                                      'consumer': params['tool_consumer_info_product_family_code'],
+                                      # 'consumer': params['tool_consumer_info_product_family_code'],
                                       'error': e,
                                       'location': "Inside Student"
                                   }))
