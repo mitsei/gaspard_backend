@@ -31,6 +31,12 @@ $(document).ready(function () {
         } else {
             console.log('Not in iframe');
         }
+        $('#finish-warning').html('Are you sure you would like to submit your answers?');
+        $('#modal-warn-submit-grade').modal('show');
+
+    });
+    $('#btn-return-back').click(function(){
+        $('#finish-warning').html('Are you sure you would like to leave this page?');
         $('#modal-warn-submit-grade').modal('show');
 
     });

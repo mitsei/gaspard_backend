@@ -163,6 +163,9 @@ def student(request):
             '''
             review_whether_correct= resp['reviewWhetherCorrect']
             grade = 'none'
+            tool_consumer = 'none'
+            if 'tool_consumer_info_product_family_code' in params:
+                tool_consumer = params['tool_consumer_info_product_family_code']
 
             questions = getQuestions(bank_id, taken_id)
             if review_whether_correct:
@@ -206,7 +209,7 @@ def student(request):
                 return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error':'Could not get questions'}))
             return render_to_response("ims_lti_py_sample/home_student.html",
                                           RequestContext(request, {'userName': name, 'questions': questions, 'grade': grade,
-                                                                   'consumer':params['tool_consumer_info_product_family_code'],
+                                                                   'consumer': tool_consumer,
                                                                    'answered_all_questions': answered_all_questions,
                                                                    'welcome': True,
                                                                 'seeAnswer': review_whether_correct}))
