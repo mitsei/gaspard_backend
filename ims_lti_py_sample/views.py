@@ -260,6 +260,9 @@ def student_home(request):
 
         name = 'none'
         grade = 'none'
+        tool_consumer = 'MITx'
+        if 'tool_consumer_info_product_family_code' in params:
+            tool_consumer = params['tool_consumer_info_product_family_code']
         if 'lis_person_name_given' in params:
             name = params["lis_person_name_given"]
 
@@ -270,11 +273,6 @@ def student_home(request):
         if review_whether_correct:
             grade = int(getOverallGrade(bank_id,taken_id)*1000)/float(10)
 
-
-
-
-
-
         print "all questions: "
         print answered_all_questions
 
@@ -283,7 +281,7 @@ def student_home(request):
 
         return render_to_response("ims_lti_py_sample/home_student.html",
                                       RequestContext(request, {'userName': name, 'questions': questions,'grade':grade,
-                                                               'consumer':params['tool_consumer_info_product_family_code'],
+                                                               'consumer': tool_consumer,
                                                                'answered_all_questions': answered_all_questions,
                                                                'seeAnswer': review_whether_correct}))
 

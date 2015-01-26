@@ -47,38 +47,30 @@
     <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 "></div>
     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 btn-submit-padding" id="submit-btn-div" style="float:right;border:0px solid darkolivegreen">
 
-        {%if answered_all_questions%}
-        <div>
-            <a href="#">
-            <button class="btn btn-white-background" id="btn-submit-grade">
-                <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
-                    {%if grade == 'none' %}
-                    Submit answers
-                    {%elif consumer == 'none' %}
-                    Go back
 
-                    {%else%}
-                    Go back to {{consumer}}
-                    {%endif%}
-
-            </button>
-            </a>
-        </div>
-        {%else%}
-
-            {%if grade == 'none' %}
-            <div id="btn-submit-disabled-div"
-                 style="border:0px solid yellow; border-top-color: #4D8496;" data-toggle="tooltip" data-placement="bottom"
-                 title="You must attempt all questions before submitting answers">
-                <a href="#" id="btn-submit-disabled">
-                    <button class="btn btn-white-background" disabled>
+            {%if grade == 'none' %} <!--this is a test-->
+                {%if answered_all_questions%}
+                    <div>
+                    <a href="#">
+                    <button class="btn btn-white-background" id="btn-submit-grade">
                         <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
-
                         Submit answers
-
                     </button>
-                </a>
-            {%else %}
+                    </a>
+                    </div>
+                {%else%}<!-- Haven't answered all questions yet, wnat to disable the submit btn-->
+                    <div id="btn-submit-disabled-div"
+                         style="border:0px solid yellow; border-top-color: #4D8496;" data-toggle="tooltip" data-placement="bottom"
+                         title="You must attempt all questions before submitting answers">
+                        <a href="#" id="btn-submit-disabled">
+                            <button class="btn btn-white-background" disabled>
+                                <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                                Submit answers
+                            </button>
+                        </a>
+                    </div>
+                {%endif%}
+            {%else %}<!-- This is practice excercise-->
                 <div>
                 <a href="#">
                 <button class="btn btn-white-background" id="btn-return-back">
@@ -88,7 +80,7 @@
                 </a>
                 </div>
              {%endif%}
-        {%endif%}
+
 
 
         </div>

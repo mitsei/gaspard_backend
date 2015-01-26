@@ -26,12 +26,11 @@
 
     function submitMultiAnswer() {
         if (selectedLayout != null) {
-            document.getElementById("report-answer").innerHTML='';
             console.log("Answer is: "+selectedLayout);
             $.ajax({
                 url: "submit_multi_answer",
                 type: "POST",
-                data: {"answer": selectedLayout},
+                data: { answer: selectedLayout},
                 success: function (response) {
                     printResponse(response);
 
