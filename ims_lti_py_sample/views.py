@@ -163,7 +163,7 @@ def student(request):
             '''
             review_whether_correct= resp['reviewWhetherCorrect']
             grade = 'none'
-            tool_consumer = 'none'
+            tool_consumer = 'MITx'
             if 'tool_consumer_info_product_family_code' in params:
                 tool_consumer = params['tool_consumer_info_product_family_code']
 
@@ -219,7 +219,7 @@ def student(request):
             print resp['detail']
             return render_to_response("ims_lti_py_sample/student_error.html",
                                       RequestContext(request, {'userName': name,
-                                                               'return_url': params['launch_presentation_return_url'],
+                                                               # 'return_url': params['launch_presentation_return_url'],
                                                                # 'consumer':tool_consumer,
                                                                'error': detail,
                                                                'location': "Getting AssessmentTaken"
@@ -304,12 +304,13 @@ def submit_grade(request):
 
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
+        return_url = params['launch_presentation_return_url']
 
         submitGradeToConsumer(bank_id, taken_id, params)
         if not params['see_answer']:
             finishAssessment(bank_id,taken_id)
 
-        return HttpResponse(json.dumps({'return_url': params['launch_presentation_return_url']}), content_type='application/json')
+        return HttpResponse(json.dumps({'return_url': return_url}), content_type='application/json')
 
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request,{'error': e}))

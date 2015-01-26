@@ -26,11 +26,7 @@ $(document).ready(function () {
         });
     $('#btn-submit-grade').click(function(){
 
-        if ( window.location !== window.parent.location ) {
-            console.log("In iframe");
-        } else {
-            console.log('Not in iframe');
-        }
+
         $('#finish-warning').html('Are you sure you would like to submit your answers?');
         $('#modal-warn-submit-grade').modal('show');
 
@@ -48,9 +44,13 @@ $(document).ready(function () {
             success: function(response){
                 $('.quest-item').unbind();
                 $('#btn-submit-grade').unbind();
-
-                 document.location.href = response['return_url'];
-
+                if(response['return_url']== '' ) {
+                    /* have nothing to do*/
+                }else if(window.location === window.parent.location){//if is not in iframe
+                     window.close();
+                }else{
+                    document.location.href = response['return_url'];
+                }
             }
         }).done(function(){
 
