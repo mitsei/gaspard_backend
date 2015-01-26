@@ -44,14 +44,18 @@ $(document).ready(function () {
             success: function(response){
                 $('.quest-item').unbind();
                 $('#btn-submit-grade').unbind();
-                if(response['return_url']== '' ) {
-                    /* have nothing to do*/
-                }else if(window.location === window.parent.location){//if is not in iframe
-                     window.close();
+
+                if( window.location === window.parent.location) { //it is not in iframe
+                    window.close();
+                }else if(response['return_url']== '') { //this is MITx
+                    /* no url given, nothing to do yet*/
                 }else{
                     document.location.href = response['return_url'];
                 }
+
             }
+
+
         }).done(function(){
 
         });
