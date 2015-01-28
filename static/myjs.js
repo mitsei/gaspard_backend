@@ -25,9 +25,7 @@ $(document).ready(function () {
             return false;
         });
     $('#btn-submit-grade').click(function(){
-
-
-        $('#finish-warning').html('Are you sure you would like to submit your answers?');
+        $('#finish-warning').html('Are you sure you would like to submit your answers');
         $('#modal-warn-submit-grade').modal('show');
 
     });
