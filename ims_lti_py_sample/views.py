@@ -312,11 +312,13 @@ def submit_grade(request):
 
         bank_id = params['custom_bank_id']
         taken_id = params['taken_id']
-        return_url = params['launch_presentation_return_url']
+        return_url = ''
+        if 'launch_presentation_return_url' in params:
+            return_url = params['launch_presentation_return_url']
 
         submitGradeToConsumer(bank_id, taken_id, params, unique_id)
         if not params['see_answer']:
-            finishAssessment(bank_id,taken_id, unique_id)
+            finishAssessment(bank_id, taken_id, unique_id)
 
         return HttpResponse(json.dumps({'return_url': return_url}), content_type='application/json')
 
@@ -1444,7 +1446,7 @@ def finishAssessment(bank_id, taken_id, unique_id):
     Finish this assessment
     url: assessment/banks/<bank_id>/assessmentstaken/<taken_id>/finish/
     '''
-    print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/finish/"
+    # print student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/finish/"
     resp1 = student_req.post(student_req.url + bank_id + "/assessmentstaken/" + taken_id + "/finish/")
     print resp1
 
