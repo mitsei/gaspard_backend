@@ -5,7 +5,6 @@ from django.utils import importlib
 urlpatterns = patterns('',
                        url(r'^$', 'ims_lti_py_sample.views.index', name='lti_index'),
                        url(r'^/$', 'ims_lti_py_sample.views.index', name='lti_index'),
-                       # url(r'^add$', 'ims_lti_py_sample.views.add_problem', name='AddProblem'),
 
                        url(r'^instructor$', 'ims_lti_py_sample.views.instructor', name='InstructorView'),
                        url(r'^student$', 'ims_lti_py_sample.views.student', name='StudentView'),

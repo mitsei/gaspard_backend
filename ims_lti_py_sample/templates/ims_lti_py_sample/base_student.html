@@ -53,7 +53,6 @@
 
 <body style="height:100%">
 
-
 <div id="modal-warn-submit-grade" class="modal fade">
     <div class="modal-dialog" style="width:900px">
         <div class="modal-content">
@@ -62,16 +61,12 @@
                         class="sr-only">Close</span></button>
                 <h4 class="modal-title">Finish Assessment</h4>
             </div>
-            <div class="modal-body" >
-                <p>Are you sure you would like to submit your answers?</p>
-
-
+            <div class="modal-body">
+                <p id="finish-warning"></p>
             </div>
             <div class="modal-footer">
-
-                <button type="button" class="btn btn-white-background btn-default" data-dismiss="modal" id="btn-finish-assessment">Finish</button>
-                <button type="button" class="btn btn-white-background btn-default" data-dismiss="modal" >Cancel</button>
-
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-finish-assessment">Finish</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal" >Cancel</button>
             </div>
         </div>
         <!-- /.modal-content -->
