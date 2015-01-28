@@ -25,11 +25,13 @@ $(document).ready(function () {
             return false;
         });
     $('#btn-submit-grade').click(function(){
+        console.log("btn-submit-grade");
         $('#finish-warning').html('Are you sure you would like to submit your answers');
         $('#modal-warn-submit-grade').modal('show');
 
     });
     $('#btn-return-back').click(function(){
+        console.log("btn-return-back");
         $('#finish-warning').html('Are you sure you would like to leave this page?');
         $('#modal-warn-submit-grade').modal('show');
 
