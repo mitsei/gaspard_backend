@@ -12,5 +12,6 @@ urlpatterns = patterns('',
     #url(r'^/lti/', include('ims_lti_py_sample.urls')),
 ## LTI urls
     url(r'^lti/', include('ims_lti_py_sample.urls')),
-
+    # put in by cjshaw@mit.edu, Feb 5, 2015 for IS&T monitoring
+    url(r'', include('ims_lti_py_sample.urls')),
 )

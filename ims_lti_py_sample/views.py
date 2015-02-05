@@ -39,6 +39,12 @@ def get_client_ip(request):
 
 @csrf_exempt
 def index(request):
+    # method detection put in by cjshaw@mit.edu, Feb 5, 2015
+    # Return valid page for non-POST requests, because
+    # IS&T monitoring tools need a valid GET response, otherwise
+    # they report that gaspard.mit.edu is down.
+    if request.method != 'POST':
+        return HttpResponse('This site only accepts a valid LTI POST request.')
     if settings.LTI_DEBUG:
         print "META"
         print request.META
