@@ -141,7 +141,7 @@ def student(request):
             return render_to_response("ims_lti_py_sample/student.html",
                                           RequestContext(request,{'userName': name, 'questions': questions}))
         else:
-            return render_to_response(("ims_lti_py_sample/student"),RequestContext(request,{'userName':name,'questions' : []}))
+            return render_to_response(("ims_lti_py_sample/student.html"),RequestContext(request,{'userName':name,'questions' : []}))
     except KeyError, e:
         return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
 
