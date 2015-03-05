@@ -2,78 +2,245 @@
 
 
 {% block content %}
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        console.log("Pages");
+        console.log("{{pages}}");
+        console.log("page_num");
+        console.log("{{page_num}}");
+
+        var pages=JSON.parse("{{pages}}");
+        var page_num=parseInt("{{page_num}}");
+
+        addAssessPageMenu(pages,page_num);
+    });
+
+</script>
 <div class="row instructor-main-bgr" style="padding-bottom:0">
     <!--<div class="instructor-main-bgr">-->
-    <div class="main-page-img"style="padding-bottom:200px">
+    <div class="main-page-img" style="padding-bottom:200px">
         <div class="welcome-row">
             {% load static %}
             <img class="img-home" src="{% static 'css_ui/SummaryPage/image.png' %}">
 
-            <h2 class="welcome">Welcome, Betsy</h2>
+            {%if user_name == 'none' %}
+         <h2 class="welcome-instructor">Welcome!</h2>
+         {%else%}
+
+         <h2 class="welcome-instructor">Welcome, {{user_name}}!</h2>
+         {%endif%}
         </div>
         <div class="row">
-            <div class="col-lg-1"></div>
-            <div class="col-lg-3"><p class="whitetext">1. Choose an assessment</p></div>
-            <div class="col-lg-4"></div>
-            <div class="col-lg-3"><p class="whitetext">Choose problem from the Bank</p></div>
-            <div class="col-lg-1"></div>
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                <p class="whitetext">
+                Choose an assessment, drag and drop items into selected assessment
+                    <!--<button type="button" class="btn" id="help" data-container="body" data-toggle="popover" data-placement="top" data-content="Vivamus sagittis lacus vel augue laoreet rutrum faucibus.">-->
+                    <a href="#" tabindex='0' id="help-assessment" data-container="body"
+                       data-trigger="focus"
+                              data-toggle="popover" data-placement="top" data-content="Click + button to create new assessment.
+                              Select the newly created assessment and drag items from the bank into the area under the assessment name.
+                               To offer the selected assessment click the export button and copy parameters.">
+                    <span class="glyphicon glyphicon-question-sign"
+                        ></span>
+                        </a>
+                    <!--</button>-->
+
+
+                </p>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4"></div>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3"><p class="whitetext">Choose problems from the Bank to
+            create new assessment, click plus button
+                <a href="#" tabindex='0' id="help-bank" data-container="body"
+                       data-trigger="focus"
+                              data-toggle="popover" data-placement="top" data-content="Bank items are sorted by types. Click on the type name to view
+                               the bank items of that type. To create a new assessment select bank items and click on + button. To add items to an existing assessment
+                               select the assessment and drag items from the bank into the designated area. To remove items drag items from the assessment into
+                                the 'bank items' area">
+             <span class="glyphicon glyphicon-question-sign"></span>
+                    </a>
+            </p></div>
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
         </div>
 
         <div class="row">
-            <div class="col-lg-1"></div>
+            <!--This row has absolutely positioned div which positions the buttons in the "assessment header"-->
+            <div style="" class="wrapper-div-for-btns">
+                <button class="manage-assess-btn btn btn-dark-background" id="btn-new-assess"
+                        data-toggle="tooltip" data-placement="top" title="Create new assessment">
+                    <span class="glyphicon glyphicon-plus" style="float:right"></span>
+                </button>
+                <button class="manage-assess-btn btn btn-dark-background" id="btn-del-assess"
+                        data-toggle="tooltip" data-placement="top" title="Delete assessment">
+                    <span class="glyphicon glyphicon-minus" style="float:right"></span>
+                </button>
+                <button class="manage-assess-btn btn btn-dark-background" id="btn-show-offering-option"
+                        data-toggle="tooltip" data-placement="top" title="Create offering for selected assessment">
+                    <span class="glyphicon glyphicon-share" style="float:right;"></span>
+                </button>
+            </div>
+        </div>
+        <div class="row">
 
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
             <!--Assessments-->
-            <div class="col-lg-3 col-list">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 col-list">
                 <div class="mylist-header">Assessments
-                    <button class="manage-assess-btn btn btn-default" id="btn-new-assess"><span
-                            class="glyphicon glyphicon-plus" style="float:right"></span></button>
-                    <button class="manage-assess-btn btn btn-default" id="btn-del-assess"><span
-                            class="glyphicon glyphicon-minus" style="float:right"></span></button>
-                    <button class="manage-assess-btn btn btn-default" id="btn-get-offering"><span
-                            class="glyphicon glyphicon-cog" style="float:right"></span></button>
+
                 </div>
 
 
-                <div class="mylist" id="assess-list">
+                <div class="mylist"  id="assess-list">
+
                     {% for a in assessments %}
-                    <a href="#" class="mylist-item assess-item" value="{{a.id}}">{{a.displayName.text}}</a>
+                    <a href="#" class="mylist-item assess-item" id="{{a.id}}">
+                        <div class="mylist-item-text">
+                            {{a.displayName.text}}
+                        </div>
+                    </a>
                     {% endfor %}
+
+                </div>
+                <div id="assess-page-menu">
+
+
                 </div>
 
             </div>
-
             <!--Items in the assessment-->
-            <div class="col-lg-3" id="assess-box-droppable">
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+                <div id="assess-box-droppable">
 
-                <div id="assess-items">
+                    <div class="mylist-header " >
+                        <div class="mylist-item-text" id="assess-items-name"></div>
+                        <button class="manage-assess-btn btn btn-dark-background" data-toggle="tooltip" data-placement="top" title="Rename/reorder"
+                                id="btn-reorder-items" onclick="showModalReorderItems()">
+                            <span class="glyphicon glyphicon-sort" ></span></button>
+                    </div>
+                    <div id="assess-items">
+
+                    </div>
                 </div>
-
             </div>
-            <div class="col-lg-1">
-
+            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1">
             </div>
 
             <!--Items in a Bank-->
-            <div class="col-lg-3">
-                <p class="mylist-header">Items</p>
+            <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 no-padding" id="bank-box-droppable">
+                <p class="mylist-header" id="bank-items-name">Items</p>
 
-                <div class="mylist" id="bank-box-droppable">
-                    {% for a in items %}
-                    <div class="mylist-item-div bank-item">
-                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                <!--Type 1-->
+                <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title" id="items_type1">
+                                <p class="bank-type">
+                                    Match Orthographic Faces
+                                </p>
+                                <span class="glyphicon glyphicon-collapse-down glyphicon-collapse-position"></span>
+                            </div>
+                        </div>
+                        <div id="collapseOne" class="  panel-collapse collapse">
+                            <div class="panel-body" style="">
+                                <!-- Items-->
+                                <div class="mylist-bank-items">
+                                    {% for a in items_type1 %}
+                                    <div class="mylist-item-div bank-item">
+                                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
+                    <!--Type 2-->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title" id="items_type2">
+                                <p class="bank-type">
+                                    Multiple-Choice Orthographic Question
+                                    <span class="glyphicon glyphicon-collapse-down glyphicon-collapse-position"></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <!--Items-->
+                                <div class="mylist">
+                                    {% for a in items_type2 %}
+                                    <div class="mylist-item-div bank-item">
+                                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                    </div>
+                                    {% endfor %}
+                                </div>
 
-                    {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <!--Type 3-->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title" id="items_type3">
+                                <p class="bank-type">
+                                    Define Orthographic Faces
+                                    <span class="glyphicon glyphicon-collapse-down glyphicon-collapse-position" ></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div id="collapseThree" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <!--Items-->
+                                <div class="mylist">
+                                    {% for a in items_type3 %}
+                                    <div class="mylist-item-div bank-item">
+                                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                    </div>
+
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!--Type 4-->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <div class="panel-title" id="items_type4">
+                                <p class="bank-type">
+                                    Other: Default Genus Type
+                                    <span class="glyphicon glyphicon-collapse-down glyphicon-collapse-position" style=""></span>
+                                </p>
+                            </div>
+                        </div>
+                        <div id="collapseFour" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <!--Items-->
+                                <div class="mylist">
+                                    {% for a in items_type4 %}
+                                    <div class="mylist-item-div bank-item">
+                                        <a href="#" class="mylist-item " value="{{a.id}}">{{a.displayName.text}}</a>
+                                    </div>
+
+                                    {% endfor %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-
-
             </div>
-            <div class="col-lg-1"></div>
+            <div class="col-lg-1 col-md-1"></div>
         </div>
 
         <div class="row">
-            <div class="col-lg-2"></div>
+            <div class="col-lg-2">
+
+            </div>
             <div class="col-lg-2"></div>
             <div class="col-lg-2"></div>
             <div class="col-lg-2"></div>

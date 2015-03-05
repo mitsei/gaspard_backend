@@ -2,6 +2,7 @@ Django==1.6.5
 PyRSS2Gen==1.0.0
 dj-database-url==0.3.0
 djutils==0.3.2
+gnureadline==6.3.3
 -e git+https://github.com/digitalbazaar/py-http-signature@824de0d8957b4423b1ac986fe47a2d303cdfb434#egg=http_signature-master
 httplib2==0.9
 lxml==3.3.5
@@ -17,5 +18,3 @@ requests==2.3.0
 wsgiref==0.1.2
 
 -e git+https://github.com/starteam/ims_lti_py.git@be26d5f9dc061bdbd7c76949b6f963bcf61fe912#egg=ims_lti_py-master
-
-

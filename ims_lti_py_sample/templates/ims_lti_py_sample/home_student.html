@@ -1,0 +1,170 @@
+{% extends "ims_lti_py_sample/base_student.html" %}
+
+
+{% block content %}
+
+<script>
+    $(document).ready(function(){
+        var width=$('#btn-submit-disabled').outerWidth();
+        $('#btn-submit-disabled-div').css('width', width);
+    });
+</script>
+<div class="row" style="">
+    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="border:0px solid darkolivegreen">
+        <a href="/lti/student_home">
+            <button class="btn btn-white-background home-btn" style="font-size: 25px" type="button">
+                <span class="glyphicon glyphicon-home"></span>
+            </button>
+        </a>
+    </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding-top:25px;border:0px solid darkolivegreen">
+        {%if welcome%}
+            {%if userName == 'none' %}
+                <h2 class="welcome">Welcome!</h2>
+            {%else%}
+                <h2 class="welcome">Welcome, {{userName}}!</h2>
+            {%endif%}
+        {%endif%}
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style="border:0px solid darkolivegreen">
+        <nav>
+            <ul class="numbering">
+                <li><a href="#"><span aria-hidden="true" class="next-badge" id="{{prev_quest_id}}">&laquo;</span><span
+                        class="sr-only">Previous</span></a></li>
+                {%for a in questions%}
+                    {%if a.number == 0 %}
+                    <li><a href="#" style="padding:0 5px">&hellip;</a></li>
+                    {%else %}
+                    <li><a href="#" id="{{a.id}}" class="question-link">{{a.number}}</a></li>
+                    {%endif%}
+                {%endfor%}
+                <li><a href="#"><span aria-hidden="true" id="{{next_quest_id}}" class="next-badge">&raquo;</span><span
+                        class="sr-only">Next</span></a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1 "></div>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 btn-submit-padding" id="submit-btn-div" style="float:right;border:0px solid darkolivegreen">
+
+
+            {%if grade == 'none' %} <!--this is a test-->
+                {%if answered_all_questions%}
+                    <div>
+                    <a href="#">
+                    <button class="btn btn-white-background" id="btn-submit-grade">
+                        <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                        Submit answers
+                    </button>
+                    </a>
+                    </div>
+                {%else%}<!-- Haven't answered all questions yet, wnat to disable the submit btn-->
+                    <div id="btn-submit-disabled-div"
+                         style="border:0px solid yellow; border-top-color: #4D8496;" data-toggle="tooltip" data-placement="bottom"
+                         title="You must attempt all questions before submitting answers">
+                        <a href="#" id="btn-submit-disabled">
+                            <button class="btn btn-white-background" disabled>
+                                <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                                Submit answers
+                            </button>
+                        </a>
+                    </div>
+                {%endif%}
+            {%else %}<!-- This is practice excercise-->
+                <div>
+                <a href="#">
+                <button class="btn btn-white-background" id="btn-return-back">
+                    <span class="glyphicon glyphicon-cloud-upload" style="padding-right:10px"></span>
+                        Go back to {{consumer}}
+                </button>
+                </a>
+                </div>
+             {%endif%}
+
+
+
+        </div>
+    </div>
+
+</div>
+
+
+<div class="row" style="border:0px green solid;margin-top: 120px; ">
+</div>
+
+<div class="row" style="min-height: 700px;margin-top: 20px">
+    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1"></div>
+    <div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style="border:0px orangered solid">
+        <div class="row" style="">
+            <!--This is the header-->
+            <ul style="padding:0px">
+                <li class="questions-list-item" style="border-bottom: 0px solid #4D8496">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="border-bottom: 1px solid #4D8496">
+                     <span class="glyphicon glyphicon-unchecked " style="padding-right: 15px; color: transparent"></span>
+                    Questions
+                     </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="border-bottom:1px #4D8496 solid">
+                        Status
+                     </div>
+                </li>
+                <!--these are the rows for the questions-->
+                {%for a in questions%}
+                <li class="questions-list-item">
+                    <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="border:0px orangered solid">
+                        {%if seeAnswer %}
+                            {%if a.responded == 'Correct'%}
+                            <span class="glyphicon glyphicon-ok-circle quest-status" style="color:green"></span>
+                            {%elif a.responded == 'Incorrect'%}
+                            <span class="glyphicon glyphicon-remove-circle quest-status" style="color: indianred"></span>
+                            {%else %}
+                            <span class="glyphicon glyphicon-unchecked quest-status" style="color: #4D8496"></span>
+                            {%endif%}
+                        {%else %}
+                            {%if a.responded == 'Correct'%}
+                            <span class="glyphicon glyphicon-check quest-status" style="color:#4D8496;"></span>
+                            {%elif a.responded == 'Incorrect'%}
+                            <span class="glyphicon glyphicon-check quest-status" style="color:#4D8496;"></span>
+                            {%else %}
+                            <span class="glyphicon glyphicon-unchecked quest-status" style="color: #4D8496"></span>
+                            {%endif%}
+                        {%endif%}
+                        <a href="" class="question-link" id="{{a.id}}">
+                            Question #{{a.number}}
+                        </a>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="border:0px orangered solid">
+                        {%if seeAnswer %}
+                            {%if a.responded == 'Correct'%}
+                                Correct
+                            {%elif a.responded == 'Incorrect'%}
+                                Incorrect
+                            {%else %}
+                                Not answered
+                            {%endif%}
+                        {%else %}
+                            {%if a.responded == 'Correct'%}
+                                Saved
+                            {%elif a.responded == 'Incorrect'%}
+                                Saved
+                            {%else %}
+                                Not answered
+                            {%endif%}
+                        {%endif%}
+                    </div>
+                </li>
+                {%endfor%}
+            </ul>
+
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" ></div>
+     <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3" style=" border:0px solid #ffff00">
+         <div class="display-grade">
+            {%if grade == 'none' %}
+
+            {% else %}
+            Overall Grade: {{grade}}%
+            {%endif%}
+        </div>
+</div>
+{%endblock%}

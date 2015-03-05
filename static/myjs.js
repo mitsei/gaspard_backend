@@ -2,103 +2,314 @@
  * Created by anna on 8/4/14.
  */
 var selectedAssessment = null;
-var selectedBankItems=[];
+var selectedBankItems = [];
+var wait=false;
 
 $(document).ready(function () {
-    $(".submit-answer").click(function(){
-         u.getUnity().SendMessage("Question", "RequestRespone", "");
-    });
 
 
-    /* Handle the selection of the assessment */
-    $('.assess-item').click(function () {
-        clickAssessment($(this));
-    });
-    /* Delete an assessment */
+    $("#see-answer").change(function(){
+        console.log('changed');
+        if($(this).prop('checked')){
+            $('#max-attempts').prop("disabled", true).val('');
+            $('#max-attempts-option-text').css('color', "#A9A9A9");
 
-    $('#btn-del-assess').click(function () {
-        var sub_id = findSelectedAssess();
-        unselectThisAssessment($(this));
-        //check if any selected
-        $.ajax({
-            url: 'del_assess',
-            type: 'GET',
-            data: {'sub_id': sub_id},
-            success: function (response) {
-                console.log(response);
-
-                updateAssessmentList();
-
-
-            }
-        });
-
-    });
-    $('.bank-item').click(function(){
-        clickBankItem($(this));
-    });
-     /**
-     * Click on bank item                           //change
-     */
-
-     /**
-      * Plus button -> show modal, ask for name
-     */
-
-
-      $("#btn-new-assess").click(function () {
-        $('#modal-create-assessment').modal('show');
-
-    });
-    /**
-     * "Create" button inside the modal
-     *  check if entered name is not empty
-     */
-
-    $('#create').click(function() {
-
-        var name= $("#assess-name").val();
-        console.log("Name of the new assessment");
-        console.log(name);
-
-        if(name.length>0) {
-            if (selectedBankItems.length > 0) {
-                $.ajax({
-                    url: "create_assessment",
-                    type: 'POST',
-                    data: {'selected': selectedBankItems, 'name': name},
-                    success: function (response) {
-                        console.log(response);
-                        updateAssessmentList();
-                    }
-                });
-
-            } else {
-                console.log('No bank items are selected');
-            }
         }else{
-            $("#modal-create-assessment").modal('show');
+            $('#max-attempts').prop("disabled", false);
+            $('#max-attempts-option-text').css('color', "black");
         }
     });
 
+    $('.question-link').click(function(){
+            getProblem($(this));
+            return false;
+        });
+    $('#btn-submit-grade').click(function(){
+        console.log("btn-submit-grade");
+        $('#finish-warning').html('Are you sure you would like to submit your answers');
+        $('#modal-warn-submit-grade').modal('show');
 
-    $("#btn-get-offering").click(function () {
-        var sub_id = findSelectedAssess();
+    });
+    $('#btn-return-back').click(function(){
+        console.log("btn-return-back");
+        $('#finish-warning').html('Are you sure you would like to leave this page?');
+        $('#modal-warn-submit-grade').modal('show');
 
-        //check if any selected
-        if(sub_id!=null) {
+    });
+    $('#btn-finish-assessment').click(function(){
+        console.log("Submit Grade");
+        $.ajax({
+            url:'submit_grade',
+            type:'POST',
+            success: function(response){
+                $('.quest-item').unbind();
+                $('#btn-submit-grade').unbind();
+
+                if( window.location === window.parent.location) { //it is not in iframe
+                    console.log("Not in iframe");
+                    window.close();
+                }else if(response['return_url']=== '') { //this is MITx
+                    console.log("Return url is empty");
+                    console.log(window.location);
+                    console.log(window.parent.location);
+                    /* no url given, nothing to do yet*/
+                }else{
+                    document.location.href = response['return_url'];
+                }
+
+            }
+
+
+        }).done(function(){
+
+        });
+    });
+
+    $('#help-bank').popover('hide');
+    $('#help-bank').click(function(){
+        return false;
+    });
+    $('#help-assessment').click(function(){
+        return false;
+    });
+    $('#help-assessment').popover('hide');
+    $('#btn-submit-disabled-div').tooltip('hide');
+    /* instructor view*/
+    $('#btn-new-assess').tooltip('hide');
+    $('#btn-del-assess').tooltip('hide');
+    $('#btn-show-offering-option').tooltip('hide');
+    $('#btn-reorder-items').tooltip('hide');
+//
+    $('#help').on('show.bs.popover', function () {
+        console.log("show");
+});
+
+
+    $(".panel-title").click(function () {
+
+        var id = $(this).attr('id');
+        console.log(id);
+        var types = {items_type1: "#collapseOne", items_type2: "#collapseTwo", items_type3: "#collapseThree", items_type4: "#collapseFour"};
+        var spanElement = $(this).find('span');
+        console.log(spanElement);
+
+        if ($(types[id]).is(':hidden')) {
+            console.log("Collapse one is hidden");
+            $(types[id]).collapse('show');
+
+            $(spanElement).removeClass("glyphicon-collapse-down");
+            $(spanElement).addClass("glyphicon-collapse-up");
+
+
+        } else {
+            console.log("Collapse one is visible");
+            $(types[id]).collapse('hide');
+            $(spanElement).removeClass("glyphicon-collapse-up");
+            $(spanElement).addClass("glyphicon-collapse-down");
+        }
+        return false;
+    });
+
+
+    /**
+     * This is button in "modal-reorder-items"
+     */
+    $('#btn-submit-new-order').click(function () {
+        /*Want to check if there are any items in the assessment*/
+
+        var sub_id = selectedAssessment.attr('id');
+        var idsArray = $('#reorder-items').sortable("toArray");
+        console.log(idsArray);
+
+        if(idsArray.length>1) {
+            startWaiting();
             $.ajax({
-                url: 'get_offering_id',
+                url: 'reorder_items',
                 type: 'POST',
-                data: {'sub_id': sub_id},
+                data: {sub_id: sub_id, 'items': idsArray},
+                success: function (response) {
+                }
+            }).done(function () {
+                changeAssessmentName(sub_id);
+                stopWaiting()
+
+            });
+        }else{
+            changeAssessmentName(sub_id);
+        }
+    });
+    function changeAssessmentName(sub_id) {
+        var oldName = selectedAssessment.text();
+        var newName;
+        var finalName = selectedAssessment.text();
+        if ($('#assess-name-reorder').has('input').length) {
+            newName = document.getElementById("inpt-change-assess-name").value;
+        } else {
+            newName = $(document.getElementById('assess-name-reorder')).attr('value');
+        }
+        if (newName != null) {
+            newName = newName.trim();
+            if (newName.length > 0) {
+                finalName = newName;
+            }
+        }
+        if (finalName != oldName) {
+            $(selectedAssessment).find('div').text(finalName);
+            startWaiting();
+            $.ajax({
+                url: 'rename_assessment',
+                type: 'POST',
+                data: {sub_id: sub_id, 'name': newName},
                 success: function (response) {
                     console.log(response);
-                    $('#display_offering_id').html(response);
-                    $('#modal-offering-id').modal('show');
+                }
+
+            }).done(function(){
+                requestItems(selectedAssessment);
+                stopWaiting();
+            });
+        }else{
+            requestItems(selectedAssessment);
+
+        }
+        $('#assess-name-reorder').html('');
+
+    }
+
+    /* Handle the selection of the assessment */
+    $('.assess-item').click(function () {
+        console.log("before wait");
+        if (wait == false) {
+            clickAssessment($(this));
+        }
+        return false;
+    });
+
+    /* Delete an assessment */
+    $('#btn-del-assess').click(function () {
+        if (selectedAssessment != null && wait==false) {
+            var sub_id = selectedAssessment.attr('id');
+            unselectSelectedAssessment();
+
+            $.ajax({
+                url: 'del_assess',
+                type: 'GET',
+                data: {'sub_id': sub_id},
+                success: function (response) {
+                    response= JSON.parse(response);
+                    console.log('success' in response);
+                    if(response['success']) {
+                          $("#modal-delete-assess-report .modal-body").html("Assessment successfully deleted!");
+                        $("#modal-delete-assess-report").modal('show');
+                    }else{
+                         $("#modal-delete-assess-report .modal-body").html("This assessment has AssessmentTakens" +
+                            " and cannot be deleted.");
+                        $("#modal-delete-assess-report").modal('show');
+                    }
+
+                    updateAssessmentList(0);//0 stands for no page change
+
                 }
             });
         }
 
+    });
+    $('.bank-item').click(function () {
+        clickBankItem($(this));
+        return false;
+    });
+    /**
+     * Click on bank item                           //change
+     */
+
+    /**
+     * Plus button -> show modal, ask for name
+     */
+
+
+    $("#btn-new-assess").click(function () {
+        unselectSelectedAssessment();
+        $("#assess-name").val('');
+        document.getElementById("assess-name").focus();
+        $('#warning').html('');
+        $('#modal-create-assessment').modal('show');
+
+    });
+
+    /**
+     * "Create" button inside the modal
+     */
+
+    $('#btn-create').click(function () {
+        createNewAssessment();
+
+
+    });
+
+
+    $('#assess-name').keyup(function (e) {
+        var key = e.which;
+        if (key == 13) {
+            $('#btn-create').click();
+        }
+    });
+
+     $("#btn-show-offering-option").click(function () {
+         //check if any selected
+         if (selectedAssessment != null) {
+             $('#see-answer').attr('checked', true);
+             $('#max-attempts').prop("disabled", true).val('');
+             $('#max-attempts-option-text').css('color', "#A9A9A9");
+             $('#modal-get-offering').modal('show');
+
+         }
+     });
+
+    $("#btn-get-offering").click(function () {
+        var sub_id = findSelectedAssessId();
+        if (selectedAssessment != null) {
+            var seeAnswer= $('#see-answer').prop('checked');
+            console.log("See Answer: "+ seeAnswer);
+
+            var maxAttempts=document.getElementById("max-attempts").value;
+            console.log(maxAttempts);
+
+            console.log(sub_id);
+            if (sub_id != null) {
+                $.ajax({
+                    url: 'get_offering_id',
+                    type: 'POST',
+                    data: {'sub_id': sub_id, 'seeAnswer': seeAnswer,'maxAttempts':maxAttempts},
+                    success: function (response) {
+                        console.log(response);
+                        if (response['data']) {
+                            console.log(response['data']);
+                            var str = "<b>offering_id=" + response['data'][0]+'</b>';
+                            $('#display-offering-id').html(str);
+                            str = "<b>bank_id=" + response['data'][1]+'</b>';
+                            $('#display-bank-id').html(str);
+
+                            $('#modal-get-offering').modal('hide');
+                            $('#modal-offering-id').modal('show');
+
+                        } else if (response['detail']) {
+                            console.log(response);
+                            $('#modal-get-offering').modal('hide');
+                            $('#help-title').html("Create offering");
+                            $('#detail-div').html(response['detail']);
+                            $('#help-text').html("Drag items from the bank into selected assessment area.");
+                            $('#modal-display-detail').modal('show');
+                        }
+
+
+                    }
+                });
+            }
+        } else {
+            $('#help-title').html("Create offering for selected assessment");
+            $('#help-text').html("No assessment is selected.");
+            $('#modal-display-detail').modal('show');
+        }
     });
 
     /**
@@ -106,47 +317,45 @@ $(document).ready(function () {
      */
     $("#assess-box-droppable").droppable({
 
+        accept: ":not(.ui-sortable-helper)",
 
         drop: function (event, ui) {
-
-            //if this item is not in the list
             console.log("trying to drop bank item into assessment");
             console.log(ui.draggable.find('a').text());
 
+            /*if this item is not in the list*/
             if (!isInAssessItems(ui.draggable.find('a').text())) {
                 var question_id = ui.draggable.find('a').attr('value');
 
                 console.log("Dropping element into the assessment box: ");
                 console.log(question_id);
 
-                var sub_id = findSelectedAssess();
+                var sub_id = findSelectedAssessId();
                 if (sub_id != null && typeof question_id != 'undefined') {
 
                     console.log("question_id is defined ");
                     console.log("sending request to add item");
-
+                    startWaiting();
                     $.ajax({
                         url: 'add_item',
                         type: "POST",
                         data: {'question_id': question_id, 'sub_id': sub_id},
                         success: function (response) {
                             console.log("success adding item to assessment");
-                            //
-                            // console.log(response);
-                            console.log("now we can append it to the #assess-items list");
-                            $('#assess-items').append(buildListItem(ui.draggable.find('a').text(), ui.draggable.find('a').attr('value')));
 
-
+                            requestItems(selectedAssessment);
                         }
+                    }).done(function(){
+                        stopWaiting();
+                        console.log("Exiting add item to assessment.");
                     });
+
                 } else {
                     console.log("Error:    sub_id or question_id is not found");
                 }
             } else {
                 console.log("This item is already in the assessment");
             }
-
-
         }
     });
 
@@ -163,18 +372,14 @@ $(document).ready(function () {
 
             console.log("Trying to drop an item into bank-box-droppable");
 
-            if (ui.draggable.hasClass('bank-item')) {
-
+            if (ui.draggable.hasClass('bank-item')) {  /*do nothing*/
                 console.log("this item belongs to the bank");
-
             } else {
-
                 var question_id = ui.draggable.find('a').attr('value');
-                var sub_id = findSelectedAssess();
+                var sub_id = findSelectedAssessId();
+
                 if (sub_id != null && typeof question_id != 'undefined') {
-
-                    console.log("sending request to remove item");
-
+                    startWaiting();
                     $.ajax({
                         url: 'remove_item',
                         type: "POST",
@@ -182,10 +387,11 @@ $(document).ready(function () {
                         success: function (response) {
 
                             console.log("success removing item");
-
-
                             requestItems(selectedAssessment);
                         }
+                    }).done(function(){
+                        stopWaiting();
+                        console.log("Exiting remove item from assessment");
                     });
                 } else {
                     console.log('Error:    sub_id or question_id is not found');
@@ -199,42 +405,43 @@ $(document).ready(function () {
 
 /*
  Check if this item is already in the assessment
- This function is used by assess-box-groppable
+ This function is used by assess-box-droppable
  */
 
 
 function isInAssessItems(name) {
 
-    var result = false;
+//    var result = false;
     var itemsDiv = document.getElementById('assess-items');
 
     console.log("Iterating through assessment items ");
-    console.log(itemsDiv);
+//    console.log(itemsDiv);
 
     if (itemsDiv != null) {
         var items = itemsDiv.childNodes;
-        console.log("Printing child nodes ");
-        console.log(items);
+//        console.log("Printing child nodes ");
+//        console.log(items);
         for (var i = 0; i < items.length; i++) {
-
-            console.log(items[i].childNodes[0].innerText);
-            console.log(name);
-            if (name === items[i].childNodes[0].innerText) {
-                console.log("found a match");
-                result = true;
+//            console.log(hasclass(items[i], 'item-in-assess'));
+            if (hasclass(items[i], 'item-in-assess')) {
+                console.log(items[i].childNodes[0].innerText);
+                console.log(name);
+                if(typeof items[i].childNodes[0].innerText == 'undefined'){//for Mozilla
+                    if (name === items[i].childNodes[0].textContent) {
+                        console.log("found a match");
+                        return true;
+                    }
+                }else {
+                    if (name === items[i].childNodes[0].innerText) {
+                        console.log("found a match");
+                        return true;
+                    }
+                }
             }
         }
 
     }
-//    $('.item-in-assess').each(function () {
-//        console.log($(this).text());
-//        console.log(name);
-//        //name=name.trim();
-//        if (name === $(this).text()) {
-//            result = true;
-//        }
-//    });
-    return result;
+    return false;
 }
 
 
@@ -244,47 +451,65 @@ function isInAssessItems(name) {
  if none returns null                                    done
  */
 
-function findSelectedAssess() {
-    var el = document.getElementById('assess-list');
-    var children = el.childNodes;
-    var sub_id = null;
+function findSelectedAssessId() {
+
+    if (selectedAssessment!=null){
+        return $(selectedAssessment).attr("id");
+    }
+    return null;
+}
+
+
+function findAssessmentWithName(name) {
+    var children= $('#assess-list').children();
+    console.log(children);
+    var obj = null;
     var i;
     for (i = 0; i < children.length; i++) {
-        console.log(children[i].classList);
-
-        if (hasclass(children[i], 'selected')) {
-            console.log("has class selected");
-            sub_id = children[i].getAttribute('value');
+        console.log("Print text");
+        console.log($(children[i]).find('div').html().trim());
+        if ($(children[i]).find('div').html().trim().indexOf(name)>-1) {
+            console.log("This assessment has name "+ name );
+            obj=children[i];
         }
     }
-    return sub_id;
+    console.log(obj);
+    console.log('Exiting findAssessmentWithName');
+    return obj;
 
-    /**
-     * or could just check if selectedAssessment is null or not
-     */
+
 }
+
 function hasclass(element, cls) {
     return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
 }
-function clickBankItem(obj){
-         console.log("clicked on bank item");
-         var id=$(obj).find('a').attr('value');
-        if($(obj).hasClass('selected-bank-item')){
-            console.log("unselecting bank item");
-            $(obj).removeClass('selected-bank-item');
-            var i=selectedBankItems.indexOf(id);
-            if(i!=-1){
+function clickBankItem(obj) {
+    console.log("clicked on bank item");
+    var id = $(obj).find('a').attr('value');
+    if ($(obj).hasClass('selected-bank-item')) {
 
-                selectedBankItems.splice(i,1);
-            }
+        console.log("unselecting bank item");
 
-        }else{
-            console.log("selecting new bank item");
-            $(obj).addClass('selected-bank-item');
-
-            selectedBankItems.push(id);
+        $(obj).removeClass('selected-bank-item');
+        var i = selectedBankItems.indexOf(id);
+        if (i != -1) {
+            selectedBankItems.splice(i, 1);
         }
+    } else {
+        console.log("selecting new bank item");
+        $(obj).addClass('selected-bank-item');
+        selectedBankItems.push(id);
     }
+}
+function unselectAllBankItems() {
+    $(".bank-item").each(function (i, obj) {
+        if ($(obj).hasClass('selected-bank-item')) {
+            $(obj).removeClass('selected-bank-item');
+        }
+        selectedBankItems = [];
+
+    });
+}
 /*
  Handle a click on an assessment
  Selecting an element:
@@ -294,40 +519,23 @@ function clickBankItem(obj){
  */
 function clickAssessment(obj) {
     console.log("clicked again");
-    if ($(obj).hasClass('selected')) {  //if this assess already selected
-        console.log("this object is already selected");
 
-        unselectThisAssessment($(obj));
-        //now no assessment is selected
+    if (obj!=null) {
+        /*if this assess already selected*/
+        if ($(obj).hasClass('selected')) {
+            unselectSelectedAssessment();
 
-        $('.bank-item').draggable('disable');
+        }else {
+            if (isAnySelected()) {
+                unselectSelectedAssessment();
+            }
+            selectAssessment(obj);//adds class and appends the #select-badge
+            requestItems(obj);
+            unselectAllBankItems();
 
-
-    } else { //if not yet selected
-        if (isAnySelected()) {
-            console.log("Need to unselect one first");
-            unselectThisAssessment(selectedAssessment);
-            $('.bank-item').draggable('disable');
         }
-
-        selectAssessment(obj);//adds class and appends the #select-badge
-        requestItems(obj);
-
-
-        //Do we want to disable dragging when assessment not selected
-        if ($('.bank-item').hasClass("ui-draggable")) {
-            $('.bank-item').draggable('enable');
-        } else {
-            $('.bank-item').draggable();
-        }
-
-        $('.bank-item').draggable("option", "revert", 'invalid');
-        $('.bank-item').draggable("option", "helper", "clone");
-        $('.bank-item').on("dragstart", function (event, ui) {
-            ui.helper.addClass("mylist-item-div-clone");
-
-        });
     }
+    console.log("Exiting clickAssessment")
 }
 
 
@@ -338,61 +546,203 @@ function clickAssessment(obj) {
 
  */
 function requestItems(obj) {
-    var sub_id = $(obj).attr('value');
+    console.log("Request Items");
+    var sub_id = $(obj).attr('id');
+
+    startWaiting();
+
     $.ajax({
         url: 'get_items',
         type: 'GET',
         data: {'sub_id': sub_id},
         success: function (response) {
-            if ('data' in response) {
-                console.log('was found');
+            if ('detail' in response) {
+                console.log(response['detail']);
+                console.log('The assessment was not found');
+
+            }else {
                 var str = "";
-                console.log(response['data'].length);
-                if (response['data'].length > 0) { //if there are items in assessment
-                    $.each(response['data'], function (key, value) {
+                $('#assess-items').html('');
+                $('#assess-items-name').html(getName(obj));
+
+                if (response.length > 0) { //if there are items in assessment
+                    $.each(response, function (key, value) {
 
                         str += buildListItem(value['displayName']['text'], value['id']);
                         console.log(value['id']);
                     });
-                    removeHeader();
-                    $('#assess-box-droppable').prepend('<p class="mylist-header" id="assess-items-name">'+$(obj).text()+'</p>');
-                    $('#assess-items').addClass('mylist').html(str);
+                    $('#assess-items').html(str);
+
+                    $('.item-in-assess').click(function () {
+                        return false;
+                    });
 
                     $('.item-in-assess').draggable();
                     $('.item-in-assess').draggable("option", "revert", 'invalid');
                     $('.item-in-assess').draggable("option", "helper", "clone");
                     $('.item-in-assess').on("dragstart", function (event, ui) {
-                        ui.helper.addClass("mylist-item-div-clone");
-
+                        ui.helper.removeClass("mylist-item-div").addClass("mylist-item-div-clone").width(document.getElementById("assess-box-droppable").offsetWidth).css('z-index',200);
 
                     });
+                } else {
 
+                }
+                $('#assess-items').addClass('mylist');
+                $("#assess-items").append('<div class="mylist-item-div"><a href="#" class="assess-item-placeholder">-Drop items here-</a></div>');
 
-                    $('#assess-items').sortable();
+                if ($("#assess-box-droppable").is(":hidden")) {
+                    $('#assess-box-droppable').slideDown("slow");//.delay(800);
                 }
-            } else {
-                if ('detail' in response) {
-                    console.log(response['detail']);
-                    console.log('The assessment was not found');
-                }
-                console.log('The assessment was not found');
+                $('.assess-item-placeholder').click(function () {
+                    return false;
+                });
+
             }
+
+
         },
         error: function (xhr) {
             //Do Something to handle error
         }
+    }).done(function(){
+        stopWaiting();
+        console.log('Exiting RequestItems');
     });
 
 }
-function removeHeader(){
-    var header=document.getElementById('assess-items-name');
-                    if(header!=null) {
-                        header.remove();
-                    }
+function showModalReorderItems() {
+
+    var sub_id = $(selectedAssessment).attr('id');
+    console.log("sub_id " + sub_id);
+
+    $.ajax({
+        url: 'get_items',
+        type: 'GET',
+        data: {'sub_id': sub_id},
+        success: function (response) {
+            if ('detail' in response) {
+            }else{ //if successful response is a list of items
+                var str = "";
+                if (response.length > 0) { //if there are items in assessment
+                    $.each(response, function (key, value) {
+
+                        str += buildListItem(value['displayName']['text'], value['id']);
+                        console.log(value['id']);
+                    });
+                }
+                $('#assess-name-reorder').html(getName(selectedAssessment)+
+                    ' <button class="btn btn-dark-background rename-btn"><span class="glyphicon glyphicon-edit">' +
+                    '</span></button>').attr('value', getName(selectedAssessment));
+                $('#reorder-items').addClass('mylist').html(str);
+                $("#reorder-items").sortable();
+                $("#assess-name-reorder").unbind().click(function () {
+                    clickAssessmentName();
+                });
+                $("#modal-reorder-items").modal('show');
+            }
+        }
+    });
+
+
+}
+function getName(obj) {
+    return $(obj).find('div').text().trim();
+}
+function createNewAssessment() {
+    var name = $("#assess-name").val();
+    console.log("Name of the new assessment");
+    console.log(name);
+
+         /*  check if entered name is not empty*/
+
+    if (name.length > 0) {
+        startWaiting();
+        $.ajax({
+            url: "create_assessment",
+            type: 'POST',
+            data: {'selected': selectedBankItems, 'name': name},
+            success: function (response) {
+                /* want to select the newly created assessment*/
+                /* find the object with the new assessment name*/
+
+                $.when(updateAssessmentList(1)).done(function(){
+                    clickAssessment(findAssessmentWithName(name));
+
+                });
+                unselectAllBankItems();
+            }
+        }).done(function(){
+            stopWaiting();
+            $('#modal-create-assessment').modal('hide')
+        });
+
+    } else {
+        console.log("the name is empty");
+        $("#warning").html("Assessment name cannot be empty.");
+    }
+
+}
+/**
+ * This function is called when in the reorder modal you click on the header
+ * This allows you to change the name of the assessment
+ * @param obj
+ */
+function clickAssessmentName() {
+    var inputElement=document.getElementById("inpt-change-assess-name");
+
+    /*
+     if input is active
+     want to save the input
+     */
+
+    if(inputElement!= null){
+        console.log('Has input element');
+        console.log(inputElement);
+        var assessName = $('#assess-name-reorder').attr('value');
+        var newName = inputElement.value;
+
+        if (newName != null) {
+            newName = newName.trim();
+            if (newName.length > 0) {
+                assessName = newName;
+            }
+        }
+        $('#assess-name-reorder').html(assessName).attr('value', assessName);
+        $('#assess-name-reorder').append('<button class="btn btn-dark-background rename-btn"><span class="glyphicon glyphicon-edit"></span></button>');
+
+
+    } else {
+        /*
+         Want to add input element
+         display old name as a placeholder
+         */
+        console.log($('#assess-name-reorder').attr('value'));
+        $('#assess-name-reorder').html('<input type="text" id="inpt-change-assess-name">');
+        inputElement = document.getElementById("inpt-change-assess-name");
+        inputElement.setAttribute('placeholder', $('#assess-name-reorder').attr('value'));
+        inputElement.focus();
+        $('#inpt-change-assess-name').click(function () {
+
+            return false;
+        });
+        $('#assess-name-reorder').append('<button class="btn btn-dark-background rename-btn"><span class="glyphicon glyphicon-edit"></span></button>');
+
+    }
+
+
 }
 
+function removeHeader(idName) {
+    var header = document.getElementById(idName);
+    if (header != null) {
+       // header.remove();
+        header.removeChild(header.children[0]);
+    }
+}
+
+//May want to change value of a and store the id in item-in-assess
 function buildListItem(value, id) {
-    return  '<div class="mylist-item-div item-in-assess">' +
+    return  '<div class="mylist-item-div item-in-assess" id="' + id + '">' +
         '<a href="#" class="mylist-item" value="' + id + '">' + value + "</a></div>";
 
 
@@ -401,106 +751,128 @@ function buildListItem(value, id) {
  done
  */
 
-function selectAssessment(obj) {
-     selectedAssessment = obj;
-    $(obj).addClass('selected').append('<span class="glyphicon glyphicon-chevron-right" id="select-badge" style="float:right"></span>');
 
+function selectAssessment(obj) {
+
+    selectedAssessment = obj;
+    $(obj).addClass('selected').append('<span class="glyphicon glyphicon-chevron-right" id="select-badge" style="position:absolute; right:10px;top:25%;"></span>');
+
+    /*  Enable dragging of bank items  */
+    if ($('.bank-item').hasClass("ui-draggable")) {
+        $('.bank-item').draggable('enable');
+    } else {
+        $('.bank-item').draggable();
+    }
+
+    $('.bank-item').draggable("option", "revert", 'invalid');
+    $('.bank-item').draggable("option", "helper", "clone");
+    $('.bank-item').on("dragstart", function (event, ui) {
+        if (!$('.bank-item').hasClass("ui-draggable-disabled")) {
+            ui.helper.removeClass("mylist-item-div").addClass("mylist-item-div-clone");
+            ui.helper.width(document.getElementById("bank-box-droppable").offsetWidth).css('z-index', 200);
+        }
+    });
 }
 /*
  Check if any assessment is selected
- Return true if there is one selected                  change
+ Return true if there is one selected
  */
 function isAnySelected() {
-    var selected = false;
-
-
-//    $('.assess-item').each(function () {
-//        if ($(this).hasClass('selected')) {
-//            selected = true;
-//        }
-//    });
-//    return selected;
-
-
-    if(selectedAssessment==null){
+    if (selectedAssessment == null) {
         console.log("isAnySelected returned false");
         return false;
     }
     return true;
 
 
-
 }
-/*
- Find and Unselect a selected assessment               change
-
-
- */
-//function unselectAnAssessment() {
-////    $('.assess-item').each(function () {
-////        if ($(this).hasClass('selected')) {
-////            unselectThisAssessment($(this));
-////        }
-////    });
-//    //new version
-//    unselectThisAssessment(selectedAssessment);
-//}
 
 /*
  Unselect given assessment                  done
 
  */
-function unselectThisAssessment(obj) {
-    selectedAssessment = null;
-    $(obj).removeClass('selected');
-    console.log("Remove the select-badge");
-    $(obj).children('#select-badge').remove();
-    //document.getElementById('select-badge').remove();
-    removeAssessItems();
-
-}
-
-function removeAssessItems(){
-    console.log("removing the header");
-    removeHeader();
-    var itemsDiv = document.getElementById("assess-items");
-    if (itemsDiv != null) {
-        itemsDiv.innerHTML = "";
-        itemsDiv.className = "";
-
-
-
-
-
-    } else {
-        console.log("Trying to unselect a not selected assessment");
-        console.log($(obj));
+function unselectSelectedAssessment() {
+    if (selectedAssessment != null) {
+        $(selectedAssessment).removeClass('selected');
+        $(selectedAssessment).children('#select-badge').remove();
+        selectedAssessment = null;
+        $('.bank-item').draggable('disable');
     }
+    hideAssessItems();
 
 }
-function updateAssessmentList() {
-    // $('#assess-list').empty();
+
+function hideAssessItems() {
+    if (!$("#assess-box-droppable").is(":hidden")) {
+        $('#assess-box-droppable').hide();
+
+
+    }
+//    stopWaiting();
+}
+
+function startWaiting(){
+    console.log("Start waiting");
+    wait = true;
+    $("body").css("cursor", "progress");
+    $(".assess-item").addClass("progress-cursor");
+    $(".mylist-item").addClass("progress-cursor");
+    $("#bank-box-droppable").addClass("progress-cursor");
+}
+
+function stopWaiting() {
+    console.log("Stop waiting");
+    wait = false;
+    $("body").css("cursor", "default");
+    $(".assess-item").removeClass("progress-cursor");
+    $(".mylist-item").removeClass("progress-cursor");
+    $("#bank-box-droppable").removeClass("progress-cursor");
+}
+
+/**
+ * Request new assessment list for the given page number
+ * Response has attributes: 'assessments', 'pages', 'page_num'
+ * @param page_num
+ */
+function updateAssessmentList(page_num) {
     var text = "";
+//    startWaiting();
+    console.log(page_num);
     $.ajax({
         url: 'update_assess',
         type: 'GET',
+        data: {'page_num' : page_num},
+        async: false,
         success: function (response) {
             console.log(response);
-            var data = response;
-            $.each(response, function (key, value) {
+            var assessments = response['assessments'];
+            var pages=response['pages'];
+            var page_num=response['page_num'];
+
+            $.each(assessments, function (key, value) {
                 console.log(value['displayName']['text']);
-                text += '<a href="#" class="mylist-item assess-item" value="' + value['id'] + '">' + value['displayName']['text'] + '</a>';
+                text += '<a href="#" class="mylist-item assess-item" id="' + value['id'] + '"><div class="mylist-item-text">' + value['displayName']['text'] + '</div></a>';
 
             });
-            console.log(text);
             $('#assess-list').html(text);
-            selectedAssessment=null;
+            selectedAssessment = null;
             $('.assess-item').click(function () {
-                clickAssessment($(this))
+                if (wait == false) {
+                    clickAssessment($(this));
+                }
+                return false;
             });
+            addAssessPageMenu(pages,page_num);
+
 
         }
+    }).done(function(){
+
+        console.log("Done updating assess list");
+//        stopWaiting();
+
     });
+    console.log('Exiting updateAssessmentList');
 
 
 }
@@ -510,20 +882,77 @@ function updateAssessmentList() {
  * displays the problem
  * @param obj is the quest-item clicked on
  */
-function getProblem(obj){
-            $.ajax({
-                url:'get_question',
-                type:'POST',
-                data:{data:[$(obj).attr('value'), $(obj).attr('name'), $(obj).text(), $(obj).attr('id')]},//send the file.manip
-                success: function(data){
-                    console.log(data);
-                    //window.location.href = response.redirect;
-                    if(data['redirect']) {
-                         window.location = data['redirectURL'];
-                     }
-                }
-            });
+function getProblem(obj) {
+    console.log($(obj).attr('id'));
+    $.ajax({
+        url: 'get_question',
+        type: 'POST',
+        data: {data: [  $(obj).attr('id')]},//send the file.manip
+        success: function (data) {
+            console.log(data);
+            if (data['redirect']) {
+                window.location = data['redirectURL'];
+            }
         }
+    });
+}
+function printResponse(response){
+                var reportDiv = document.getElementById("report-answer");
+                var answer='';
+
+                console.log("See answer "+ response['see_answer']);
+                if('detail' in response){
+                    answer="Could not submit answer!"
+                }else if(response['see_answer']==true) {
+
+                    if (response['correct'] === true) {
+                        answer = '<span class="glyphicon glyphicon-ok badge-answer" style="" ></span>' + " Correct!";
+                        reportDiv.style.color = "green";
+                    } else {
+                        answer = '<span class="glyphicon glyphicon-remove badge-answer" style=""></span>' + "Incorrect!";
+                        reportDiv.style.color = "red";
+                    }
+                }else{
+
+                    answer="Saved!";
+                }
+                reportDiv.innerHTML = answer;
+            }
+
+function addAssessPageMenu(pages, page_num){
+    console.log("adding page menu");
+    var str='<ul class="assess-page-menu-ul">';
+    str+='<li class="assess-page-li"><a href="#" class="assess-page assess-page-a" name="'+pages[0]+'">&laquo;</li>';
+
+
+    for(var i=1; i<pages.length-1; i++){
+        if(pages[i]==page_num){
+            str+='<li class="assess-page-li"><a href="#" class="assess-page cur-assess-page-a" name="'+pages[i]+'">'+pages[i]+'</a></li>';
+        }else{
+            str+='<li class="assess-page-li"><a href="#" class="assess-page assess-page-a" name="'+pages[i]+'">'+pages[i]+'</a></li>';
+        }
+    }
+    str+='<li class="assess-page-li"><a href="#" class="assess-page assess-page-a" name="'+pages[pages.length-1]+'">&raquo;</a></li>';
+
+    str+="</ul>";
+
+    $("#assess-page-menu").html(str);
+    $(".cur-assess-page-a").click(function(){
+        return false;
+    });
+
+    $(".assess-page-a").click(function() {
+        var page_num = $(this).attr('name');
+        if (wait == false) {
+            unselectSelectedAssessment();
+            unselectAllBankItems();
+            updateAssessmentList(page_num);
+        }
+        return false;
+
+    });
+
+}
 
 
 

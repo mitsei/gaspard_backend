@@ -13,6 +13,40 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
+
+FN_CREDENTIALS = "settings_credentials.py"
+
+
+def msg_credentials():
+    msg = "*** Please edit the %s file with the required settings for authentication. ***" %(FN_CREDENTIALS, )
+    stars = "*" * len(msg)
+    return "\n\n%s\n%s\n%s\n\n" %(stars, msg, stars)
+
+try:
+    import settings_credentials
+
+except ImportError:
+    from os.path import dirname, abspath
+    import shutil
+    thisdir = dirname(abspath(__file__))
+    shutil.copy2("%s/%s.skel" % (thisdir, FN_CREDENTIALS), "%s/%s" % (thisdir, FN_CREDENTIALS))
+    print msg_credentials()
+    exit(1)
+
+
+DATABASES = settings_credentials.DATABASES
+ALLOWED_HOSTS = settings_credentials.__dict__.get('ALLOWED_HOSTS')
+STATICFILES_DIRS = settings_credentials.__dict__.get('STATICFILES_DIRS')
+STATIC_ROOT=settings_credentials.__dict__.get('STATIC_ROOT')
+STATIC_URL = settings_credentials.__dict__.get('STATIC_URL')
+CONSUMER_KEY = settings_credentials.__dict__.get('CONSUMER_KEY')
+LTI_SECRET = settings_credentials.__dict__.get('LTI_SECRET')
+URL_ASSESSMENTS = settings_credentials.__dict__.get('URL_ASSESSMENTS')
+PUBLIC_KEY = settings_credentials.__dict__.get('PUBLIC_KEY')
+PRIVATE_KEY = settings_credentials.__dict__.get('PRIVATE_KEY')
+ASSESSMENTS_HOST = settings_credentials.__dict__.get('ASSESSMENTS_HOST')
+LOGGING = settings_credentials.__dict__.get('LOGGING')
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
@@ -24,7 +58,6 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['assessments-dev.mit.edu']
 
 CACHES = {
     'default': {
@@ -62,16 +95,18 @@ WSGI_APPLICATION = 'ims_lti_py_django.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-if True:
-    import dj_database_url
-    DATABASES['default'] = dj_database_url.config() or DATABASES['default']
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+#
+#
+#
+# if True:
+#     import dj_database_url
+#     DATABASES['default'] = dj_database_url.config() or DATABASES['default']
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
@@ -87,25 +122,13 @@ USE_L10N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
 
-STATIC_URL = '/static/'
-#STATIC_ROOT='/Users/anna/Documents/ims_lti_py_django'
-STATICFILES_DIRS = ( '/Users/anna/Documents/ims_lti_py_django/static', )
 ## LTI Parameters
 X_FRAME_OPTIONS = 'ALLOW-FROM: *'
 LTI_DEBUG = True
-CONSUMER_KEY = "__consumer_key__"
-LTI_SECRET = "__lti_secret__"
+
 LTI_URL_FIX = {
     "https://localhost/":"http://192.168.33.10/"
 }
 ## Heroku SSL proxy fix
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-
-URL_ASSESSMENTS = "https://assessments-dev.mit.edu/api/v1"
-PUBLIC_KEY='E5IFLfKuxNdhLKh+tLRN'
-PRIVATE_KEY='0/e10IAyBE1VkqtK+8PzPh2ViXVl5us1Zrj2rYQs'
-ASSESSMENTS_HOST='assessments-dev.mit.edu'

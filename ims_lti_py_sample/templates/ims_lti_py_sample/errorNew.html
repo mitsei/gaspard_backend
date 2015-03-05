@@ -1,0 +1,13 @@
+<html>
+<head>
+    <title>IMS LTI Error</title>
+</head>
+<body>
+Error:   {{error}}
+<!--{{params}}-->
+<!--{{params.items}}-->
+{% for key,value in params.items%}
+<p>{{key}}  ={{value}} </p>
+{%endfor%}
+</body>
+</html>

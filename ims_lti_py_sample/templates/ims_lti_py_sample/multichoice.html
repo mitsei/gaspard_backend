@@ -1,0 +1,263 @@
+{% extends "ims_lti_py_sample/question.html" %}
+
+{%block unity%}
+{% load staticfiles %}
+
+{% static "MultichoiceLayouts/largeOrthoViewSet0.jpg" as lg_img_layout1%}
+{% static "MultichoiceLayouts/largeOrthoViewSet1.jpg" as lg_img_layout2%}
+{% static "MultichoiceLayouts/largeOrthoViewSet2.jpg" as lg_img_layout3%}
+{% static "MultichoiceLayouts/largeOrthoViewSet3.jpg" as lg_img_layout4%}
+
+
+{% static "MultichoiceLayouts/smallOrthoViewSet0.jpg" as sm_img_layout1%}
+{% static "MultichoiceLayouts/smallOrthoViewSet1.jpg" as sm_img_layout2%}
+{% static "MultichoiceLayouts/smallOrthoViewSet2.jpg" as sm_img_layout3%}
+{% static "MultichoiceLayouts/smallOrthoViewSet3.jpg" as sm_img_layout4%}
+
+<script type="text/javascript">
+    /**
+     * Numerical value corresponding to the selected layout
+     **/
+    var selectedLayout = null;
+
+    $(document).ready(function () {
+        showFourChoices();
+    });
+
+    function submitMultiAnswer() {
+        if (selectedLayout != null) {
+            console.log("Answer is: "+selectedLayout);
+            $.ajax({
+                url: "submit_multi_answer",
+                type: "POST",
+                data: { answer: selectedLayout},
+                success: function (response) {
+                    printResponse(response);
+
+                }
+            });
+        }
+    }
+    function showLargeLayout(num) {
+        var four_lg_img = ["{{lg_img_layout1}}", "{{lg_img_layout2}}", "{{lg_img_layout3}}", "{{lg_img_layout4}}"];
+
+        /* If this large layout is already selected want to check the radio button*/
+
+        var checked='';
+        if (selectedLayout != null) {
+            if (selectedLayout== num){
+                checked='checked';
+            }
+        }
+
+
+
+        $("#choices-row").html('<div  id="expand-img">' +
+
+                '<a href="#"><span class="glyphicon glyphicon-chevron-left next-choice-badge" value="' + num + '" id="left-choice-badge"></span></a>' +
+                '<a href="#"><span class="glyphicon glyphicon-remove close-choice-badge"></span></a>' +
+                '<input style="" class="radio-inline" id="lg-img-radio" value="' + num+ '" type="radio"'+checked+'>'+
+                '<img class="multichoice-img-lg" style="min-height:618px" src="' + four_lg_img[num] + '">' +
+                '<a href="#"><span class="glyphicon glyphicon-chevron-right next-choice-badge" value="' + num + '" id="right-choice-badge"></span></a>' +
+                '</div>');
+        $('.close-choice-badge').click(function () {
+            showFourChoices();
+
+        });
+        $('#lg-img-radio').change(function(){
+            console.log($(this).attr('value'));
+            console.log($(this).prop('checked'));
+            if($(this).prop('checked')){
+                selectedLayout=$(this).attr('value');
+
+            }
+            /* Want to set or reset the selected layout*/
+        });
+
+        $("#left-choice-badge").click(function (e) {
+            console.log(parseInt($(this).attr('value')));
+            displayPrevLargeLayout((parseInt($(this).attr('value'))));
+            return false;
+
+        });
+        $("#right-choice-badge").click(function () {
+            displayNextLargeLayout((parseInt($(this).attr('value')) + 1) % 4);
+            return false;
+        });
+
+
+    }
+
+
+    function displayNextLargeLayout(num) {
+        showLargeLayout(num);
+    }
+    function displayPrevLargeLayout(num) {
+        if (num < 1) {
+            num = 3;
+        } else {
+            num--;
+        }
+        console.log(num);
+        showLargeLayout(num);
+    }
+    function showFourChoices() {
+        var str = "";
+        var four_sm_img = ["{{sm_img_layout1}}", "{{sm_img_layout2}}", "{{sm_img_layout3}}", "{{sm_img_layout4}}"];
+        for (var i = 0; i < 4; i++) {
+
+
+            str += '<div class="col-xs-6 col-md-6 col-sm-6 col-lg-6 choice-col" style="">' +
+                    '<a href="#" class="thumbnail multichoice-img-select" value="' + i + '">' +
+                    '<input style="position:absolute" class="radio-inline"value="' + i + '" type="radio">' +
+                    '<img class="multichoice-img-small " value="' + i + '" style=""' +
+                    'src="' + four_sm_img[i] + '">' +
+                    '<span class="glyphicon glyphicon-zoom-in zoom-in-badge" value="' + i + '"></span>'+
+                    '</a>' +
+                    '</div>';
+
+        }
+
+        $("#choices-row").html(str);
+
+        /* since the previous layout object is not existent anymore need get the value*/
+
+        if (selectedLayout != null) {
+            var layouts = document.getElementsByClassName("multichoice-img-select");
+
+            $( $(layouts[selectedLayout]).find('input')[0]).prop('checked', true);
+            $(layouts[selectedLayout]).css("background", '#DBE6EA');
+        }
+        $('input').click(function(){
+            console.log("click radio");
+            console.log($(this)[0].checked);
+        });
+//        $("input").unbind();
+
+        $("input").change(function(){
+            console.log("change radio");
+            console.log($(this)[0].checked);
+        });
+
+
+//        $('input[type="radio"]')
+//            // bind a change-event handler using 'on()':
+//                .on('change', function () {
+//                    // re-select the same elements:
+//                    $('input[type="radio"]')
+//                        // set the 'checked' property back to the default (on page-load) state:
+//                            .prop('checked', function () {
+//                                return this.defaultChecked;
+//                            });
+//                });
+        $(".multichoice-img-select").click(function () {
+            imgClickNew($(this));
+            return false;
+        });
+        $("input[type='radio']").click(function(){
+            radioClick($(this));
+//            return false;
+
+        });
+//        $(".thumbnail ").click(function(e){
+////            return false;
+//            e.preventDefault();
+//        });
+        $('input').on('click', function(e){
+             e.stopPropagation();
+        });
+        $('.zoom-in-badge').click(function(){
+            showLargeLayout(parseInt($(this).attr('value')));
+            return false;
+        });
+
+    }
+    function radioClick(obj){
+
+        if (selectedLayout === obj.attr('value')) { //Unselect
+
+        }else {
+            if (selectedLayout == null) {
+            }else{
+                var layouts = document.getElementsByClassName("thumbnail");
+                var old_radio=$(layouts[selectedLayout]).find('input')[0];
+                $(layouts[selectedLayout]).css("background",'white');
+                $(old_radio).attr('checked',false);
+            }
+            obj.parent().css("background", '#DBE6EA');
+            selectedLayout = obj.attr('value');
+        }
+    }
+
+    function imgClickNew(obj) {
+
+//            var layouts = document.getElementsByClassName("multichoice-img-select");
+        var layouts = document.getElementsByClassName("thumbnail");
+//            var clicked_obj=obj.parent();
+        var clicked_obj = obj;
+        var input_radio = clicked_obj.find('input')[0];
+        console.log($(input_radio).prop('checked'));
+//            console.log(obj);
+
+
+        if (selectedLayout == null) {
+            selectedLayout = obj.attr('value');
+            $(input_radio).prop('checked', true);
+//
+            console.log(obj.parent());
+            clicked_obj.css("background", '#DBE6EA');
+
+            //select the radio button
+        } else if (selectedLayout === obj.attr('value')) { //Unselect
+
+        } else {//reselect
+            var old_radio = $(layouts[selectedLayout]).find('input')[0];
+            $(layouts[selectedLayout]).css("background", 'white');
+            $(old_radio).attr('checked', false);
+
+            selectedLayout = obj.attr('value');
+            clicked_obj.css("background", '#DBE6EA');
+
+            $(input_radio).prop('checked', true);
+            console.log(input_radio);
+        }
+        console.log($(input_radio).prop('checked'));
+    }
+</script>
+
+
+<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style=" border:0px greenyellow solid;">
+
+    <div class="unity-content-multichoice" style="border:0px solid indianred; overflow:hidden">
+        <!--<div class="unity-content">-->
+        <div id="unityPlayer">
+            <div class="missing">
+                <a href="http://unity3d.com/webplayer/" title="Unity Web Player. Install now!">
+                    <img alt="Unity Web Player. Install now!"
+                         src="http://webplayer.unity3d.com/installation/getunity.png" width="193" height="63"/>
+                </a>
+            </div>
+            <div class="broken">
+                <a href="http://unity3d.com/webplayer/"
+                   title="Unity Web Player. Install now! Restart your browser after install.">
+                    <img alt="Unity Web Player. Install now! Restart your browser after install."
+                         src="http://webplayer.unity3d.com/installation/getunityrestart.png" width="193" height="63"/>
+                </a>
+            </div>
+        </div>
+
+        <!--</div>-->
+
+    </div>
+</div>
+
+
+<div class="col-lg-7 col-md-7 col-sm-7 col-xs-7">
+    <div class="row" id="choices-row" style="border:0px solid blue;">
+    </div>
+
+
+</div>
+
+
+{%endblock%}

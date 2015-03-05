@@ -1,91 +1,324 @@
-{% extends "ims_lti_py_sample/base.html" %}
+{% extends "ims_lti_py_sample/base_student.html" %}
 
 {%block title%}
         Assessment Name
 {%endblock%}
 
+
+
+
 {% block content %}
+        {% load staticfiles %}
+    {%static "Gaspard/Gaspard.logo.png" as gaspard%}
+    {%static "Gaspard/" as manipFile%}
+    {%static "Gaspard/Gaspard - Web Build.unity3d" as gaspardWebBuild%}
+
+
 <script>
     $(document).ready(function () {
-        $('.prob-quest-header').click(function () {
-            var width = document.getElementById('prob-quest-row').offsetWidth;
-            console.log(width);
-            $('.quest-item').css('width', width);
+
+        $('#get-next-few-questions').click(function () {
+                        console.log('next');
+
+            nextFewQuestions(true);
         });
-        $('.quest-item').click(function(){
-            console.log("Clicked on question");
-            $('.prob-quest-header').html($(this).text());
-            console.log("Changed header text");
-            //goto a different question
-            getProblem($(this));
+        $('#get-prev-few-questions').click(function () {
+           console.log('prev');
+
+            nextFewQuestions(false);
         });
-        $('#prob-quest-header').click(function(){
-                   $('.dropdown-menu').css('width', $("#prob-quest-row").width());
+         $('.next-badge').click(function () {
+            nextBadgeClick(this);
+            return false;
 
         });
+         function nextFewQuestions(next_bool){
+            console.log("Get more questions");
+//            console.log("{{questions}}");
+             var last_number='0';
+             if(next_bool){
+                 last_number = $('.question-link').last().html();
+             }else{
+                 last_number = $('.question-link').first().html();
 
+             }
+
+
+              console.log(last_number);
+            $.ajax({
+                url: "update_questions_menu",
+                type: "POST",
+                data: {last_number: last_number, next: next_bool, questions: '{{questions}}'},
+                success: function (response) {
+                    console.log("Got the answer back");
+                    console.log(response[0]);
+                    updateMenu(response);
+                }
+            });
+
+        }
+        function updateMenu(questions) {
+            var str = '';
+            str += '<li style="margin-left: 0"><a href="#"><span aria-hidden="true" class="next-badge" id="{{prev_quest_id}}">&laquo;</span><span class="sr-only">Previous</span></a></li>';
+            for (var i in questions) {
+//                console.log(i);
+                console.log(questions[i].number);
+                console.log("question_number variable: ");
+                console.log("{{question_number}}");
+                if (questions[i].number == '{{question_number}}')
+                    str += '<li><a href="#" id="'+questions[i].id+'" class="number-of-cur-quest">' + questions[i].number + '</a></li>';
+                else if (questions[i].number == -1) {
+                    str += '<li><a  href="#" id="get-prev-few-questions">&hellip;</a></li>';
+                }else if (questions[i].number == 0) {
+                    str += '<li><a href="#" id="get-next-few-questions">&hellip;</a></li>';
+
+                }else {
+                    str += '<li><a href="#"  id="'+questions[i].id+'" class="question-link">' + questions[i].number + '</a></li>';
+                }
+            }
+            str += '<li style="margin-right: 0"><a href="#" id="{{next_quest_id}}" class="next-badge"><span aria-hidden="true" >&raquo;</span><span class="sr-only">Next</span></a></li>';
+            $('#questions-menu-ul').addClass("add-side-margin");
+            $('#questions-menu-ul').html(str);
+
+            $('#get-next-few-questions').click(function () {
+                                        console.log('next');
+
+                nextFewQuestions(true);
+                return false;
+            });
+//            $('#get-prev-few-questions').click(function () {
+//                nextFewQuestions(false);
+//            });
+            $('#get-prev-few-questions').click(function () {
+                console.log('prev');
+
+                nextFewQuestions(false);
+            });
+            $('.next-badge').click(function () {
+                nextBadgeClick(this);
+                return false;
+            });
+             $('.question-link').click(function(){
+                getProblem(this);
+                return false;
+            });
+
+        }
+
+        function nextBadgeClick(obj){
+             console.log('Clicked next question');
+            if ($(obj).attr('id') == 'home') {
+                window.location.href = 'student_home';
+            } else {
+                getProblem(obj);
+            }
+        }
     });
 </script>
-<div class="row main-problem-bgr" >
-    <!--<div class="col-lg-1"></div>-->
-    <div class="col-lg-12 col-quest-background " style="margin-top: -20px">
-        <div class="display-question">
-            <div class="row body-row" style="margin:0">
+<script type="text/javascript">
+    console.log("Print type");
+    console.log("{{question_type}}");
+
+    if ("{{question_type}}".toLowerCase().indexOf("choose-viewset") >= 0) {
+        w = 512;
+        h = 512;
+        console.log("this is a Choose viewset");
+    } else {
+        var w = 1024;
+        var h = 700;
+    }
+    var config = {
+        width: w,
+        height: h,
+        params: { enableDebugging: "0"} //, logoimage: "{{gaspard}}" }
+    };
+    var u = new UnityObject2(config);
+    console.log(u);
+
+
+    jQuery(function () {
+        console.log("Entered function");
+
+        var $missingScreen = jQuery("#unityPlayer").find(".missing");
+        var $brokenScreen = jQuery("#unityPlayer").find(".broken");
+        $missingScreen.hide();
+        $brokenScreen.hide();
+
+        u.observeProgress(function (progress) {
+            switch (progress.pluginStatus) {
+                case "broken":
+                    $brokenScreen.find("a").click(function (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        u.installPlugin();
+                        return false;
+                    });
+                    $brokenScreen.show();
+                    break;
+                case "missing":
+                    $missingScreen.find("a").click(function (e) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        u.installPlugin();
+                        return false;
+                    });
+                    $missingScreen.show();
+                    break;
+                case "installed":
+                    $missingScreen.remove();
+                    break;
+                case "first":
+                    SaySomethingToUnity();
+                    break;
+            }
+        });
+        console.log("Calling initPlugin");
+        u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}");
 
 
 
-                <div class="col-lg-12 col-md-12">
-                    <div class="next-question">
-                        <span class="glyphicon glyphicon-chevron-left next-badge"></span>
-                        <span class="glyphicon glyphicon-chevron-right next-badge"></span>
+        console.log("Done")
+    });
+    function SaySomethingToUnity() {
+        console.log("Sending message");
 
-                    </div>
+//
+        if ("{{question_type}}".toLowerCase().indexOf("define-ortho-faces") >= 0) {
+            console.log("Define ortho faces");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "false");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "true");
 
-                    <div class="question-col">
-                     <!--Start of the Question-Description column-->
-                    <!--<div class="question-menu-div" style="">-->
-                        <div class="dropdown" id="prob-quest-row">
-                            <a data-toggle="dropdown" href="#">
-                                <p class="mylist-header" id="prob-quest-header">{{question_name}}<span class="glyphicon glyphicon-chevron-down"
-                                        style="float:right; margin-top:5px;"></span></p>
-                            </a>
-                            <div class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                {% for a in questions %}
-                                <a href="#" class="mylist-item quest-item" value="{{a.files.manip}}"
-
-                                   name="{{a.text.text}}" id="{{a.id}}" >{{a.displayName.text}}</a>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    <!--</div>-->
-                        <div style="padding:100px 0 30px 0;">
-                             <h4>Description</h4>
-
-                        </div>
-
-                    <div class="instruction">
-                        <p>{{question}}</p>
-
-                    </div>
-                    <div class="instruction">
-                        <!--Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum aliquam leo, a laoreet-->
-                        <!--lectus gravida tristique. Nam ultrices urna ut nisi pharetra, non ornare massa gravida.-->
-                        <!--Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vestibulum aliquam leo, a laoreet-->
-                        <!--lectus gravida tristique. Nam ultrices urna ut nisi pharetra, non ornare massa gravida.-->
-                    </div>
-                    <!--End of Description column-->
-                    </div>
+        } else if ("{{question_type}}".toLowerCase().indexOf("match-ortho-faces") >= 0) {
+            console.log("Match ortho faces");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "true");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "true");
 
 
+        } else if ("{{question_type}}".toLowerCase().indexOf("choose-viewset") >= 0) {
+            console.log("Choose-viewset");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowOrthoViews", "false");
+            u.getUnity().SendMessage("QuestionLoader", "SetShowFacesPalette", "false");
+            console.log("sent message")
 
-                    {%block unity%}
-                    {%endblock%}
+        }
+        u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}{{question_name}}.unity3d");
 
 
-                </div>
-            </div>
-        </div>
-        <!--<div class="col-lg-1"></div>-->
+        u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");
+        // Want to enable the submit button only after the Unity object is ready
+        // Is there a way to know if a bundle is loaded
+
+    }
+
+    /**
+     * This method is called by unity object in DEFINE and MATCH ortho faces
+     * @param arg
+     * @constructor
+     *
+     */
+    function UnityPrint(str) {
+        console.log(str);
+    }
+    /* This method is called by unity objects with the answer provided
+     *
+     * */
+    function ReceiveResponse(arg) {
+
+        $.ajax({
+            url: "submit_answer",
+            type: "POST",
+            data: {answer: arg},
+            success: function (response) {
+                console.log("Got the answer back");
+                console.log(response);
+                printResponse(response);
+            }
+        });
+    }
+    function bundleIsReady(){
+        console.log("Bundle is ready");
+        console.log("{{seeAnswer}}");
+        //print the  submit button
+        var elemId='submit-match-answer', btnText='Save Answer';
+        if ( '{{question_type}}'.indexOf('choose-viewset')>=0){
+            elemId="submit-multi-answer";
+        }
+        if('{{seeAnswer}}'.indexOf('True')>=0){
+            btnText="Check Answer";
+
+        }
+        var str= '<a href="#" id="'+elemId+'"><button class="btn btn-white-background" type="button">'+
+            ''+btnText+'</button></a>';
+        $("#submit-btn-div").append(str);
+
+
+        $('#submit-multi-answer').click(function () {
+            document.getElementById("report-answer").innerHTML='';
+            submitMultiAnswer();
+            return false;
+        });
+        $("#submit-match-answer").click(function () {
+            document.getElementById("report-answer").innerHTML='';
+            u.getUnity().SendMessage("Question", "RequestRespone", "");
+            return false;
+        });
+
+    }
+</script>
+
+
+<div class="row" style="border:0px blue solid;">
+    <div class="col-lg-1 col-md-1 col-sm-1 col-xs-1" style="border:0px solid darkolivegreen">
+        <!--{% load staticfiles %}-->
+        <a href="/lti/student_home">
+        <button class="btn btn-white-background home-btn" style="font-size: 25px" type="button">
+            <span class="glyphicon glyphicon-home"></span>
+        </button>
+            </a>
+    </div>
+
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4" style="padding-top: 30px; border:0px solid darkolivegreen">
+        <div><p style="color:grey;font-size: 17px">{{question}}</p></div>
+    </div>
+    <div class="col-lg-3 col-md-3 col-sm-3 col-xs-3 " style="padding-right:0;border:0px solid lawngreen">
+        <nav style="border:0px solid red">
+            <ul class="numbering" id="questions-menu-ul">
+                <li><a href="#"><span aria-hidden="true" class="next-badge" id="{{prev_quest_id}}">&laquo;</span><span
+                        class="sr-only">Previous</span></a></li>
+                {%for a in small_list%}
+
+                    {%if a.number == question_number %}
+                    <li><a href="#" id="{{a.id}}" class="number-of-cur-quest">{{a.number}}</a></li>
+                    {%elif a.number == 0 %}
+                    <li><a href="#" id="get-next-few-questions">&hellip;</a></li>
+                    {%elif a.number == -1 %}
+                    <li><a href="#" id="get-prev-few-questions">&hellip;</a></li>
+                    {%else %}
+                    <li><a href="#" id="{{a.id}}" class="question-link">{{a.number}}</a></li>
+                    {%endif%}
+                {%endfor%}
+                <li><a href="#" id="{{next_quest_id}}" class="next-badge"><span aria-hidden="true" id="{{next_quest_id}}" >&raquo;</span><span
+                        class="sr-only">Next</span></a></li>
+            </ul>
+        </nav>
+    </div>
+    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2" style="padding-top:24px;border:0px solid darkolivegreen">
+        <div id=report-answer style=""></div>
+
+    </div>
+    <div class="col-lg-2 col-md-2 col-sm-2 col-xs-2 btn-submit-padding" id="submit-btn-div" style="border:0px solid darkolivegreen">
+
     </div>
 </div>
+
+<div class="row">
+    {%block unity%}
+    {%endblock%}
+</div>
+<div class="row" id="bottom-row" style="border:0px blanchedalmond solid">
+
+</div>
+
+
+
 {%endblock%}

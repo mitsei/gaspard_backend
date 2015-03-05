@@ -1,130 +1,32 @@
 {% extends "ims_lti_py_sample/question.html" %}
 
 {%block unity%}
-{% load staticfiles %}
-    {%static "Gaspard/Gaspard.logo.png" as gaspard%}
-    {%static "Gaspard/" as manipFile%}
-    {%static "Gaspard/Gaspard - Web Buil.unity3d" as gaspardWebBuild%}
 
 <script type="text/javascript">
-    $(document).ready(function () {
-        $("#submit-answer").click(function () {
-
-            u.getUnity().SendMessage("Question", "RequestRespone", "");
-            console.log("send response");
-        });
-    });
-
-    var config = {
-//        width: 1280,
-//        height: 864,
-        width:1024,
-        height:700,
-        params: { enableDebugging: "0", logoimage: "{{gaspard}}" }
-
-    };
-    var u = new UnityObject2(config);
-    console.log(u);
 
 
-    jQuery(function () {
-        console.log("Entered function");
-
-        var $missingScreen = jQuery("#unityPlayer").find(".missing");
-        var $brokenScreen = jQuery("#unityPlayer").find(".broken");
-        $missingScreen.hide();
-        $brokenScreen.hide();
-
-        u.observeProgress(function (progress) {
-            switch (progress.pluginStatus) {
-                case "broken":
-							$brokenScreen.find("a").click(function (e) {
-								e.stopPropagation();
-								e.preventDefault();
-								u.installPlugin();
-								return false;
-							});
-							$brokenScreen.show();
-						break;
-						case "missing":
-							$missingScreen.find("a").click(function (e) {
-								e.stopPropagation();
-								e.preventDefault();
-								u.installPlugin();
-								return false;
-							});
-							$missingScreen.show();
-						break;
-						case "installed":
-							$missingScreen.remove();
-						break;
-						case "first":
-						break;
-					}
-				});
-                console.log("Calling initPlugin");
-				u.initPlugin(jQuery("#unityPlayer")[0], "{{gaspardWebBuild}}");
-                console.log("saying smth");
-				SaySomethingToUnity();
-                console.log("Done")
-			});
-			function SaySomethingToUnity()
-			{   console.log("Sending message");
-			    u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}{{question_name}}.unity3d");
-                console.log("sending second message");
-			    u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");
-			}
-
-            function ReceiveResponse( arg )
-		{
-		    // show the message
-		   // alert( arg );
-            $.ajax({
-                url:"submit_answer",
-                type:"POST",
-                data: {answer: arg},
-                success: function(response){
-                    console.log("Got the answer back");
-                    console.log(response);
-                    var answer='';
-                   // console.log("Got here");
-                    console.log(response['correct']=== true );
-                    if(response['correct']=== true ){
-                        answer='<span class="glyphicon glyphicon-ok" style="top:5px; color:green;" ></span>'+ " Correct!";
-
-                    }else{
-                        answer='<span class="glyphicon glyphicon-remove" style="top:5px;"></span>'+" Wrong!";
-
-
-                        $('#report-answer').css("color","red");
-                    }
-                    //$('.display-answer').css("display", "visible").css("position", "absolute").html(answer);
-                    $('#report-answer').html(answer);
-                    console.log("Print variable: ");
-                    console.log('{{question_name}}');
-
-                }
-            });
-		}
 </script>
-        <div class="unity-content">
-			<div id="unityPlayer">
-				<div class="missing">
-					<a href="http://unity3d.com/webplayer/" title="Unity Web Player. Install now!">
-						<img alt="Unity Web Player. Install now!" src="http://webplayer.unity3d.com/installation/getunity.png" width="193" height="63" />
-					</a>
-				</div>
-				<div class="broken">
-					<a href="http://unity3d.com/webplayer/" title="Unity Web Player. Install now! Restart your browser after install.">
-						<img alt="Unity Web Player. Install now! Restart your browser after install." src="http://webplayer.unity3d.com/installation/getunityrestart.png" width="193" height="63" />
-					</a>
-				</div>
-			</div>
-            <button class="btn  btn-lg submit-answer" id="submit-answer" type="button">Submit</button>
-            <div id="report-answer">
+<div class="col-lg-12" style="border:0px solid paleturquoise;min-height:600px;">
 
+    <div class="unity-content">
+        <div id="unityPlayer" style="border:0px lawngreen solid">
+            <div class="missing">
+                <a href="http://unity3d.com/webplayer/" title="Unity Web Player. Install now!">
+                    <img alt="Unity Web Player. Install now!"
+                         src="http://webplayer.unity3d.com/installation/getunity.png" width="193" height="63"/>
+                </a>
             </div>
-		</div>
+            <div class="broken">
+                <a href="http://unity3d.com/webplayer/"
+                   title="Unity Web Player. Install now! Restart your browser after install.">
+                    <img alt="Unity Web Player. Install now! Restart your browser after install."
+                         src="http://webplayer.unity3d.com/installation/getunityrestart.png" width="193" height="63"/>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 {%endblock%}

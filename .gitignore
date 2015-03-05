@@ -1,6 +1,8 @@
 .idea/
 db.sqlite3
 *.pyc
-.DS_Store
+*.DS_Store
+settings_credentials.py
 *.log
-*settings_credentials.py
+log/
+src/
