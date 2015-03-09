@@ -6,3 +6,4 @@ settings_credentials.py
 *.log
 log/
 src/
+apache/django.wsgi
