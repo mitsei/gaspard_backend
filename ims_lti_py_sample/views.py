@@ -7,6 +7,7 @@ from ims_lti_py.tool_provider import DjangoToolProvider
 
 from django.conf import settings
 from django.http import Http404
+from django.utils.http import unquote
 
 # Create your views here.
 from django.views.decorators.csrf import csrf_exempt
@@ -513,13 +514,17 @@ def display_question(request):
 
         {files:{}, displayName:{text:""},description:{}, recordTypeIds:[],text:{}, responded:True,....}
         '''
-        resp2 = student_req.get(student_req.url + bank_id + '/assessmentstaken/' + taken_id +
-                                "/questions/" + question_id + "/")
+        question_url = student_req.url + unquote(bank_id) + '/assessmentstaken/' + unquote(taken_id) + "/questions/" + unquote(question_id) + "/"
+        resp2 = student_req.get(question_url)
 
+        import logging
+        logging.info(question_url)
 
         static_folder = settings.STATIC_ROOT
         if static_folder == '':
             static_folder = 'static/'
+
+        logging.info(resp2.json())
 
         q_name = resp2.json()['displayName']['text']
         '''
@@ -788,14 +793,14 @@ def instructor(request):
         Get list of banks
         url: assessment/banks
         '''
-        eq = req_assess.get(req_assess.url)
+        eq = req_assess.get(req_assess.url + '?page=all')
         banks = eq.json()['data']['results']
 
         print "Number of banks: " + str(len(banks))
         found = False
         bank_id = ""
         for a in banks:
-            if a['displayName']['text'] == "Ortho 3D":
+            if str(a['displayName']['text']) == "Ortho 3D Production":
                 print "Found Ortho 3D"
                 found = True
 
@@ -898,6 +903,8 @@ def instructor(request):
                                                       'items_type3': items_type3, 'items_type4': items_type4}))
         else:
             print "No bank Ortho 3D found"
+            import logging
+            logging.info('no Ortho 3d bank found')
 
     except KeyError, e:
         # return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
@@ -953,8 +960,10 @@ def getPagesList(total_count, page_num):
     else:
         pages.insert(0, number_of_pages)
     '''number of next page'''
-    pages.append((page_num%number_of_pages)+1)
-
+    if number_of_pages > 0:
+        pages.append((page_num%number_of_pages)+1)
+    else:
+        pass
     print pages
 
     return pages

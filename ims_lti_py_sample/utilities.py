@@ -59,7 +59,7 @@ class AssessmentRequests(object):
             self._headers['LTI-User-ID'] =                     str(params['user_id'])
             self._headers['LTI-Tool-Consumer-Instance-GUID'] = str(params['tool_consumer_instance_guid'])
             self._headers['LTI-User-Role'] =                   str(params['roles'])
-            self._headers['LTI-Bank'] ='assessment.Bank%3A53cec85833bb72730f66da92%40birdland.mit.edu'
+            self._headers['LTI-Bank'] ='assessment.Bank%3A54f9e256e7dde0acfe411731%40bazzim.MIT.EDU'
 
             # print params['user_id']
             # print params['tool_consumer_instance_guid']
