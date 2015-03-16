@@ -125,7 +125,7 @@ USE_TZ = True
 
 ## LTI Parameters
 X_FRAME_OPTIONS = 'ALLOW-FROM: *'
-LTI_DEBUG = True
+LTI_DEBUG = False
 
 LTI_URL_FIX = {
     "https://localhost/":"http://192.168.33.10/"

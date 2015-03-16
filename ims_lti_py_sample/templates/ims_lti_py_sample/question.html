@@ -10,7 +10,6 @@
 {% block content %}
         {% load staticfiles %}
     {%static "Gaspard/Gaspard.logo.png" as gaspard%}
-    {%static "Gaspard/" as manipFile%}
     {%static "Gaspard/Gaspard - Web Build.unity3d" as gaspardWebBuild%}
 
 
@@ -201,7 +200,7 @@
             console.log("sent message")
 
         }
-        u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}{{question_name}}.unity3d");
+        u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}");
 
 
         u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");

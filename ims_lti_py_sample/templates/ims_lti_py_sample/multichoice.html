@@ -3,17 +3,6 @@
 {%block unity%}
 {% load staticfiles %}
 
-{% static "MultichoiceLayouts/largeOrthoViewSet0.jpg" as lg_img_layout1%}
-{% static "MultichoiceLayouts/largeOrthoViewSet1.jpg" as lg_img_layout2%}
-{% static "MultichoiceLayouts/largeOrthoViewSet2.jpg" as lg_img_layout3%}
-{% static "MultichoiceLayouts/largeOrthoViewSet3.jpg" as lg_img_layout4%}
-
-
-{% static "MultichoiceLayouts/smallOrthoViewSet0.jpg" as sm_img_layout1%}
-{% static "MultichoiceLayouts/smallOrthoViewSet1.jpg" as sm_img_layout2%}
-{% static "MultichoiceLayouts/smallOrthoViewSet2.jpg" as sm_img_layout3%}
-{% static "MultichoiceLayouts/smallOrthoViewSet3.jpg" as sm_img_layout4%}
-
 <script type="text/javascript">
     /**
      * Numerical value corresponding to the selected layout
@@ -39,7 +28,7 @@
         }
     }
     function showLargeLayout(num) {
-        var four_lg_img = ["{{lg_img_layout1}}", "{{lg_img_layout2}}", "{{lg_img_layout3}}", "{{lg_img_layout4}}"];
+        var four_lg_img = $.parseJSON("{{ lg_img_layouts }}".replace('&quot;', '"'));
 
         /* If this large layout is already selected want to check the radio button*/
 
@@ -103,7 +92,7 @@
     }
     function showFourChoices() {
         var str = "";
-        var four_sm_img = ["{{sm_img_layout1}}", "{{sm_img_layout2}}", "{{sm_img_layout3}}", "{{sm_img_layout4}}"];
+        var four_sm_img = $.parseJSON("{{ sm_img_layouts }}".replace('&quot;', '"'));
         for (var i = 0; i < 4; i++) {
 
 

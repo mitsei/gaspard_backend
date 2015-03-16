@@ -538,6 +538,7 @@ def display_question(request):
         # text_file = open(static_folder+"Gaspard/" + q_name + ".unity3d", "w")
         # text_file.write(decoded)
         # text_file.close()
+        manip_url = resp2.json()['files']['manip']
 
         '''
         Identifying type of the question
@@ -561,7 +562,7 @@ def display_question(request):
             return render_to_response("ims_lti_py_sample/unity.html", RequestContext(request,
                                                      {'question_name': q_name, 'question': question,
 
-                                                      'question_number': question_number,
+                                                      'manipFile': manip_url,
                                                       'small_list': questions,
                                                       'question_type': question_type,
                                                       'next_quest_id': next_quest_id,
@@ -570,30 +571,41 @@ def display_question(request):
         else:
             if "choose-viewset" in question_type:
                 list_choices = resp2.json()['choices']
+                lg_img_layouts = []
+                sm_img_layouts = []
                 for i, c in enumerate(list_choices):
                     # print c['name']
                     # print c['id']
-                    smallView = c['smallOrthoViewSet']
-                    largeView = c['largeOrthoViewSet']
-                    decoded1 = base64.b64decode(smallView)
-                    decoded2 = base64.b64decode(largeView)
+                    small_view = c['smallOrthoViewSet']
+                    large_view = c['largeOrthoViewSet']
 
-                    small_view_file = open(static_folder + "MultichoiceLayouts/smallOrthoViewSet" + str(i) + ".jpg", "w")
-                    large_view_file = open(static_folder + "MultichoiceLayouts/largeOrthoViewSet" + str(i) + ".jpg", "w")
-                    small_view_file.write(decoded1)
-                    large_view_file.write(decoded2)
+                    lg_img_layouts.append(large_view)
+                    sm_img_layouts.append(small_view)
 
-                    small_view_file.close()
-                    large_view_file.close()
+                    # decoded1 = base64.b64decode(smallView)
+                    # decoded2 = base64.b64decode(largeView)
+                    #
+                    # small_view_file = open(static_folder + "MultichoiceLayouts/smallOrthoViewSet" + str(i) + ".jpg", "w")
+                    # large_view_file = open(static_folder + "MultichoiceLayouts/largeOrthoViewSet" + str(i) + ".jpg", "w")
+                    # small_view_file.write(decoded1)
+                    # large_view_file.write(decoded2)
+                    #
+                    # small_view_file.close()
+                    # large_view_file.close()
+
 
                 return render_to_response("ims_lti_py_sample/multichoice.html",
                                           RequestContext(request,
-                                                         {'question_name': q_name, 'question': question,
-                                                          'question_number': question_number,
-                                                          'small_list': questions,
-                                                          'question_type': question_type, "choices": list_choices,
+                                                         {"choices": list_choices,
+                                                          'lg_img_layouts' : lg_img_layouts,
+                                                          'manipFile': manip_url,
                                                           'next_quest_id': next_quest_id,
                                                           'prev_quest_id': prev_quest_id,
+                                                          'question': question,
+                                                          'question_number': question_number,
+                                                          'question_type': question_type,
+                                                          'small_list': questions,
+                                                          'sm_img_layouts'  : sm_img_layouts,
                                                           'seeAnswer': review_whether_correct}))
             else:
                 return render_to_response("ims_lti_py_sample/error.html", RequestContext(request))
@@ -783,7 +795,8 @@ def instructor(request):
         unique_id = request.session.get('unique_id')
         #getting parameters for the user
         # params={}
-
+        import pdb
+        pdb.set_trace()
         params = Parameters.objects.filter(key=unique_id).values()[0]['value']
         params = ast.literal_eval(params)
         print type(params)
