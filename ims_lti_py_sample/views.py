@@ -53,6 +53,9 @@ def index(request):
 
         flush()
 
+    import logging
+    logging.info('here is a test entry')
+
     session = request.session
     session.clear()
     try:
@@ -147,6 +150,10 @@ def student(request):
         print bank_id
         print offering_id
 
+        import logging
+        logging.info('offering id: ' + str(offering_id))
+        logging.info('bank id: ' + str(bank_id))
+
         '''
         create new taken
         and get the taken_id
@@ -233,6 +240,8 @@ def student(request):
         return render_to_response("ims_lti_py_sample/errorNew.html", RequestContext(request, {'error': e,
                                                                                               'params': params}))
     except Exception, e:
+        import logging
+        logging.info(e)
         return render_to_response("ims_lti_py_sample/student_error.html",
                                   RequestContext(request, {
                                       # 'consumer': params['tool_consumer_info_product_family_code'],
@@ -570,7 +579,7 @@ def display_question(request):
                                                       'seeAnswer': review_whether_correct}))
         else:
             if "choose-viewset" in question_type:
-                list_choices = resp2.json()['choices']
+                list_choices = resp2.json()['files']['choices']
                 lg_img_layouts = []
                 sm_img_layouts = []
                 for i, c in enumerate(list_choices):
@@ -788,15 +797,15 @@ def submit_multi_answer(request):
 def instructor(request):
     print "Instructor View"
     print request.session.get('unique_id')
-
+    import logging
+    logging.info('here at instrutor')
+    logging.info('unique_id' + str(request.session.get('unique_id')))
 
     try:
         #getting the unique identifier of the user
         unique_id = request.session.get('unique_id')
         #getting parameters for the user
         # params={}
-        import pdb
-        pdb.set_trace()
         params = Parameters.objects.filter(key=unique_id).values()[0]['value']
         params = ast.literal_eval(params)
         print type(params)

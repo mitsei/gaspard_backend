@@ -200,7 +200,7 @@
             console.log("sent message")
 
         }
-        u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}");
+        u.getUnity().SendMessage("QuestionLoader", "SetBundleURL", "{{manipFile}}".replace(/&amp;/g,'&'));
 
 
         u.getUnity().SendMessage("QuestionLoader", "LoadBundle", "");
