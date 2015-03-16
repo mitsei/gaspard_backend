@@ -1401,6 +1401,49 @@ def update_assessments(request):
                                     'page_num': page_num}), content_type='application/json')
 
 
+
+
+@csrf_exempt
+def get_response(request):
+    """
+    Get the student response to a specific question
+    :param request:
+    :return:
+    """
+    unique_id = request.session.get('unique_id')
+
+    try:
+        if request.method != 'GET':
+            raise NotImplementedError('Only GET is allowed on this endpoint.')
+
+        params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
+
+
+        bank_id = params['custom_bank_id']
+        taken_id = params['taken_id']
+        question_id = params['question_id']
+        student_req = AssessmentRequests(unique_id,'taaccct_student')
+
+
+        response_url = (student_req.url + bank_id + "/assessmentstaken/" + taken_id +
+                        "/questions/" + question_id + '/responses/')
+        student_response = student_req.get(response_url)
+        if student_response.status_code == 200:
+            data = student_response.json()
+        else:
+            raise LookupError
+
+        return HttpResponse(json.dumps(data), content_type='application/json')
+    except LookupError:
+        raise Http404('Bank, assessment taken, question, or response not found.')
+    except Exception as ex:
+        import logging
+        logging.info('get_response exception: ' + str(ex.args[0]))
+        raise Http404
+
+
+
+
 '''''''''''''''''''''''''''''
 'Helper functions'
 '''''''''''''''''''''''''''''
@@ -1430,7 +1473,6 @@ def replaceAllItems(bank_id, sub_id, data, unique_id):
         return resp
     else:
         return '{"detail":"Could not replace items"}'
-
 
 '''
 Get a list of items in this assessment

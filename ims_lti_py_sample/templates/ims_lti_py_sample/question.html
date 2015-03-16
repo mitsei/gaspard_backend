@@ -258,8 +258,22 @@
         });
         $("#submit-match-answer").click(function () {
             document.getElementById("report-answer").innerHTML='';
-            u.getUnity().SendMessage("Question", "RequestRespone", "");
+            u.getUnity().SendMessage("Question", "RequestResponse", "");
             return false;
+        });
+
+        // try to get the last student response, and load it into Unity widget
+        // if available
+        $.ajax({
+            url : 'get_response'
+        }).error(function(xhr, status, msg) {
+            console.log('Server error: ' + xhr.responseText);
+        }).success(function(data) {
+            var response = $.parseJSON(data);
+            u.getUnity().SendMessage("Question","SetFaceAsFront", response['integerValues']['frontFaceValue']);
+            u.getUnity().SendMessage("Question","SetFaceAsSide", response['integerValues']['sideFaceValue']);
+            u.getUnity().SendMessage("Question","SetFaceAsTop", response['integerValues']['topFaceValue']);
+            console.log('Set the faces.');
         });
 
     }

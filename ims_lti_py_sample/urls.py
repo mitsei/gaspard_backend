@@ -20,6 +20,8 @@ urlpatterns = patterns('',
                        url(r'^rename_assessment$', 'ims_lti_py_sample.views.rename_assessment',
                            name="RenameAssessment"),
 
+                       url(r'^responses$', 'ims_lti_py_sample.views.get_student_response', name='GetResponse'),
+
 
                        # url(r'^items/(?P<sub_id>[-.:@%\d\w]+)/$', 'ims_lti_py_sample.views.assessment_items', name='AssessmentItems'),
 
