@@ -1,4 +1,5 @@
 Django==1.6.5
+PyRSS2Gen==1.0.0
 dj-database-url==0.3.0
 djutils==0.3.2
 -e git+https://github.com/digitalbazaar/py-http-signature@824de0d8957b4423b1ac986fe47a2d303cdfb434#egg=http_signature-master

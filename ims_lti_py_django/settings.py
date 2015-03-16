@@ -51,12 +51,12 @@ LOGGING = settings_credentials.__dict__.get('LOGGING')
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '^-nmp6((#y35$613xtxr!#dm9kedo2#2=+xvj)7nf-0670f^pp'
+SECRET_KEY = settings_credentials.__dict__.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = settings_credentials.__dict__.get('DEBUG')
 
-TEMPLATE_DEBUG = True
+TEMPLATE_DEBUG = settings_credentials.__dict__.get('TEMPLATE_DEBUG')
 
 
 CACHES = {
@@ -132,3 +132,4 @@ LTI_URL_FIX = {
 }
 ## Heroku SSL proxy fix
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+

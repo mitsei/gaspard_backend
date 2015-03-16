@@ -530,14 +530,14 @@ def display_question(request):
         '''
         Writing the manip file
         '''
-        if 'detail' in resp2.json():
-            print 'has detail'
-        print resp2.json()
-        manip = resp2.json()['files']['manip']
-        decoded = base64.b64decode(manip)
-        text_file = open(static_folder+"Gaspard/" + q_name + ".unity3d", "w")
-        text_file.write(decoded)
-        text_file.close()
+        # if 'detail' in resp2.json():
+        #     print 'has detail'
+        # print resp2.json()
+        # manip = resp2.json()['files']['manip']
+        # decoded = base64.b64decode(manip)
+        # text_file = open(static_folder+"Gaspard/" + q_name + ".unity3d", "w")
+        # text_file.write(decoded)
+        # text_file.close()
 
         '''
         Identifying type of the question
