@@ -257,8 +257,10 @@
             return false;
         });
         $("#submit-match-answer").click(function () {
+            console.log('about to request answer from unity');
             document.getElementById("report-answer").innerHTML='';
             u.getUnity().SendMessage("Question", "RequestResponse", "");
+            console.log('got answer from unity');
             return false;
         });
 
