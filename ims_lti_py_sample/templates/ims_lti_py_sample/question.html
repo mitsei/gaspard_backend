@@ -269,11 +269,12 @@
         }).error(function(xhr, status, msg) {
             console.log('No student responses avialable.');
         }).success(function(data) {
-            var response = $.parseJSON(data);
-            u.getUnity().SendMessage("Question","SetFaceAsFront", response['integerValues']['frontFaceValue']);
-            u.getUnity().SendMessage("Question","SetFaceAsSide", response['integerValues']['sideFaceValue']);
-            u.getUnity().SendMessage("Question","SetFaceAsTop", response['integerValues']['topFaceValue']);
-            console.log('Set the faces.');
+            if (data.hasOwnProperty('integerValues')) {
+                u.getUnity().SendMessage("Question","SetFaceAsFront", data['integerValues']['frontFaceValue']);
+                u.getUnity().SendMessage("Question","SetFaceAsSide", data['integerValues']['sideFaceValue']);
+                u.getUnity().SendMessage("Question","SetFaceAsTop", data['integerValues']['topFaceValue']);
+                console.log('Set the faces.');
+            }
         });
 
     }

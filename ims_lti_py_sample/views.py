@@ -569,8 +569,9 @@ def display_question(request):
         if "label-ortho-faces" in question_record_type:
 
             return render_to_response("ims_lti_py_sample/unity.html", RequestContext(request,
-                                                     {'question_name': q_name, 'question': question,
-
+                                                     {'question_name': q_name,
+                                                      'question': question,
+                                                      'question_number': question_number,
                                                       'manipFile': manip_url,
                                                       'small_list': questions,
                                                       'question_type': question_type,
