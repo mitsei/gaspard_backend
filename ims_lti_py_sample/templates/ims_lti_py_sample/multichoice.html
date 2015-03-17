@@ -91,13 +91,15 @@
         showLargeLayout(num);
     }
     function showFourChoices() {
-        var str = "";
-        var four_sm_img = $.parseJSON('{{ sm_img_layouts }}'.replace(/&quot;/g, '"').replace(/u&#39;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, '"'));
+        var str = "",
+            four_sm_img = $.parseJSON('{{ sm_img_layouts }}'.replace(/&quot;/g, '"').replace(/u&#39;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, '"')),
+            choice_ids = $.parseJSON('{{ choice_ids }}'.replace(/&quot;/g, '"').replace(/u&#39;/g, '"').replace(/&amp;/g, '&').replace(/&#39;/g, '"'));
+
         for (var i = 0; i < 4; i++) {
 
 
             str += '<div class="col-xs-6 col-md-6 col-sm-6 col-lg-6 choice-col" style="">' +
-                    '<a href="#" class="thumbnail multichoice-img-select" value="' + i + '">' +
+                    '<a href="#" class="thumbnail multichoice-img-select" value="' + i + '" data-id="' + choice_ids[i] + '">' +
                     '<input style="position:absolute" class="radio-inline"value="' + i + '" type="radio">' +
                     '<img class="multichoice-img-small " value="' + i + '" style=""' +
                     'src="' + four_sm_img[i] + '">' +

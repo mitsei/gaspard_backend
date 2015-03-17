@@ -581,6 +581,8 @@ def display_question(request):
         else:
             if "choose-viewset" in question_type:
                 list_choices = resp2.json()['files']['choices']
+                choices = resp2.json()['choices']
+                choice_ids = [choice['id'] for choice in choices]
                 lg_img_layouts = []
                 sm_img_layouts = []
                 for i, c in enumerate(list_choices):
@@ -607,6 +609,7 @@ def display_question(request):
                 return render_to_response("ims_lti_py_sample/multichoice.html",
                                           RequestContext(request,
                                                          {"choices": list_choices,
+                                                          'choice_ids'  : choice_ids,
                                                           'lg_img_layouts' : lg_img_layouts,
                                                           'manipFile': manip_url,
                                                           'next_quest_id': next_quest_id,

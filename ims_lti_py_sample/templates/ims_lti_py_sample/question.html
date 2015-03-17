@@ -274,6 +274,13 @@
                 u.getUnity().SendMessage("Question","SetFaceAsSide", data['integerValues']['sideFaceValue']);
                 u.getUnity().SendMessage("Question","SetFaceAsTop", data['integerValues']['topFaceValue']);
                 console.log('Set the faces.');
+            } else if (data.hasOwnProperty('choiceIds')) {
+                var choices = $('a.multichoice-img-select');
+                _.each(choices, function (choice) {
+                    if ($(choice).data('id') === data['choiceIds'][0]) {
+                        $(choice).click();
+                    }
+                });
             }
         });
 
