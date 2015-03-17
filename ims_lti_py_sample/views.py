@@ -1404,7 +1404,7 @@ def update_assessments(request):
 
 
 @csrf_exempt
-def get_response(request):
+def get_student_response(request):
     """
     Get the student response to a specific question
     :param request:
@@ -1419,9 +1419,9 @@ def get_response(request):
         params = ast.literal_eval(Parameters.objects.filter(key=unique_id)[0].value)
 
 
-        bank_id = params['custom_bank_id']
-        taken_id = params['taken_id']
-        question_id = params['question_id']
+        bank_id = unquote(params['custom_bank_id'])
+        taken_id = unquote(params['taken_id'])
+        question_id = unquote(params['question_id'])
         student_req = AssessmentRequests(unique_id,'taaccct_student')
 
 

@@ -265,9 +265,9 @@
         // try to get the last student response, and load it into Unity widget
         // if available
         $.ajax({
-            url : 'get_response'
+            url : 'responses'
         }).error(function(xhr, status, msg) {
-            console.log('Server error: ' + xhr.responseText);
+            console.log('No student responses avialable.');
         }).success(function(data) {
             var response = $.parseJSON(data);
             u.getUnity().SendMessage("Question","SetFaceAsFront", response['integerValues']['frontFaceValue']);
