@@ -5,7 +5,7 @@ dj-database-url==0.3.0
 djutils==0.3.2
 -e git+https://github.com/digitalbazaar/py-http-signature@824de0d8957b4423b1ac986fe47a2d303cdfb434#egg=http_signature-master
 httplib2==0.9
--e git+https://github.com/starteam/ims_lti_py.git@be26d5f9dc061bdbd7c76949b6f963bcf61fe912#egg=ims_lti_py-origin/master
+-e git+https://github.com/starteam/ims_lti_py.git@be26d5f9dc061bdbd7c76949b6f963bcf61fe912#egg=ims_lti_py-origin-master
 lxml==3.3.5
 macholib==1.7
 modulegraph==0.12
