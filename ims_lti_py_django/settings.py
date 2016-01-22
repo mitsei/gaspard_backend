@@ -10,9 +10,13 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import random
+import string
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
-
+def rand_generator(size=24, chars=string.ascii_uppercase + string.digits):
+    return ''.join(random.choice(chars) for x in range(size))
 
 FN_CREDENTIALS = "settings_credentials.py"
 
@@ -51,7 +55,8 @@ LOGGING = settings_credentials.__dict__.get('LOGGING')
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = settings_credentials.__dict__.get('SECRET_KEY')
+SECRET_KEY = settings_credentials.__dict__.get('SECRET_KEY', rand_generator())
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = settings_credentials.__dict__.get('DEBUG')
